@@ -8,6 +8,8 @@ import {
 import { BaseDTO } from '../base.dto';
 import { CategoryResponseDTO } from '../category/category.dto';
 import { ProductImageResponseDTO } from './product-image.dto';
+import { TagResponseDTO } from '../tag/tag.dto';
+import { ReviewResponseDTO } from '../review/review.dto';
 
 export class ProductResponseDTO {
   id?: number;
@@ -32,6 +34,8 @@ export class ProductDetailResponseDTO {
   is_documented: boolean;
   images?: ProductImageResponseDTO[];
   total_sale?: number;
+  tags?: TagResponseDTO[];
+  reviews?: ReviewResponseDTO[];
 }
 
 export class CreateProductDTO {
@@ -69,6 +73,9 @@ export class CreateProductDTO {
 
   @IsOptional()
   images?: string[];
+
+  @IsOptional()
+  tags?: string[];
 }
 
 export class UpdateProductDTO {
@@ -106,4 +113,7 @@ export class UpdateProductDTO {
 
   @IsOptional()
   images?: string[];
+
+  @IsOptional()
+  tags?: string[];
 }

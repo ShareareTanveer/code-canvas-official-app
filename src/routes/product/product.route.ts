@@ -51,6 +51,11 @@ const router = express.Router();
  *           items:
  *             type: string
  *           example: ["image1.jpg", "image2.jpg"]
+ *         tags:
+ *           type: array
+ *           items:
+ *             type: number
+ *           example: [1, 2]
  *         total_sale:
  *           type: integer
  *           nullable: true
@@ -123,6 +128,11 @@ const router = express.Router();
  *           items:
  *             type: string
  *           example: ["updated_image1.jpg", "updated_image2.jpg"]
+ *         tags:
+ *           type: array
+ *           items:
+ *             type: number
+ *           example: [1, 2]
  */
 
 /**
@@ -137,7 +147,7 @@ const router = express.Router();
  *         name: keyword
  *         schema:
  *           type: string
- *         description: Search keyword to filter products by title, slug, or category name.
+ *         description: Search keyword to filter products by title, slug, or category name or tag name.
  *       - in: query
  *         name: category
  *         schema:

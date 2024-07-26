@@ -31,5 +31,7 @@ export const toProductDetailResponseDTO = (
     is_documented: entity.is_documented,
     images: entity.images,
     total_sale: entity.total_sale,
+    tags: entity.tags,
+    reviews: entity.reviews,
   };
 };

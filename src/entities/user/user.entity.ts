@@ -1,8 +1,9 @@
-import { Column, Entity, PrimaryGeneratedColumn, Unique, ManyToOne, OneToOne, JoinColumn } from 'typeorm';
+import { Column, Entity, PrimaryGeneratedColumn, Unique, ManyToOne, OneToOne, JoinColumn, OneToMany } from 'typeorm';
 import { IsStrongPassword } from 'class-validator';
 import { BaseEntity } from '../base/base.entity';
 import { UserDetail } from './userDetails.entity';
 import { Role } from './role.entity';
+import { Review } from '../review/review.entity';
 
 @Entity('user', { orderBy: { id: 'DESC' } })
 export class User extends BaseEntity {
@@ -33,4 +34,7 @@ export class User extends BaseEntity {
   })
   @JoinColumn()
   details: UserDetail;
+
+  @OneToMany(() => Review, (review) => review.user)
+  reviews: Review[];
 }

@@ -14,16 +14,19 @@ import {
 } from './mapper/product.mapper';
 import ApiUtility from '../../utilities/api.utility';
 import { IProductQueryParams } from 'product.interface';
+import { In } from 'typeorm';
+import { Tag } from '../../entities/tag/tag.entity';
 
 const repository = dataSource.getRepository(Product);
 const categoryRepository = dataSource.getRepository(Category);
+const tagRepository = dataSource.getRepository(Tag);
 
 const getById = async (
   id: number,
 ): Promise<ProductDetailResponseDTO> => {
   const entity = await repository.findOne({
     where: { id },
-    relations: ['images', 'category'],
+    relations: ['images', 'category', 'tags', 'reviews'],
   });
   if (!entity) {
     throw new Error('Product not found');
@@ -35,11 +38,12 @@ const list = async (params: IProductQueryParams) => {
   let productRepo = repository
     .createQueryBuilder('product')
     .leftJoinAndSelect('product.category', 'category')
-    .leftJoinAndSelect('product.images', 'images');
+    .leftJoinAndSelect('product.images', 'images')
+    .leftJoinAndSelect('product.tags', 'tags');
 
   if (params.keyword) {
     productRepo = productRepo.andWhere(
-      '(LOWER(product.title) LIKE LOWER(:keyword) OR LOWER(product.slug) LIKE LOWER(:keyword) OR LOWER(category.name) LIKE LOWER(:keyword))',
+      '(LOWER(product.title) LIKE LOWER(:keyword) OR LOWER(product.slug) LIKE LOWER(:keyword) OR LOWER(category.name) LIKE LOWER(:keyword) OR LOWER(tags.name) LIKE LOWER(:keyword))',
       { keyword: `%${params.keyword}%` },
     );
   }
@@ -99,6 +103,12 @@ const create = async (
   product.price = params.price;
   product.is_documented = params.is_documented || false;
 
+  if (params.tags) {
+    const tagEntities =
+      await tagRepository.findBy({ id: In(params.tags) })
+      product.tags = tagEntities;
+  }
+
   if (params.images && params.images.length > 0) {
     product.images = params.images.map((url) => {
       const image = new ProductImage();
@@ -117,7 +127,7 @@ const update = async (
 ): Promise<ProductDetailResponseDTO> => {
   const product = await repository.findOne({
     where: { id },
-    relations: ['images', 'category'],
+    relations: ['images', 'category', 'tags'],
   });
 
   if (!product) {
@@ -142,6 +152,12 @@ const update = async (
   if (params.price !== undefined) product.price = params.price;
   if (params.is_documented !== undefined)
     product.is_documented = params.is_documented;
+
+  if (params.tags) {
+    const tagEntities =
+      await tagRepository.findBy({ id: In(params.tags) })
+      product.tags = tagEntities;
+  }
 
   if (params.images && params.images.length > 0) {
     product.images = params.images.map((url) => {

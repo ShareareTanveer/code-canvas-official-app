@@ -1,25 +1,22 @@
 import httpStatusCodes from 'http-status-codes';
 import IController from '../../interfaces/IController';
 import ApiResponse from '../../utilities/api-response.utility';
-import productService from '../../services/product/product.service';
+import reviewService from '../../services/review/review.service';
 import {
-  UpdateProductDTO,
-  CreateProductDTO,
-} from '../../services/dto/product/product.dto';
-import { IProductQueryParams } from 'product.interface';
+  CreateReviewDTO,
+  UpdateReviewDTO,
+} from '../../services/dto/review/review.dto';
 import ApiUtility from '../../utilities/api.utility';
+import { User } from '../../entities/user/user.entity';
+import { IReviewQueryParams } from 'review.interface';
 
 const getById: IController = async (req, res) => {
   try {
     const id: number = parseInt(req.params.id, 10);
-    const data = await productService.getById(id);
+    const data = await reviewService.getById(id);
     return ApiResponse.result(res, data, httpStatusCodes.OK);
   } catch (e) {
-    return ApiResponse.error(
-      res,
-      httpStatusCodes.BAD_REQUEST,
-      e.message,
-    );
+    return ApiResponse.error(res, httpStatusCodes.NOT_FOUND, e.message);
   }
 };
 
@@ -27,19 +24,10 @@ const list: IController = async (req, res) => {
   try {
     const limit = ApiUtility.getQueryParam(req, 'limit');
     const page = ApiUtility.getQueryParam(req, 'page');
-    const keyword = ApiUtility.getQueryParam(req, 'keyword');
-    const category = ApiUtility.getQueryParam(req, 'category');
-    const sortOrder = ApiUtility.getQueryParam(req, 'sortOrder');
-    const sortBy = ApiUtility.getQueryParam(req, 'sortBy');
-    const params: IProductQueryParams = {
-      limit,
-      page,
-      keyword,
-      category,
-      sortOrder,
-      sortBy,
-    };
-    const data = await productService.list(params);
+    const product = ApiUtility.getQueryParam(req, 'product');
+    const params: IReviewQueryParams = { limit, page, product };
+    const user: User = req.user;
+    const data = await reviewService.list(params, user);
     return ApiResponse.result(
       res,
       data.response,
@@ -58,19 +46,13 @@ const list: IController = async (req, res) => {
 
 const create: IController = async (req, res) => {
   try {
-    const params: CreateProductDTO = {
-      category: req.body.category,
-      title: req.body.title,
-      slug: req.body.slug,
-      description: req.body.description,
-      live_link: req.body.live_link,
-      support_for: req.body.support_for,
-      price: req.body.price,
-      is_documented: req.body.is_documented,
-      images: req.body.images,
-      tags: req.body.tags,
+    const params: CreateReviewDTO = {
+      rating: req.body.rating,
+      text: req.body.text,
+      product: req.body.product,
     };
-    const data = await productService.create(params);
+    const user: User = req.user
+    const data = await reviewService.create(params, user);
     return ApiResponse.result(res, data, httpStatusCodes.CREATED);
   } catch (e) {
     return ApiResponse.error(
@@ -84,19 +66,12 @@ const create: IController = async (req, res) => {
 const update: IController = async (req, res) => {
   try {
     const id: number = parseInt(req.params.id, 10);
-    const params: UpdateProductDTO = {
-      category: req.body.category,
-      title: req.body.title,
-      slug: req.body.slug,
-      description: req.body.description,
-      live_link: req.body.live_link,
-      support_for: req.body.support_for,
-      price: req.body.price,
-      is_documented: req.body.is_documented,
-      images: req.body.images,
-      tags: req.body.tags,
+    const params: UpdateReviewDTO = {
+      rating: req.body.rating,
+      text: req.body.text,
     };
-    const data = await productService.update(id, params);
+    const user: User = req.user;
+    const data = await reviewService.update(id, params, user);
     return ApiResponse.result(res, data, httpStatusCodes.OK);
   } catch (e) {
     return ApiResponse.error(
@@ -110,7 +85,7 @@ const update: IController = async (req, res) => {
 const remove: IController = async (req, res) => {
   try {
     const id: number = parseInt(req.params.id, 10);
-    await productService.remove(id);
+    const data = await reviewService.remove(id);
     return ApiResponse.result(res, {}, httpStatusCodes.OK);
   } catch (e) {
     return ApiResponse.error(

@@ -5,11 +5,15 @@ import {
   ManyToOne,
   JoinColumn,
   OneToMany,
+  ManyToMany,
+  JoinTable,
 } from 'typeorm';
 import { Category } from '../category/category.entity';
 import { IsBoolean, IsNumber, IsOptional } from 'class-validator';
 import { BaseEntity } from '../base/base.entity';
 import { ProductImage } from './product-image.entity';
+import { Tag } from '../tag/tag.entity';
+import { Review } from '../review/review.entity';
 
 @Entity('product')
 export class Product  {
@@ -45,9 +49,9 @@ export class Product  {
   @IsBoolean()
   is_documented: boolean;
 
-  // @OneToMany(() => ProductImage, (image) => image.product, { eager: true, onDelete: "CASCADE"})
-  // @IsOptional()
-  // images?: ProductImage[];
+  @ManyToMany(() => Tag, (tag) => tag.products)
+  @JoinTable()
+  tags: Tag[];
 
   @OneToMany(() => ProductImage, (image) => image.product, { cascade: true })
   images: ProductImage[];
@@ -56,6 +60,9 @@ export class Product  {
   @IsOptional()
   @IsNumber()
   total_sale?: number;
+
+  @OneToMany(() => Review, (review) => review.product)
+  reviews: Review[];
  
 //   @Column({ length: 255, nullable: true })
 //   @IsOptional()
