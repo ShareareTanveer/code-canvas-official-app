@@ -8,12 +8,19 @@ import {
   ProductResponseDTO,
   UpdateProductDTO,
 } from '../dto/product/product.dto';
-import { toProductDetailResponseDTO, toProductResponseDTO } from './mapper/product.mapper';
+import {
+  toProductDetailResponseDTO,
+  toProductResponseDTO,
+} from './mapper/product.mapper';
+import ApiUtility from '../../utilities/api.utility';
+import { IProductQueryParams } from 'product.interface';
 
 const repository = dataSource.getRepository(Product);
 const categoryRepository = dataSource.getRepository(Category);
 
-const getById = async (id: number): Promise<ProductDetailResponseDTO> => {
+const getById = async (
+  id: number,
+): Promise<ProductDetailResponseDTO> => {
   const entity = await repository.findOne({
     where: { id },
     relations: ['images', 'category'],
@@ -24,11 +31,51 @@ const getById = async (id: number): Promise<ProductDetailResponseDTO> => {
   return toProductDetailResponseDTO(entity);
 };
 
-const list = async (): Promise<ProductResponseDTO[]> => {
-  const entities = await repository.find({
-    relations: ['images', 'category'],
-  });
-  return entities.map(toProductResponseDTO);
+const list = async (params: IProductQueryParams) => {
+  let productRepo = repository
+    .createQueryBuilder('product')
+    .leftJoinAndSelect('product.category', 'category')
+    .leftJoinAndSelect('product.images', 'images');
+
+  if (params.keyword) {
+    productRepo = productRepo.andWhere(
+      '(LOWER(product.title) LIKE LOWER(:keyword) OR LOWER(product.slug) LIKE LOWER(:keyword) OR LOWER(category.name) LIKE LOWER(:keyword))',
+      { keyword: `%${params.keyword}%` },
+    );
+  }
+
+  if (params.sortBy && params.sortOrder) {
+    const validSortBy = ['title', 'price'];
+    const validSortOrder = ['ASC', 'DESC'];
+  
+    if (validSortBy.includes(params.sortBy) && validSortOrder.includes(params.sortOrder.toUpperCase())) {
+      productRepo = productRepo.orderBy(`product.${params.sortBy}`, params.sortOrder.toUpperCase() as 'ASC' | 'DESC');
+    }
+  }
+  
+  
+
+  // Pagination
+  const paginationRepo = productRepo;
+  const total = await paginationRepo.getMany();
+  const pagRes = ApiUtility.getPagination(
+    total.length,
+    params.limit,
+    params.page,
+  );
+
+  productRepo = productRepo
+    .limit(params.limit)
+    .offset(ApiUtility.getOffset(params.limit, params.page));
+  const products = await productRepo.getMany();
+
+  const response = [];
+  if (products && products.length) {
+    for (const item of products) {
+      response.push(toProductResponseDTO(item));
+    }
+  }
+  return { response, pagination: pagRes.pagination };
 };
 
 const create = async (
@@ -68,7 +115,10 @@ const update = async (
   id: number,
   params: UpdateProductDTO,
 ): Promise<ProductDetailResponseDTO> => {
-  const product = await repository.findOne({ where: { id }, relations: ['images', 'category'] });
+  const product = await repository.findOne({
+    where: { id },
+    relations: ['images', 'category'],
+  });
 
   if (!product) {
     throw new Error(`Product with ID ${id} not found`);

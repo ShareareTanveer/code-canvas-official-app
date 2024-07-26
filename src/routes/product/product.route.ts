@@ -16,8 +16,14 @@ const router = express.Router();
  *           type: integer
  *           example: 1
  *         category:
- *           type: integer
- *           example: 2
+ *           type: object
+ *           properties:
+ *             id:
+ *               type: integer
+ *               example: 2
+ *             name:
+ *               type: string
+ *               example: "Restaurant"
  *         title:
  *           type: string
  *           example: "Product Title"
@@ -45,7 +51,11 @@ const router = express.Router();
  *           items:
  *             type: string
  *           example: ["image1.jpg", "image2.jpg"]
- *
+ *         total_sale:
+ *           type: integer
+ *           nullable: true
+ *           example: null
+ * 
  *     CreateProductDTO:
  *       type: object
  *       properties:
@@ -79,7 +89,7 @@ const router = express.Router();
  *           items:
  *             type: string
  *           example: ["image1.jpg", "image2.jpg"]
- *
+ * 
  *     UpdateProductDTO:
  *       type: object
  *       properties:
@@ -122,15 +132,89 @@ const router = express.Router();
  *     tags:
  *       - Product
  *     summary: Get list of Products
+ *     parameters:
+ *       - in: query
+ *         name: keyword
+ *         schema:
+ *           type: string
+ *         description: Search keyword to filter products by title, slug, or category name.
+ *       - in: query
+ *         name: category
+ *         schema:
+ *           type: string
+ *         description: Filter products by category name.
+ *       - in: query
+ *         name: sortBy
+ *         schema:
+ *           type: string
+ *           enum:
+ *             - title
+ *             - price
+ *         description: Field to sort products by. 
+ *         examples:
+ *           title:
+ *             summary: Sort by product title
+ *             value: title
+ *           price:
+ *             summary: Sort by product price
+ *             value: price
+ *       - in: query
+ *         name: sortOrder
+ *         schema:
+ *           type: string
+ *           enum:
+ *             - ASC
+ *             - DESC
+ *         description: Sort order. 
+ *         examples:
+ *           ASC:
+ *             summary: Sort in ascending order
+ *             value: ASC
+ *           DESC:
+ *             summary: Sort in descending order
+ *             value: DESC
+ *       - in: query
+ *         name: limit
+ *         schema:
+ *           type: integer
+ *           example: 10
+ *         description: Number of products to return.
+ *       - in: query
+ *         name: page
+ *         schema:
+ *           type: integer
+ *           example: 1
+ *         description: Page number for pagination.
  *     responses:
  *       200:
  *         description: Product list retrieved successfully
  *         content:
  *           application/json:
  *             schema:
- *               type: array
- *               items:
- *                 $ref: '#/components/schemas/Product'
+ *               type: object
+ *               properties:
+ *                 data:
+ *                   type: array
+ *                   items:
+ *                     $ref: '#/components/schemas/Product'
+ *                 success:
+ *                   type: boolean
+ *                   example: true
+ *                 pagination:
+ *                   type: object
+ *                   properties:
+ *                     currentPage:
+ *                       type: integer
+ *                     totalPages:
+ *                       type: integer
+ *                     previousPage:
+ *                       type: integer
+ *                       nullable: true
+ *                     nextPage:
+ *                       type: integer
+ *                       nullable: true
+ *                     totalItems:
+ *                       type: integer
  *       400:
  *         description: Error Response
  *         content:
