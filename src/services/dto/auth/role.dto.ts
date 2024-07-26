@@ -36,7 +36,6 @@ export class UpdateRoleDTO {
   @IsString()
   @MaxLength(100)
   @IsOptional()
-  @IsNotEmpty()
   name?: string;
 
   @IsOptional()
