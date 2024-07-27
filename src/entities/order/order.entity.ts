@@ -8,7 +8,7 @@ import {
 import { User } from '../user/user.entity';
 import { OrderItem } from './order-item.entity';
 import { EOrderStaus } from '../../enum/order-status.enum';
-import { IsEnum } from 'class-validator';
+import { IsEnum, IsString } from 'class-validator';
 import { BaseEntity } from '../base/base.entity';
 import { DecimalColumnTransformer } from '../../utilities/decimal-column-transformer.utility';
 
@@ -39,4 +39,28 @@ export class Order extends BaseEntity {
   })
   @IsEnum(EOrderStaus)
   orderStatus: EOrderStaus;
+
+  @Column({nullable: true})
+  @IsString()
+  paymentID?: string;
+
+  @Column({nullable: true})
+  @IsString()
+  paymentNumber?: string;
+
+  @Column({nullable: true})
+  @IsString()
+  merchantInvoiceNumber?: string;  
+  
+  @Column({nullable: true})
+  @IsString()
+  trxID?: string;
+
+  @Column({nullable: true})
+  @IsString()
+  paymentExecuteTime?: string;
+
+  @Column({nullable: true})
+  @IsString()
+  paymentPortal?: string;
 }

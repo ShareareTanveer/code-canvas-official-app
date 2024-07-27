@@ -11,6 +11,7 @@ import tagRouter from './tag/tag.route';
 import reviewRouter from './review/review.route';
 import cartRouter from './cart/cart.route';
 import orderRouter from './order/order.route';
+import paymentRouter from './order/bkash-payment.route';
 import genericPageSectionItemRouter from './core/generic-page-section-item.route';
 import genericPageSectionRouter from './core/generic-page-section.route';
 
@@ -28,6 +29,7 @@ router.use('/tag', tagRouter);
 router.use('/review', reviewRouter);
 router.use('/cart', cartRouter);
 router.use('/order', orderRouter);
+router.use('/payment', paymentRouter);
 router.use('/core/generic-page-section-item', genericPageSectionItemRouter);
 router.use('/core/generic-page-section', genericPageSectionRouter);
 
