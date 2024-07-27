@@ -6,7 +6,7 @@ import {ICookie, IPagination, IOverrideRequest } from '../interfaces/common.inte
 export default class ApiResponse {
   static result = (
     res: Response,
-    data: object,
+    data: object & { message?: string },
     status: number = 200,
     cookie: ICookie = null,
     pagination: IPagination = null,
@@ -20,6 +20,10 @@ export default class ApiResponse {
 
     if (pagination) {
       responseData = { ...responseData, pagination };
+    }
+
+    if (data.hasOwnProperty('message')) {
+      responseData.message = data['message'];
     }
 
     res.json(responseData);

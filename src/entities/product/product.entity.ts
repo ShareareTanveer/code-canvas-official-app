@@ -14,6 +14,7 @@ import { BaseEntity } from '../base/base.entity';
 import { ProductImage } from './product-image.entity';
 import { Tag } from '../tag/tag.entity';
 import { Review } from '../review/review.entity';
+import { DecimalColumnTransformer } from '../../utilities/decimal-column-transformer.utility';
 
 @Entity('product')
 export class Product  {
@@ -42,7 +43,7 @@ export class Product  {
   @Column({ nullable: true })
   support_for: string;
 
-  @Column('decimal', { precision: 10, scale: 2, nullable: false  })
+  @Column('decimal', { precision: 10, scale: 2, nullable: false, transformer: new DecimalColumnTransformer()  })
   price: number;
 
   @Column({ default: false })

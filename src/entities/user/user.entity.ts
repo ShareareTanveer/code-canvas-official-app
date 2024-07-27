@@ -1,9 +1,20 @@
-import { Column, Entity, PrimaryGeneratedColumn, Unique, ManyToOne, OneToOne, JoinColumn, OneToMany } from 'typeorm';
+import {
+  Column,
+  Entity,
+  PrimaryGeneratedColumn,
+  Unique,
+  ManyToOne,
+  OneToOne,
+  JoinColumn,
+  OneToMany,
+} from 'typeorm';
 import { IsStrongPassword } from 'class-validator';
 import { BaseEntity } from '../base/base.entity';
 import { UserDetail } from './userDetails.entity';
 import { Role } from './role.entity';
 import { Review } from '../review/review.entity';
+import { Cart } from '../cart/cart.entity';
+import { Order } from '../order/order.entity';
 
 @Entity('user', { orderBy: { id: 'DESC' } })
 export class User extends BaseEntity {
@@ -37,4 +48,12 @@ export class User extends BaseEntity {
 
   @OneToMany(() => Review, (review) => review.user)
   reviews: Review[];
+
+  @OneToOne(() => Cart, (cart) => cart.user, { cascade: true })
+  @JoinColumn()
+  cart: Cart;
+  
+  @OneToMany(() => Order, (order) => order.user, { cascade: true })
+  @JoinColumn()
+  orders: Order[];
 }

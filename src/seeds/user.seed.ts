@@ -6,6 +6,7 @@ export const userSeed = [
     password: bcrypt.hashSync('password', 10),
     firstName: 'Administrator',
     lastName: '',
+    role: 1
   },
   // {
   //   email: 'matteo@gmail.com',

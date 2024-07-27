@@ -28,6 +28,8 @@ const getById = async (
     where: { id },
     relations: ['images', 'category', 'tags', 'reviews'],
   });
+  console.log(entity)
+  console.log(typeof entity.price)
   if (!entity) {
     throw new Error('Product not found');
   }
@@ -92,7 +94,7 @@ const create = async (
   if (!category) {
     throw new Error(`Category with ID ${params.category} not found`);
   }
-
+  
   const product = new Product();
   product.category = category;
   product.title = params.title;
@@ -117,7 +119,7 @@ const create = async (
     });
   }
   const savedEntity = await repository.save(product);
-
+  console.log(savedEntity);
   return toProductDetailResponseDTO(savedEntity);
 };
 
