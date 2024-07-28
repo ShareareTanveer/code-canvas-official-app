@@ -13,5 +13,6 @@ export const toGenericPageSectionResponseDTO = (
     image: entity.image,
     keyPoints: entity.keyPoints,
     items: entity.items,
+    sectionName: entity.sectionName,
   };
 };

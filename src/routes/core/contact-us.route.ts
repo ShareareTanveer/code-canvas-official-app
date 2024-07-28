@@ -1,65 +1,60 @@
 import express from 'express';
-import genericPageSectionController from '../../controllers/core/generic-page-section.controller';
+import officeInfoController from '../../controllers/core/contact-us.controller';
 import { validateDTO } from '../../middlewares/dto-validator.middleware';
-import { CreateGenericPageSectionDTO, UpdateGenericPageSectionDTO } from '../../services/dto/core/generic-page-section.dto';
+import { CreateContactUsDTO, UpdateContactUsDTO } from '../../services/dto/core/contact-us.dto';
 
 const router = express.Router();
 
 /**
  * @swagger
  * tags:
- *   - name: GenericPageSection
- *     description: Endpoints related to GenericPageSection
+ *   - name: ContactUs
+ *     description: Endpoints related to ContactUs
  */
 
 /**
  * @swagger
  * components:
  *   schemas:
- *     GenericPageSection:
+ *     ContactUs:
  *       type: object
  *       properties:
  *         id:
  *           type: integer
  *           example: 1
- *         title:
+ *         phone:
  *           type: string
- *           example: "Sample Title"
- *         subtitle:
+ *           example: "123-456-7890"
+ *         email:
  *           type: string
- *           example: "Sample Subtitle"
- *         keyPoints:
- *           type: array
- *           items:
- *             type: object
- *             properties:
- *               point:
- *                 type: string
- *                 example: "Key point"
- *         description:
+ *           example: "user@example.com"
+ *         address:
  *           type: string
- *           example: "Detailed description"
- *         icon:
+ *           example: "address name"
+ *         company:
  *           type: string
- *           example: "icon-class"
- *         image:
+ *           example: "company name"
+ *         subject:
  *           type: string
- *           example: "http://example.com/image.png"
- *         genericPageSection:
- *           type: integer
- *           example: 1
+ *           example: "subject"
+ *         message:
+ *           type: string
+ *           example: "message"
+ *         fullName:
+ *           type: string
+ *           example: "fullName"
  */
 
 /**
  * @swagger
- * /core/generic-page-section:
+ * /core/contact-us:
  *   get:
  *     tags:
- *       - GenericPageSection
- *     summary: Get list of GenericPageSection
+ *       - ContactUs
+ *     summary: Get list of ContactUs
  *     responses:
  *       200:
- *         description: GenericPageSection list retrieved successfully
+ *         description: ContactUs list retrieved successfully
  *         content:
  *           application/json:
  *             schema:
@@ -71,7 +66,7 @@ const router = express.Router();
  *                 data:
  *                   type: array
  *                   items:
- *                     $ref: '#/components/schemas/GenericPageSection'
+ *                     $ref: '#/components/schemas/ContactUs'
  *       400:
  *         description: Error Response
  *         content:
@@ -89,15 +84,15 @@ const router = express.Router();
  *                       type: string
  *                       example: "Error message"
  */
-router.get('/', genericPageSectionController.list);
+router.get('/', officeInfoController.list);
 
 /**
  * @swagger
- * /core/generic-page-section/{id}:
+ * /core/contact-us/{id}:
  *   get:
  *     tags:
- *       - GenericPageSection
- *     summary: Get a GenericPageSection by ID
+ *       - ContactUs
+ *     summary: Get a ContactUs by ID
  *     security:
  *       - bearerAuth: []
  *     parameters:
@@ -108,7 +103,7 @@ router.get('/', genericPageSectionController.list);
  *           type: integer
  *     responses:
  *       200:
- *         description: GenericPageSection retrieved successfully
+ *         description: ContactUs retrieved successfully
  *         content:
  *           application/json:
  *             schema:
@@ -118,7 +113,7 @@ router.get('/', genericPageSectionController.list);
  *                   type: boolean
  *                   example: true
  *                 data:
- *                   $ref: '#/components/schemas/GenericPageSection'
+ *                   $ref: '#/components/schemas/ContactUs'
  *       400:
  *         description: Error Response
  *         content:
@@ -136,15 +131,15 @@ router.get('/', genericPageSectionController.list);
  *                       type: string
  *                       example: "Error message"
  */
-router.get('/:id', genericPageSectionController.getById);
+router.get('/:id', officeInfoController.getById);
 
 /**
  * @swagger
- * /core/generic-page-section/{id}:
+ * /core/contact-us/{id}:
  *   delete:
  *     tags:
- *       - GenericPageSection
- *     summary: Remove a GenericPageSection by ID
+ *       - ContactUs
+ *     summary: Remove a ContactUs by ID
  *     security:
  *       - bearerAuth: []
  *     parameters:
@@ -155,7 +150,7 @@ router.get('/:id', genericPageSectionController.getById);
  *           type: integer
  *     responses:
  *       200:
- *         description: GenericPageSection removed successfully
+ *         description: ContactUs removed successfully
  *         content:
  *           application/json:
  *             schema:
@@ -181,54 +176,24 @@ router.get('/:id', genericPageSectionController.getById);
  *                       type: string
  *                       example: "Error message"
  */
-router.delete('/:id', genericPageSectionController.remove);
+router.delete('/:id', officeInfoController.remove);
 
 /**
  * @swagger
- * /core/generic-page-section:
+ * /core/contact-us:
  *   post:
  *     tags:
- *       - GenericPageSection
- *     summary: Create a new GenericPageSection
+ *       - ContactUs
+ *     summary: Create a new ContactUs
  *     requestBody:
  *       required: true
  *       content:
  *         application/json:
  *           schema:
- *             type: object
- *             properties:
- *               title:
- *                 type: string
- *                 example: "Sample Title"
- *               sectionName:
- *                 type: string
- *                 example: "Hero"
- *               subtitle:
- *                 type: string
- *                 example: "Sample Subtitle"
- *               keyPoints:
- *                 type: array
- *                 items:
- *                   type: object
- *                   properties:
- *                     point:
- *                       type: string
- *                       example: "Key point"
- *               description:
- *                 type: string
- *                 example: "Detailed description"
- *               icon:
- *                 type: string
- *                 example: "icon-class"
- *               image:
- *                 type: string
- *                 example: "http://example.com/image.png"
- *               genericPageSection:
- *                 type: integer
- *                 example: 1
+ *             $ref: '#/components/schemas/ContactUs'
  *     responses:
  *       201:
- *         description: GenericPageSection created successfully
+ *         description: ContactUs created successfully
  *         content:
  *           application/json:
  *             schema:
@@ -238,7 +203,7 @@ router.delete('/:id', genericPageSectionController.remove);
  *                   type: boolean
  *                   example: true
  *                 data:
- *                   $ref: '#/components/schemas/GenericPageSection'
+ *                   $ref: '#/components/schemas/ContactUs'
  *       409:
  *         description: Error Response
  *         content:
@@ -256,15 +221,15 @@ router.delete('/:id', genericPageSectionController.remove);
  *                       type: string
  *                       example: "Error message"
  */
-router.post('/', validateDTO(CreateGenericPageSectionDTO), genericPageSectionController.create);
+router.post('/', validateDTO(CreateContactUsDTO), officeInfoController.create);
 
 /**
  * @swagger
- * /core/generic-page-section/{id}:
+ * /core/contact-us/{id}:
  *   patch:
- *     summary: Update a GenericPageSection by ID
+ *     summary: Update a ContactUs by ID
  *     tags:
- *       - GenericPageSection
+ *       - ContactUs
  *     security:
  *       - bearerAuth: []
  *     parameters:
@@ -278,40 +243,10 @@ router.post('/', validateDTO(CreateGenericPageSectionDTO), genericPageSectionCon
  *       content:
  *         application/json:
  *           schema:
- *             type: object
- *             properties:
- *               title:
- *                 type: string
- *                 example: "Updated Title"
- *               sectionName:
- *                 type: string
- *                 example: "FAQ"
- *               subtitle:
- *                 type: string
- *                 example: "Updated Subtitle"
- *               keyPoints:
- *                 type: array
- *                 items:
- *                   type: object
- *                   properties:
- *                     point:
- *                       type: string
- *                       example: "Updated key point"
- *               description:
- *                 type: string
- *                 example: "Updated description"
- *               icon:
- *                 type: string
- *                 example: "updated-icon-class"
- *               image:
- *                 type: string
- *                 example: "http://example.com/updated-image.png"
- *               genericPageSection:
- *                 type: integer
- *                 example: 1
+ *             $ref: '#/components/schemas/ContactUs'
  *     responses:
  *       200:
- *         description: GenericPageSection updated successfully
+ *         description: ContactUs updated successfully
  *         content:
  *           application/json:
  *             schema:
@@ -321,7 +256,7 @@ router.post('/', validateDTO(CreateGenericPageSectionDTO), genericPageSectionCon
  *                   type: boolean
  *                   example: true
  *                 data:
- *                   $ref: '#/components/schemas/GenericPageSection'
+ *                   $ref: '#/components/schemas/ContactUs'
  *       400:
  *         description: Bad request
  *         content:
@@ -339,7 +274,7 @@ router.post('/', validateDTO(CreateGenericPageSectionDTO), genericPageSectionCon
  *                       type: string
  *                       example: "Error message"
  *       404:
- *         description: GenericPageSection not found
+ *         description: ContactUs not found
  *         content:
  *           application/json:
  *             schema:
@@ -357,8 +292,8 @@ router.post('/', validateDTO(CreateGenericPageSectionDTO), genericPageSectionCon
  */
 router.patch(
   '/:id',
-  validateDTO(UpdateGenericPageSectionDTO),
-  genericPageSectionController.update,
+  validateDTO(UpdateContactUsDTO),
+  officeInfoController.update,
 );
 
 export default router;

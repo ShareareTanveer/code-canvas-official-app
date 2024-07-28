@@ -14,6 +14,8 @@ import orderRouter from './order/order.route';
 import paymentRouter from './order/bkash-payment.route';
 import genericPageSectionItemRouter from './core/generic-page-section-item.route';
 import genericPageSectionRouter from './core/generic-page-section.route';
+import officeInfoRouter from './core/office-info.route';
+import contactUsRouter from './core/contact-us.route';
 
 
 const router = express.Router();
@@ -32,5 +34,7 @@ router.use('/order', orderRouter);
 router.use('/payment', paymentRouter);
 router.use('/core/generic-page-section-item', genericPageSectionItemRouter);
 router.use('/core/generic-page-section', genericPageSectionRouter);
+router.use('/core/office-info', officeInfoRouter);
+router.use('/core/contact-us', contactUsRouter);
 
 export default router;

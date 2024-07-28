@@ -46,6 +46,7 @@ const update = async (
     icon: params.icon ?? entity.icon,
     image: params.image ?? entity.image,
     keyPoints: params.keyPoints ?? entity.keyPoints,
+    sectionName: params.sectionName ?? entity.sectionName,
   });
 
   const updatedEntity = await repository.save(entity);

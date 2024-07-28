@@ -13,15 +13,19 @@ export class GenericPageSection {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column({ length: 255, unique: true })
+  @Column({ length: 255, unique: true, nullable: false  })
+  @IsString()
+  sectionName: string;
+
+  @Column({ length: 255, unique: true, nullable: false  })
   @IsString()
   title: string;
 
-  @Column({ length: 255, nullable: false })
+  @Column({ length: 255, nullable: true })
   @IsString()
   subtitle: string;
 
-  @Column({ length: 255 })
+  @Column({ length: 255, nullable: true })
   @IsString()
   description: string;
 

@@ -1,65 +1,81 @@
 import express from 'express';
-import genericPageSectionController from '../../controllers/core/generic-page-section.controller';
+import officeInfoController from '../../controllers/core/office-info.controller';
 import { validateDTO } from '../../middlewares/dto-validator.middleware';
-import { CreateGenericPageSectionDTO, UpdateGenericPageSectionDTO } from '../../services/dto/core/generic-page-section.dto';
+import { CreateOfficeInfoDTO, UpdateOfficeInfoDTO } from '../../services/dto/core/office-info.dto';
 
 const router = express.Router();
 
 /**
  * @swagger
  * tags:
- *   - name: GenericPageSection
- *     description: Endpoints related to GenericPageSection
+ *   - name: OfficeInfo
+ *     description: Endpoints related to OfficeInfo
  */
 
 /**
  * @swagger
  * components:
  *   schemas:
- *     GenericPageSection:
+ *     OfficeInfo:
  *       type: object
  *       properties:
  *         id:
  *           type: integer
  *           example: 1
- *         title:
+ *         phone:
  *           type: string
- *           example: "Sample Title"
- *         subtitle:
+ *           example: "123-456-7890"
+ *         supportEmail:
  *           type: string
- *           example: "Sample Subtitle"
- *         keyPoints:
- *           type: array
- *           items:
- *             type: object
- *             properties:
- *               point:
- *                 type: string
- *                 example: "Key point"
- *         description:
+ *           example: "support@example.com" 
+ *         officialEmail:
  *           type: string
- *           example: "Detailed description"
- *         icon:
+ *           example: "official@example.com"
+ *         supportPhone:
  *           type: string
- *           example: "icon-class"
- *         image:
+ *           example: "987-654-3210"
+ *         ownerName:
  *           type: string
- *           example: "http://example.com/image.png"
- *         genericPageSection:
- *           type: integer
- *           example: 1
+ *           example: "John Doe"
+ *         brandName:
+ *           type: string
+ *           example: "BrandX"
+ *         workingDayAndTime:
+ *           type: string
+ *           example: "Mon to Sat: 8am-9pm"
+ *         closedDay:
+ *           type: string
+ *           example: "Sunday: Closed"
+ *         bin:
+ *           type: string
+ *           example: "123456789"
+ *         hotline:
+ *           type: string
+ *           example: "1800-123-456"
+ *         officeAddress:
+ *           type: string
+ *           example: "123 Main St, City, Country"
+ *         secondaryOfficeAddress:
+ *           type: string
+ *           example: "456 Secondary St, City, Country"
+ *         latitude:
+ *           type: number
+ *           example: 23.810331
+ *         longitude:
+ *           type: number
+ *           example: 90.412521
  */
 
 /**
  * @swagger
- * /core/generic-page-section:
+ * /core/office-info:
  *   get:
  *     tags:
- *       - GenericPageSection
- *     summary: Get list of GenericPageSection
+ *       - OfficeInfo
+ *     summary: Get list of OfficeInfo
  *     responses:
  *       200:
- *         description: GenericPageSection list retrieved successfully
+ *         description: OfficeInfo list retrieved successfully
  *         content:
  *           application/json:
  *             schema:
@@ -71,7 +87,7 @@ const router = express.Router();
  *                 data:
  *                   type: array
  *                   items:
- *                     $ref: '#/components/schemas/GenericPageSection'
+ *                     $ref: '#/components/schemas/OfficeInfo'
  *       400:
  *         description: Error Response
  *         content:
@@ -89,15 +105,15 @@ const router = express.Router();
  *                       type: string
  *                       example: "Error message"
  */
-router.get('/', genericPageSectionController.list);
+router.get('/', officeInfoController.list);
 
 /**
  * @swagger
- * /core/generic-page-section/{id}:
+ * /core/office-info/{id}:
  *   get:
  *     tags:
- *       - GenericPageSection
- *     summary: Get a GenericPageSection by ID
+ *       - OfficeInfo
+ *     summary: Get a OfficeInfo by ID
  *     security:
  *       - bearerAuth: []
  *     parameters:
@@ -108,7 +124,7 @@ router.get('/', genericPageSectionController.list);
  *           type: integer
  *     responses:
  *       200:
- *         description: GenericPageSection retrieved successfully
+ *         description: OfficeInfo retrieved successfully
  *         content:
  *           application/json:
  *             schema:
@@ -118,7 +134,7 @@ router.get('/', genericPageSectionController.list);
  *                   type: boolean
  *                   example: true
  *                 data:
- *                   $ref: '#/components/schemas/GenericPageSection'
+ *                   $ref: '#/components/schemas/OfficeInfo'
  *       400:
  *         description: Error Response
  *         content:
@@ -136,15 +152,15 @@ router.get('/', genericPageSectionController.list);
  *                       type: string
  *                       example: "Error message"
  */
-router.get('/:id', genericPageSectionController.getById);
+router.get('/:id', officeInfoController.getById);
 
 /**
  * @swagger
- * /core/generic-page-section/{id}:
+ * /core/office-info/{id}:
  *   delete:
  *     tags:
- *       - GenericPageSection
- *     summary: Remove a GenericPageSection by ID
+ *       - OfficeInfo
+ *     summary: Remove a OfficeInfo by ID
  *     security:
  *       - bearerAuth: []
  *     parameters:
@@ -155,7 +171,7 @@ router.get('/:id', genericPageSectionController.getById);
  *           type: integer
  *     responses:
  *       200:
- *         description: GenericPageSection removed successfully
+ *         description: OfficeInfo removed successfully
  *         content:
  *           application/json:
  *             schema:
@@ -181,54 +197,24 @@ router.get('/:id', genericPageSectionController.getById);
  *                       type: string
  *                       example: "Error message"
  */
-router.delete('/:id', genericPageSectionController.remove);
+router.delete('/:id', officeInfoController.remove);
 
 /**
  * @swagger
- * /core/generic-page-section:
+ * /core/office-info:
  *   post:
  *     tags:
- *       - GenericPageSection
- *     summary: Create a new GenericPageSection
+ *       - OfficeInfo
+ *     summary: Create a new OfficeInfo
  *     requestBody:
  *       required: true
  *       content:
  *         application/json:
  *           schema:
- *             type: object
- *             properties:
- *               title:
- *                 type: string
- *                 example: "Sample Title"
- *               sectionName:
- *                 type: string
- *                 example: "Hero"
- *               subtitle:
- *                 type: string
- *                 example: "Sample Subtitle"
- *               keyPoints:
- *                 type: array
- *                 items:
- *                   type: object
- *                   properties:
- *                     point:
- *                       type: string
- *                       example: "Key point"
- *               description:
- *                 type: string
- *                 example: "Detailed description"
- *               icon:
- *                 type: string
- *                 example: "icon-class"
- *               image:
- *                 type: string
- *                 example: "http://example.com/image.png"
- *               genericPageSection:
- *                 type: integer
- *                 example: 1
+ *             $ref: '#/components/schemas/OfficeInfo'
  *     responses:
  *       201:
- *         description: GenericPageSection created successfully
+ *         description: OfficeInfo created successfully
  *         content:
  *           application/json:
  *             schema:
@@ -238,7 +224,7 @@ router.delete('/:id', genericPageSectionController.remove);
  *                   type: boolean
  *                   example: true
  *                 data:
- *                   $ref: '#/components/schemas/GenericPageSection'
+ *                   $ref: '#/components/schemas/OfficeInfo'
  *       409:
  *         description: Error Response
  *         content:
@@ -256,15 +242,15 @@ router.delete('/:id', genericPageSectionController.remove);
  *                       type: string
  *                       example: "Error message"
  */
-router.post('/', validateDTO(CreateGenericPageSectionDTO), genericPageSectionController.create);
+router.post('/', validateDTO(CreateOfficeInfoDTO), officeInfoController.create);
 
 /**
  * @swagger
- * /core/generic-page-section/{id}:
+ * /core/office-info/{id}:
  *   patch:
- *     summary: Update a GenericPageSection by ID
+ *     summary: Update a OfficeInfo by ID
  *     tags:
- *       - GenericPageSection
+ *       - OfficeInfo
  *     security:
  *       - bearerAuth: []
  *     parameters:
@@ -278,40 +264,10 @@ router.post('/', validateDTO(CreateGenericPageSectionDTO), genericPageSectionCon
  *       content:
  *         application/json:
  *           schema:
- *             type: object
- *             properties:
- *               title:
- *                 type: string
- *                 example: "Updated Title"
- *               sectionName:
- *                 type: string
- *                 example: "FAQ"
- *               subtitle:
- *                 type: string
- *                 example: "Updated Subtitle"
- *               keyPoints:
- *                 type: array
- *                 items:
- *                   type: object
- *                   properties:
- *                     point:
- *                       type: string
- *                       example: "Updated key point"
- *               description:
- *                 type: string
- *                 example: "Updated description"
- *               icon:
- *                 type: string
- *                 example: "updated-icon-class"
- *               image:
- *                 type: string
- *                 example: "http://example.com/updated-image.png"
- *               genericPageSection:
- *                 type: integer
- *                 example: 1
+ *             $ref: '#/components/schemas/OfficeInfo'
  *     responses:
  *       200:
- *         description: GenericPageSection updated successfully
+ *         description: OfficeInfo updated successfully
  *         content:
  *           application/json:
  *             schema:
@@ -321,7 +277,7 @@ router.post('/', validateDTO(CreateGenericPageSectionDTO), genericPageSectionCon
  *                   type: boolean
  *                   example: true
  *                 data:
- *                   $ref: '#/components/schemas/GenericPageSection'
+ *                   $ref: '#/components/schemas/OfficeInfo'
  *       400:
  *         description: Bad request
  *         content:
@@ -339,7 +295,7 @@ router.post('/', validateDTO(CreateGenericPageSectionDTO), genericPageSectionCon
  *                       type: string
  *                       example: "Error message"
  *       404:
- *         description: GenericPageSection not found
+ *         description: OfficeInfo not found
  *         content:
  *           application/json:
  *             schema:
@@ -357,8 +313,8 @@ router.post('/', validateDTO(CreateGenericPageSectionDTO), genericPageSectionCon
  */
 router.patch(
   '/:id',
-  validateDTO(UpdateGenericPageSectionDTO),
-  genericPageSectionController.update,
+  validateDTO(UpdateOfficeInfoDTO),
+  officeInfoController.update,
 );
 
 export default router;
