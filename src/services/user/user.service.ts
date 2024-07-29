@@ -6,12 +6,14 @@ import { UserDetail } from '../../entities/user/userDetails.entity';
 import ApiUtility from '../../utilities/api.utility';
 import Encryption from '../../utilities/encryption.utility';
 import { generateOTP, verifyOTP } from '../../utilities/otp.utility';
+import { listEntities } from '../../utilities/pagination-filtering.utility';
+import { loginDTO, verifyEmailOtpDTO } from '../dto/auth/auth.dto';
+import { toUserResponseDTO } from './mapper/user.mapper';
 import {
   IBaseQueryParams,
   IDeleteById,
   IDetailById,
 } from '../../interfaces/common.interface';
-import { IUserQueryParams } from '../../interfaces/user.interface';
 import {
   CreateUserDTO,
   RegisterUserDTO,
@@ -19,9 +21,6 @@ import {
   UpdateUserByAdminDTO,
   UpdateUserDTO,
 } from '../dto/user/user.dto';
-import { loginDTO, verifyEmailOtpDTO } from '../dto/auth/auth.dto';
-import { toUserResponseDTO } from './mapper/user.mapper';
-import { listEntities } from '../../utilities/pagination-filtering.utility';
 
 const register = async (
   params: RegisterUserDTO,
@@ -45,6 +44,10 @@ const register = async (
   userDetail.phone = params.phone;
   userDetail.address = params.address;
   userDetail.gender = params.gender;
+
+  if (params.image) {
+    userDetail.image = params.image;
+  }
 
   user.details = userDetail;
 
@@ -74,6 +77,10 @@ const create = async (
   userDetail.phone = params.phone;
   userDetail.address = params.address;
   userDetail.gender = params.gender;
+
+  if (params.image) {
+    userDetail.image = params.image;
+  }
 
   user.details = userDetail;
 
@@ -221,53 +228,11 @@ const updateMe = async (params: UpdateUserDTO) => {
   return await userRepository.save(user);
 };
 
-const lists = async (params: IUserQueryParams) => {
-  let userRepo = dataSource
-    .getRepository(User)
-    .createQueryBuilder('user')
-    .leftJoinAndSelect('user.details', 'details')
-    .leftJoinAndSelect('user.role', 'role');
-
-  if (params.keyword) {
-    userRepo = userRepo.andWhere(
-      '(LOWER(user.firstName) LIKE LOWER(:keyword) OR LOWER(user.lastName) LIKE LOWER(:keyword))',
-      { keyword: `%${params.keyword}%` },
-    );
-  }
-
-  // Pagination
-  const paginationRepo = userRepo;
-  const total = await paginationRepo.getMany();
-  const pagRes = ApiUtility.getPagination(
-    total.length,
-    params.limit,
-    params.page,
-  );
-
-  userRepo = userRepo
-    .limit(params.limit)
-    .offset(ApiUtility.getOffset(params.limit, params.page));
-  const users = await userRepo.getMany();
-
-  const response = [];
-  if (users && users.length) {
-    for (const item of users) {
-      response.push(ApiUtility.sanitizeUser(item));
-    }
-  }
-  return { response, pagination: pagRes.pagination };
-};
-
 const list = async (params: IBaseQueryParams) => {
   const userRepository = dataSource.getRepository(User);
   return await listEntities(userRepository, params, 'user', {
     relations: ['details', 'role'],
-    searchFields: [
-      'firstName',
-      'lastName',
-      'email',
-      'details.phone',
-    ],
+    searchFields: ['firstName', 'lastName', 'email', 'details.phone'],
     validSortBy: ['email', 'firstName', 'id'],
     validSortOrder: ['ASC', 'DESC'],
     toResponseDTO: toUserResponseDTO,

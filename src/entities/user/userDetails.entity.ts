@@ -18,6 +18,11 @@ export class UserDetail {
   @IsOptional()
   address: string;
 
+  @Column({ nullable: true })
+  @IsString()
+  @IsOptional()
+  image: string;
+
   @Column({ type: 'enum', enum: EGender, nullable: true })
   @IsNotEmpty()
   @IsEnum(EGender, { message: 'Gender must be Male, Female, or Other' })

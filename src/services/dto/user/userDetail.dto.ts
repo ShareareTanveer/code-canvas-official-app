@@ -5,4 +5,5 @@ export class UserDetailResponseDTO {
   phone: string;
   address: string;
   gender: EGender;
+  image?: string;
 }

@@ -8,6 +8,7 @@ import {
 } from '../../services/dto/core/generic-page-section-item.dto';
 import ApiUtility from '../../utilities/api.utility';
 import { IBaseQueryParams } from 'common.interface';
+import uploadOnCloud from '../../utilities/cloudiary.utility';
 
 const getById: IController = async (req, res) => {
   try {
@@ -54,22 +55,64 @@ const list: IController = async (req, res) => {
 
 const create: IController = async (req, res) => {
   try {
-    const params: CreateGenericPageSectionItemDTO = req.body;
+    const imageLocalFile = req.file?.path;
+    let imageUrl;
+    if (imageLocalFile) {
+      const uploadImage = await uploadOnCloud(imageLocalFile);
+      if (!uploadImage) {
+        throw new Error('Image could not be uploaded');
+      }
+      imageUrl = uploadImage.secure_url;
+    }
+    const params: CreateGenericPageSectionItemDTO = {
+      title: req.body.title,
+      subtitle: req.body.subtitle,
+      description: req.body.description,
+      keyPoints: req.body.keyPoints,
+      icon: req.body.icon,
+      genericPageSection: req.body.genericPageSection,
+      ...(imageUrl && { image: imageUrl }),
+    };
     const data = await service.create(params);
     return ApiResponse.result(res, data, httpStatusCodes.CREATED);
   } catch (e) {
-    return ApiResponse.error(res, httpStatusCodes.BAD_REQUEST, e.message);
+    return ApiResponse.error(
+      res,
+      httpStatusCodes.BAD_REQUEST,
+      e.message,
+    );
   }
 };
 
 const update: IController = async (req, res) => {
   try {
+    const imageLocalFile = req.file?.path;
+    let imageUrl;
+    if (imageLocalFile) {
+      const uploadImage = await uploadOnCloud(imageLocalFile);
+      if (!uploadImage) {
+        throw new Error('Image could not be uploaded');
+      }
+      imageUrl = uploadImage.secure_url;
+    }
     const id: number = parseInt(req.params.id, 10);
-    const params: UpdateGenericPageSectionItemDTO = req.body;
+    const params: UpdateGenericPageSectionItemDTO = {
+      title: req.body.title,
+      subtitle: req.body.subtitle,
+      description: req.body.description,
+      keyPoints: req.body.keyPoints,
+      icon: req.body.icon,
+      genericPageSection: req.body.genericPageSection,
+      ...(imageUrl && { image: imageUrl }),
+    };
     const data = await service.update(id, params);
     return ApiResponse.result(res, data, httpStatusCodes.OK);
   } catch (e) {
-    return ApiResponse.error(res, httpStatusCodes.BAD_REQUEST, e.message);
+    return ApiResponse.error(
+      res,
+      httpStatusCodes.BAD_REQUEST,
+      e.message,
+    );
   }
 };
 
@@ -79,7 +122,11 @@ const remove: IController = async (req, res) => {
     await service.remove(id);
     return ApiResponse.result(res, {}, httpStatusCodes.OK);
   } catch (e) {
-    return ApiResponse.error(res, httpStatusCodes.BAD_REQUEST, e.message);
+    return ApiResponse.error(
+      res,
+      httpStatusCodes.BAD_REQUEST,
+      e.message,
+    );
   }
 };
 

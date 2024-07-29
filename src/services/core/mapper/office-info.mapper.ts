@@ -20,5 +20,9 @@ export const toOfficeInfoResponseDTO = (
     secondaryOfficeAddress: entity.secondaryOfficeAddress,
     latitude: entity.latitude,
     longitude: entity.longitude,
+    linkedIn: entity.linkedIn,
+    instagram: entity.instagram,
+    facebook: entity.facebook,
+    twitter: entity.twitter,
   };
 };

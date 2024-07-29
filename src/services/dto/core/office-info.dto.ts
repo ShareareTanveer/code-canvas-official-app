@@ -23,6 +23,10 @@ export class OfficeInfoResponseDTO {
   secondaryOfficeAddress?: string;
   latitude: number;
   longitude: number;
+  linkedIn?: string;
+  facebook?: string;
+  twitter?: string;
+  instagram?: string;
 }
 
 export class CreateOfficeInfoDTO {
@@ -93,6 +97,22 @@ export class CreateOfficeInfoDTO {
   @IsNumber()
   @IsNotEmpty()
   longitude?: number;
+
+  @IsString()
+  @IsOptional()
+  linkedIn?: string;
+
+  @IsString()
+  @IsOptional()
+  facebook?: string;
+
+  @IsString()
+  @IsOptional()
+  twitter?: string;
+
+  @IsString()
+  @IsOptional()
+  instagram?: string;
 }
 
 export class UpdateOfficeInfoDTO {
@@ -163,4 +183,20 @@ export class UpdateOfficeInfoDTO {
   @IsNumber()
   @IsOptional()
   longitude?: number;
+
+  @IsString()
+  @IsOptional()
+  linkedIn?: string;
+
+  @IsString()
+  @IsOptional()
+  facebook?: string;
+
+  @IsString()
+  @IsOptional()
+  twitter?: string;
+
+  @IsString()
+  @IsOptional()
+  instagram?: string;
 }

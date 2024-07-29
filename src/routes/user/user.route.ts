@@ -2,8 +2,13 @@ import express from 'express';
 import userController from '../../controllers/user/user.controller';
 import { checkPermission } from '../../middlewares/authenticate.middleware';
 import { validateDTO } from '../../middlewares/dto-validator.middleware';
-import { CreateUserDTO, UpdateUserByAdminDTO, UpdateUserDTO } from '../../services/dto/user/user.dto';
+import {
+  CreateUserDTO,
+  UpdateUserByAdminDTO,
+  UpdateUserDTO,
+} from '../../services/dto/user/user.dto';
 import { IsAdmin } from '../../decorators/role-permission.decorator';
+import { upload } from '../../middlewares/multer.middleware';
 
 const router = express.Router();
 
@@ -86,7 +91,7 @@ const router = express.Router();
  *             - email
  *             - firstName
  *             - phone
- *         description: Field to sort users by. 
+ *         description: Field to sort users by.
  *         examples:
  *           email:
  *             summary: Sort by email
@@ -104,7 +109,7 @@ const router = express.Router();
  *           enum:
  *             - ASC
  *             - DESC
- *         description: Sort order. 
+ *         description: Sort order.
  *         examples:
  *           ASC:
  *             summary: Sort in ascending order
@@ -144,9 +149,40 @@ const router = express.Router();
  *     requestBody:
  *       required: true
  *       content:
- *         application/json:
+ *         multipart/form-data:
  *           schema:
- *             $ref: '#/components/schemas/UserCreateDTO'
+ *             type: object
+ *             properties:
+ *               email:
+ *                 type: string
+ *                 format: email
+ *                 example: "user@example.com"
+ *               password:
+ *                 type: string
+ *                 format: password
+ *                 example: "StrongPassword123!"
+ *               firstName:
+ *                 type: string
+ *                 example: "John"
+ *               lastName:
+ *                 type: string
+ *                 example: "Doe"
+ *               phone:
+ *                 type: string
+ *                 example: "+1234567890"
+ *               address:
+ *                 type: string
+ *                 example: "123 Main St, Anytown, USA"
+ *               gender:
+ *                 type: string
+ *                 enum: [Male, Female, Other]
+ *                 example: "Male"
+ *               role:
+ *                 type: integer
+ *                 example: 1
+ *               image:
+ *                 type: string
+ *                 format: binary
  *     responses:
  *       201:
  *         description: User created successfully
@@ -249,12 +285,35 @@ const router = express.Router();
  *         description: Internal server error
  */
 router.get('/me', userController.me);
-router.patch('/me', validateDTO(UpdateUserDTO), userController.updateMe);
+router.patch(
+  '/me',
+  validateDTO(UpdateUserDTO),
+  userController.updateMe,
+);
 
-router.get('/', checkPermission("read","user"), userController.list);
-router.post('/', checkPermission("create","user"), validateDTO(CreateUserDTO), userController.create);
-router.get('/:id', checkPermission("read","user"), userController.detail);
-router.patch('/:id', checkPermission("update","user"),validateDTO(UpdateUserByAdminDTO), userController.update);
-router.delete('/:id',checkPermission("delete","user"), userController.remove);
+router.get('/', checkPermission('read', 'user'), userController.list);
+router.post(
+  '/',
+  checkPermission('create', 'user'),
+  upload.single("image"),
+  validateDTO(CreateUserDTO),
+  userController.create,
+);
+router.get(
+  '/:id',
+  checkPermission('read', 'user'),
+  userController.detail,
+);
+router.patch(
+  '/:id',
+  checkPermission('update', 'user'),
+  validateDTO(UpdateUserByAdminDTO),
+  userController.update,
+);
+router.delete(
+  '/:id',
+  checkPermission('delete', 'user'),
+  userController.remove,
+);
 
 export default router;

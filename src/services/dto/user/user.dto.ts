@@ -1,4 +1,12 @@
-import { IsEmail, IsEnum, IsNotEmpty, IsNumber, IsOptional, IsString, IsStrongPassword } from 'class-validator';
+import {
+  IsEmail,
+  IsEnum,
+  IsNotEmpty,
+  IsNumber,
+  IsOptional,
+  IsString,
+  IsStrongPassword,
+} from 'class-validator';
 import { UserDetailResponseDTO } from './userDetail.dto';
 import { SimpleRoleResponseDTO } from '../auth/role.dto';
 import { EGender } from '../../../enum/gender.enum';
@@ -35,6 +43,10 @@ export class RegisterUserDTO extends BaseDTO {
   @IsNotEmpty()
   @IsEnum(EGender)
   gender: EGender;
+
+  @IsOptional()
+  @IsString()
+  image?: string;
 }
 
 export class CreateUserDTO extends BaseDTO {
@@ -70,8 +82,12 @@ export class CreateUserDTO extends BaseDTO {
   gender: EGender;
 
   @IsNotEmpty()
-  @IsNumber()
+  // @IsNumber()
   role: number;
+
+  @IsOptional()
+  @IsString()
+  image?: string;
 }
 
 export class UpdateUserDTO extends BaseDTO {
@@ -88,15 +104,18 @@ export class UpdateUserDTO extends BaseDTO {
   @IsOptional()
   @IsString()
   phone?: string;
-  
+
   @IsOptional()
   @IsString()
   address?: string;
-  
+
   @IsOptional()
   @IsEnum(EGender)
   gender: EGender;
 
+  @IsOptional()
+  @IsString()
+  image?: string;
 }
 
 export class UpdateUserByAdminDTO extends BaseDTO {
@@ -113,18 +132,22 @@ export class UpdateUserByAdminDTO extends BaseDTO {
   @IsOptional()
   @IsString()
   phone?: string;
-  
+
   @IsOptional()
   @IsString()
   address?: string;
-  
+
   @IsOptional()
   @IsEnum(EGender)
   gender: EGender;
 
   @IsOptional()
   @IsNumber()
-  role?:number;
+  role?: number;
+
+  @IsOptional()
+  @IsString()
+  image?: string;
 }
 
 export class SimpleUserResponseDTO {

@@ -1,7 +1,11 @@
 import express from 'express';
 import genericPageSectionItemController from '../../controllers/core/generic-page-section-item.controller';
 import { validateDTO } from '../../middlewares/dto-validator.middleware';
-import { CreateGenericPageSectionItemDTO, UpdateGenericPageSectionItemDTO } from '../../services/dto/core/generic-page-section-item.dto';
+import {
+  CreateGenericPageSectionItemDTO,
+  UpdateGenericPageSectionItemDTO,
+} from '../../services/dto/core/generic-page-section-item.dto';
+import { upload } from '../../middlewares/multer.middleware';
 
 const router = express.Router();
 
@@ -209,7 +213,7 @@ router.delete('/:id', genericPageSectionItemController.remove);
  *     requestBody:
  *       required: true
  *       content:
- *         application/json:
+ *         multipart/form-data:
  *           schema:
  *             type: object
  *             properties:
@@ -235,7 +239,7 @@ router.delete('/:id', genericPageSectionItemController.remove);
  *                 example: "icon-class"
  *               image:
  *                 type: string
- *                 example: "http://example.com/image.png"
+ *                 format: binary
  *               genericPageSection:
  *                 type: integer
  *                 example: 1
@@ -296,7 +300,12 @@ router.delete('/:id', genericPageSectionItemController.remove);
  *                       type: string
  *                       example: "Error message"
  */
-router.post('/', validateDTO(CreateGenericPageSectionItemDTO), genericPageSectionItemController.create);
+router.post(
+  '/',
+  upload.single('image'),
+  validateDTO(CreateGenericPageSectionItemDTO),
+  genericPageSectionItemController.create,
+);
 
 /**
  * @swagger
@@ -316,7 +325,7 @@ router.post('/', validateDTO(CreateGenericPageSectionItemDTO), genericPageSectio
  *     requestBody:
  *       required: true
  *       content:
- *         application/json:
+ *         multipart/form-data:
  *           schema:
  *             type: object
  *             properties:
@@ -342,7 +351,7 @@ router.post('/', validateDTO(CreateGenericPageSectionItemDTO), genericPageSectio
  *                 example: "updated-icon-class"
  *               image:
  *                 type: string
- *                 example: "http://example.com/updated-image.png"
+ *                 format: binary
  *               genericPageSection:
  *                 type: integer
  *                 example: 1
@@ -421,6 +430,7 @@ router.post('/', validateDTO(CreateGenericPageSectionItemDTO), genericPageSectio
  */
 router.patch(
   '/:id',
+  upload.single("image"),
   validateDTO(UpdateGenericPageSectionItemDTO),
   genericPageSectionItemController.update,
 );

@@ -1,14 +1,13 @@
 import httpStatusCodes from 'http-status-codes';
 import IController from '../../interfaces/IController';
 import ApiResponse from '../../utilities/api-response.utility';
-import service from '../../services/core/generic-page-section.service';
+import service from '../../services/customer/customer.service';
 import {
-  CreateGenericPageSectionDTO,
-  UpdateGenericPageSectionDTO,
-} from '../../services/dto/core/generic-page-section.dto';
+  CreateCustomerDTO,
+  UpdateCustomerDTO,
+} from '../../services/dto/customer/customer.dto';
 import ApiUtility from '../../utilities/api.utility';
 import { IBaseQueryParams } from 'common.interface';
-import uploadOnCloud from '../../utilities/cloudiary.utility';
 
 const getById: IController = async (req, res) => {
   try {
@@ -55,23 +54,14 @@ const list: IController = async (req, res) => {
 
 const create: IController = async (req, res) => {
   try {
-    const imageLocalFile = req.file?.path;
-    let imageUrl;
-    if (imageLocalFile) {
-      const uploadImage = await uploadOnCloud(imageLocalFile);
-      if (!uploadImage) {
-        throw new Error('Image could not be uploaded');
-      }
-      imageUrl = uploadImage.secure_url;
-    }
-    const params: CreateGenericPageSectionDTO = {
-      title: req.body.title,
-      sectionName: req.body.sectionName,
-      subtitle: req.body.subtitle,
-      description: req.body.description,
-      keyPoints: req.body.keyPoints,
-      icon: req.body.icon,
-      ...(imageUrl && { image: imageUrl }),
+    const params: CreateCustomerDTO = {
+      user: req.body.user,
+      company: req.body.company,
+      contactPersons: req.body.contactPersons,
+      nidNumber: req.body.nidNumber,
+      passportAttachment: req.body.passportAttachment,
+      photo: req.body.photo,
+      otherAttachment: req.body.otherAttachment,
     };
     const data = await service.create(params);
     return ApiResponse.result(res, data, httpStatusCodes.CREATED);
@@ -86,24 +76,15 @@ const create: IController = async (req, res) => {
 
 const update: IController = async (req, res) => {
   try {
-    const imageLocalFile = req.file?.path;
-    let imageUrl;
-    if (imageLocalFile) {
-      const uploadImage = await uploadOnCloud(imageLocalFile);
-      if (!uploadImage) {
-        throw new Error('Image could not be uploaded');
-      }
-      imageUrl = uploadImage.secure_url;
-    }
     const id: number = parseInt(req.params.id, 10);
-    const params: UpdateGenericPageSectionDTO = {
-      title: req.body.title,
-      sectionName: req.body.sectionName,
-      subtitle: req.body.subtitle,
-      description: req.body.description,
-      keyPoints: req.body.keyPoints,
-      icon: req.body.icon,
-      ...(imageUrl && { image: imageUrl }),
+    const params: UpdateCustomerDTO = {
+      user: req.body.user,
+      company: req.body.company,
+      contactPersons: req.body.contactPersons,
+      nidNumber: req.body.nidNumber,
+      passportAttachment: req.body.passportAttachment,
+      photo: req.body.photo,
+      otherAttachment: req.body.otherAttachment,
     };
     const data = await service.update(id, params);
     return ApiResponse.result(res, data, httpStatusCodes.OK);
@@ -119,7 +100,7 @@ const update: IController = async (req, res) => {
 const remove: IController = async (req, res) => {
   try {
     const id: number = parseInt(req.params.id, 10);
-    await service.remove(id);
+    const data = await service.remove(id);
     return ApiResponse.result(res, {}, httpStatusCodes.OK);
   } catch (e) {
     return ApiResponse.error(

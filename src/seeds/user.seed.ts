@@ -2,18 +2,19 @@ import bcrypt from 'bcrypt';
 
 export const userSeed = [
   {
-    email: 'admin@gmail.com',
-    password: bcrypt.hashSync('password', 10),
+    email: 'admin@example.com',
+    password: bcrypt.hashSync('StrongPassword123!', 10),
     firstName: 'Administrator',
     lastName: '',
     role: 1
   },
-  // {
-  //   email: 'matteo@gmail.com',
-  //   password: bcrypt.hashSync('password', 10),
-  //   firstName: 'Matteo',
-  //   lastName: 'Gleichner',
-  // },
+  {
+    email: 'user@gmail.com',
+    password: bcrypt.hashSync('StrongPassword123!', 10),
+    firstName: 'Matteo',
+    lastName: 'Gleichner',
+    role: 2
+  },
   // {
   //   email: 'titus@gmail.com',
   //   password: bcrypt.hashSync('password', 10),

@@ -3,6 +3,7 @@ import userController from '../../controllers/user/user.controller';
 import { loginDTO, resetPasswordDTO, sendEmailOtpDTO, verifyEmailOtpDTO } from '../../services/dto/auth/auth.dto';
 import { validateDTO } from '../../middlewares/dto-validator.middleware';
 import { RegisterUserDTO } from '../../services/dto/user/user.dto';
+import { upload } from '../../middlewares/multer.middleware';
 
 const router = express.Router();
 
@@ -16,7 +17,7 @@ const router = express.Router();
  *     requestBody:
  *       required: true
  *       content:
- *         application/json:
+ *         multipart/form-data:
  *           schema:
  *             type: object
  *             properties:
@@ -44,6 +45,9 @@ const router = express.Router();
  *                 type: string
  *                 enum: [Male, Female, Other]
  *                 example: "Male"
+ *               image:
+ *                 type: string
+ *                 format: binary
  *     responses:
  *       201:
  *         description: User created successfully
@@ -69,8 +73,10 @@ const router = express.Router();
  *               error:
  *                 message: "Email already exists."
  */
+
 router.post(
   '/register',
+  upload.single("image"),
   validateDTO(RegisterUserDTO),
   userController.register,
 );

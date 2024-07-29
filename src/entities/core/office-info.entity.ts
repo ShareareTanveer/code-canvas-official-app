@@ -41,6 +41,18 @@ export class OfficeInfo {
   @Column({ length: 255, nullable: true })
   secondaryOfficeAddress: string;
 
+  @Column({ length: 255, nullable: true })
+  linkedIn?: string;
+
+  @Column({ length: 255, nullable: true })
+  facebook?: string;
+
+  @Column({ length: 255, nullable: true })
+  twitter?: string;  
+
+  @Column({ length: 255, nullable: true })
+  instagram?: string;
+
   @Column('decimal', { precision: 10, scale: 6, nullable: false })
   latitude: number;
 

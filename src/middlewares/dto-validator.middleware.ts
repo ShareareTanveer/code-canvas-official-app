@@ -5,8 +5,10 @@ import ApiResponse from '../utilities/api-response.utility';
 
 export function validateDTO(dtoClass: any) {
   return (req: Request, res: Response, next: NextFunction) => {
+    if (typeof req.body.keyPoints === 'string') {
+      req.body.keyPoints = JSON.parse(req.body.keyPoints);
+    }
     const dtoObject = plainToInstance(dtoClass, req.body);
-
     validate(dtoObject).then((errors: ValidationError[]) => {
       if (errors.length > 0) {
         const firstError = errors[0];

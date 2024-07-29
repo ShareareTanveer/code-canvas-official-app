@@ -1,0 +1,23 @@
+export const officeInfoSeed = [
+  {
+    id: 1,
+    phone: '123-456-7890',
+    supportEmail: 'support@example.com',
+    officialEmail: 'official@example.com',
+    supportPhone: '987-654-3210',
+    ownerName: 'John Doe',
+    brandName: 'BrandX',
+    workingDayAndTime: 'Mon to Sat: 8am-9pm',
+    closedDay: 'Sunday: Closed',
+    bin: '123456789',
+    linkedIn: 'https://linkedin.com',
+    facebook: 'https://facebook.com',
+    instagram: 'https://instagram.com',
+    twitter: 'https://twitter.com',
+    hotline: '1800-123-456',
+    officeAddress: '123 Main St, City, Country',
+    secondaryOfficeAddress: '456 Secondary St, City, Country',
+    latitude: 23.810331,
+    longitude: 90.412521,
+  },
+];

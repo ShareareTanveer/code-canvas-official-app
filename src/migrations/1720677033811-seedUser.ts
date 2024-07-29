@@ -3,6 +3,9 @@ import { userSeed } from '../seeds/user.seed';
 import { roleSeed } from '../seeds/role.seed';
 import { Permission } from '../entities/user/permission.entity';
 import { generatePermissions } from '../utilities/generatePermission.utility';
+import { categorySeed } from '../seeds/category.seed';
+import { officeInfoSeed } from '../seeds/office-info.seed';
+import { tagSeed } from '../seeds/tag.seed';
 
 export class SeedPermissionsAndRoles1620677033811
   implements MigrationInterface
@@ -11,14 +14,26 @@ export class SeedPermissionsAndRoles1620677033811
     // Use the queryRunner to get the repository
     const roleRepository = queryRunner.manager.getRepository('role');
     const userRepository = queryRunner.manager.getRepository('user');
+    const categoryRepository = queryRunner.manager.getRepository('category');
+    const officeInfoRepository = queryRunner.manager.getRepository('office_info');
+    const tagRepository = queryRunner.manager.getRepository('tag');
     const permissionRepository =
-      queryRunner.manager.getRepository(Permission);
+    queryRunner.manager.getRepository(Permission);
 
     // roleSeed
     await roleRepository.save(roleSeed);
 
+    // categorySeed
+    await categoryRepository.save(categorySeed);
+
     // userSeed
     await userRepository.save(userSeed);
+
+    // officeInfoSeed
+    await officeInfoRepository.save(officeInfoSeed);
+
+    // tagInfoSeed
+    await tagRepository.save(tagSeed);
 
     // permissionsSeed
     const permissionSeed = await generatePermissions();

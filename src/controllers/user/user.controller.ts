@@ -8,15 +8,42 @@ import Encryption from '../../utilities/encryption.utility';
 import { verifyOTP } from '../../utilities/otp.utility';
 import IController from '../../interfaces/IController';
 import service from '../../services/user/user.service';
-import { IBaseQueryParams, IDeleteById, IDetailById } from '../../interfaces/common.interface';
-import { IUpdateUser, IUserQueryParams } from '../../interfaces/user.interface';
-import { loginDTO, resetPasswordDTO, sendEmailOtpDTO, verifyEmailOtpDTO } from '../../services/dto/auth/auth.dto';
-import { CreateUserDTO, RegisterUserDTO, UpdateUserByAdminDTO, UpdateUserDTO } from '../../services/dto/user/user.dto';
+import {
+  IBaseQueryParams,
+  IDeleteById,
+  IDetailById,
+} from '../../interfaces/common.interface';
+import {
+  IUpdateUser,
+  IUserQueryParams,
+} from '../../interfaces/user.interface';
+import {
+  loginDTO,
+  resetPasswordDTO,
+  sendEmailOtpDTO,
+  verifyEmailOtpDTO,
+} from '../../services/dto/auth/auth.dto';
+import {
+  CreateUserDTO,
+  RegisterUserDTO,
+  UpdateUserByAdminDTO,
+  UpdateUserDTO,
+} from '../../services/dto/user/user.dto';
 import constants from '../../constants';
-import { Console } from 'winston/lib/winston/transports';
+import uploadOnCloud from '../../utilities/cloudiary.utility';
 
 const register: IController = async (req, res) => {
   try {
+    const imageLocalFile = req.file?.path;
+    let imageUrl;
+    if (imageLocalFile) {
+      const uploadImage = await uploadOnCloud(imageLocalFile);
+      if (!uploadImage) {
+        throw new Error('Image could not be uploaded');
+      }
+      imageUrl = uploadImage.secure_url;
+    }
+
     const params: RegisterUserDTO = {
       email: req.body.email,
       password: req.body.password,
@@ -25,28 +52,36 @@ const register: IController = async (req, res) => {
       phone: req.body.phone,
       address: req.body.address,
       gender: req.body.gender,
+      ...(imageUrl && { image: imageUrl }),
     };
 
     const user = await service.register(params);
     return ApiResponse.result(res, user, httpStatusCodes.CREATED);
   } catch (e) {
-    if (e.code === constants.ERROR_CODE.DUPLICATED) {
-      return ApiResponse.error(
-        res,
-        httpStatusCodes.CONFLICT,
-        'Email already exists.',
-      );
-    }
-    return ApiResponse.error(
-      res,
-      httpStatusCodes.BAD_REQUEST,
-      e?.message,
-    );
+    const statusCode =
+      e.code === constants.ERROR_CODE.DUPLICATED
+        ? httpStatusCodes.CONFLICT
+        : httpStatusCodes.BAD_REQUEST;
+    const message =
+      e.code === constants.ERROR_CODE.DUPLICATED
+        ? 'Email already exists.'
+        : e?.message;
+
+    return ApiResponse.error(res, statusCode, message);
   }
 };
 
 const create: IController = async (req, res) => {
   try {
+    const imageLocalFile = req.file?.path;
+    let imageUrl;
+    if (imageLocalFile) {
+      const uploadImage = await uploadOnCloud(imageLocalFile);
+      if (!uploadImage) {
+        throw new Error('Image could not be uploaded');
+      }
+      imageUrl = uploadImage.secure_url;
+    }
     const params: CreateUserDTO = {
       email: req.body.email,
       password: req.body.password,
@@ -56,8 +91,8 @@ const create: IController = async (req, res) => {
       address: req.body.address,
       gender: req.body.gender,
       role: req.body.role,
+      ...(imageUrl && { image: imageUrl }),
     };
-
     const user = await service.create(params);
     return ApiResponse.result(res, user, httpStatusCodes.CREATED);
   } catch (e) {
@@ -132,7 +167,7 @@ export const verifyEmailOtp: IController = async (req, res) => {
       email: req.body.email,
       otp: req.body.otp,
     };
-    const isValid =  await service.verifyEmailOtp(params);
+    const isValid = await service.verifyEmailOtp(params);
     if (!isValid) {
       return ApiResponse.error(res, 400, 'Invalid or expired OTP');
     }
@@ -184,10 +219,7 @@ export const resetPassword: IController = async (req, res) => {
     }
     const email = decoded.data.pending_user;
     const hashedPassword = await bcrypt.hash(newPassword, 10);
-    const result = await service.resetPassword(
-      email,
-      hashedPassword,
-    );
+    const result = await service.resetPassword(email, hashedPassword);
 
     if (result) {
       ApiResponse.deleteCookie(
@@ -264,7 +296,6 @@ const update: IController = async (req, res) => {
   }
 };
 
-
 const updateMe: IController = async (req, res) => {
   try {
     const params: UpdateUserDTO = {
@@ -324,7 +355,8 @@ const remove: IController = async (req, res) => {
       res,
       httpStatusCodes.BAD_REQUEST,
       e.message,
-    );  }
+    );
+  }
 };
 
 const generateUserCookie = async (userId: number) => {
