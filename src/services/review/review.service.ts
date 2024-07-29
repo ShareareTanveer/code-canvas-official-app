@@ -11,6 +11,7 @@ import ApiUtility from '../../utilities/api.utility';
 import { User } from '../../entities/user/user.entity';
 import { Product } from '../../entities/product/product.entity';
 import { IReviewQueryParams } from 'review.interface';
+import { listEntities } from '../../utilities/pagination-filtering.utility';
 
 const repository = dataSource.getRepository(Review);
 const productRepository = dataSource.getRepository(Product);
@@ -26,45 +27,20 @@ const getById = async (id: number): Promise<ReviewResponseDTO> => {
   return toReviewResponseDTO(entity);
 };
 
-const list = async (params: IReviewQueryParams, user: User) => {
-  let reviewRepo = repository
-    .createQueryBuilder('review')
-    .leftJoinAndSelect('review.user', 'user')
-    .leftJoinAndSelect('review.product', 'product');
-
-  if (user.role.name !== 'admin') {
-    reviewRepo = reviewRepo.where('review.user.id = :userId', {
-      userId: user.id,
-    });
-  }
-
-  if (params.product) {
-    reviewRepo = reviewRepo.where('product.id = :productId', {
-        productId: params.product,
-    });
-  }
-
-  // Pagination
-  const paginationRepo = reviewRepo;
-  const total = await paginationRepo.getMany();
-  const pagRes = ApiUtility.getPagination(
-    total.length,
-    params.limit,
-    params.page,
-  );
-
-  reviewRepo = reviewRepo
-    .limit(params.limit)
-    .offset(ApiUtility.getOffset(params.limit, params.page));
-  const reviews = await reviewRepo.getMany();
-
-  const response = [];
-  if (reviews && reviews.length) {
-    for (const item of reviews) {
-      response.push(toReviewResponseDTO(item));
-    }
-  }
-  return { response, pagination: pagRes.pagination };
+const list = async (params: IBaseQueryParams) => {
+  return await listEntities(repository, params, 'review', {
+    relations: ['product', 'user'],
+    searchFields: [
+      'product.title',
+      'product.slug',
+      'category.name',
+      'user.email',
+      'product.tags.name',
+    ],
+    validSortBy: ['id'],
+    validSortOrder: ['ASC', 'DESC'],
+    toResponseDTO: toReviewResponseDTO,
+  });
 };
 
 const create = async (

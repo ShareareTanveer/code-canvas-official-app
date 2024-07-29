@@ -149,6 +149,11 @@ const router = express.Router();
  *           type: string
  *         description: Search keyword to filter products by title, slug, or category name or tag name.
  *       - in: query
+ *         name: pagination
+ *         schema:
+ *           type: string
+ *         description: set pagination to true if you want to use pagination.
+ *       - in: query
  *         name: category
  *         schema:
  *           type: string

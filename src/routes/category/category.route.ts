@@ -19,6 +19,60 @@ const router = express.Router();
  *     tags:
  *       - Category
  *     summary: Get list of Category
+ *     parameters:
+ *       - in: query
+ *         name: keyword
+ *         schema:
+ *           type: string
+ *         description: Search keyword to filter products by title, slug, or category name or tag name.
+ *       - in: query
+ *         name: pagination
+ *         schema:
+ *           type: string
+ *         description: set pagination to true if you want to use pagination.
+ *       - in: query
+ *         name: category
+ *         schema:
+ *           type: string
+ *         description: Filter data by category name.
+ *       - in: query
+ *         name: sortBy
+ *         schema:
+ *           type: string
+ *           enum:
+ *             - name
+ *         description: Field to sort data by. 
+ *         examples:
+ *           name:
+ *             summary: Sort by name
+ *             value: name
+ *       - in: query
+ *         name: sortOrder
+ *         schema:
+ *           type: string
+ *           enum:
+ *             - ASC
+ *             - DESC
+ *         description: Sort order. 
+ *         examples:
+ *           ASC:
+ *             summary: Sort in ascending order
+ *             value: ASC
+ *           DESC:
+ *             summary: Sort in descending order
+ *             value: DESC
+ *       - in: query
+ *         name: limit
+ *         schema:
+ *           type: integer
+ *           example: 10
+ *         description: Number of products to return.
+ *       - in: query
+ *         name: page
+ *         schema:
+ *           type: integer
+ *           example: 1
+ *         description: Page number for pagination.
  *     responses:
  *       200:
  *         description: Category list retrieved successfully

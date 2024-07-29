@@ -1,3 +1,4 @@
+import { IBaseQueryParams } from 'common.interface';
 import dataSource from '../../configs/orm.config';
 import { GenericPageSection } from '../../entities/core/generic-page-section.entity';
 import {
@@ -6,6 +7,7 @@ import {
   UpdateGenericPageSectionDTO,
 } from '../dto/core/generic-page-section.dto';
 import { toGenericPageSectionResponseDTO } from './mapper/generic-page-section.mapper';
+import { listEntities } from '../../utilities/pagination-filtering.utility';
 
 const repository = dataSource.getRepository(GenericPageSection);
 
@@ -17,9 +19,14 @@ const getById = async (id: number): Promise<GenericPageSectionResponseDTO> => {
   return toGenericPageSectionResponseDTO(entity);
 };
 
-const list = async (): Promise<GenericPageSectionResponseDTO[]> => {
-  const entities = await repository.find({ relations: ['items'] });
-  return entities.map(toGenericPageSectionResponseDTO);
+const list = async (params: IBaseQueryParams) => {
+  return await listEntities(repository, params, 'genericpagesection', {
+    relations: ['items'],
+    searchFields: ['title', 'subtitle'],
+    validSortBy: ['title', 'id'],
+    validSortOrder: ['ASC', 'DESC'],
+    toResponseDTO: toGenericPageSectionResponseDTO,
+  });
 };
 
 const create = async (

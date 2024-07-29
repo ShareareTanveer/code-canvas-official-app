@@ -6,7 +6,7 @@ import ApiResponse from '../../utilities/api-response.utility';
 import { v4 as uuidv4 } from 'uuid';
 import { CreateOrderDTO } from '../../services/dto/order/order.dto';
 import bkashPaymentService from '../../services/order/bkash-payment.service';
-import cartService from '../../services/cart/cart.service';
+import service from '../../services/cart/cart.service';
 import { BkashPaymentExecuteResponseDTO } from '../../services/dto/order/bkash-payment.dto';
 
 const createPayment: IController = async (
@@ -17,7 +17,7 @@ const createPayment: IController = async (
     cartId: req.body.cartId,
   };
   try {
-    const cart  = await cartService.getById(params.cartId);
+    const cart  = await service.getById(params.cartId);
     const token = await getToken();
     const { data }: any = await axios.post(
       process.env.bkash_create_payment_url,

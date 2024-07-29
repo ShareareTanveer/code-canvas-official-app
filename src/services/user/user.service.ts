@@ -7,6 +7,7 @@ import ApiUtility from '../../utilities/api.utility';
 import Encryption from '../../utilities/encryption.utility';
 import { generateOTP, verifyOTP } from '../../utilities/otp.utility';
 import {
+  IBaseQueryParams,
   IDeleteById,
   IDetailById,
 } from '../../interfaces/common.interface';
@@ -20,6 +21,7 @@ import {
 } from '../dto/user/user.dto';
 import { loginDTO, verifyEmailOtpDTO } from '../dto/auth/auth.dto';
 import { toUserResponseDTO } from './mapper/user.mapper';
+import { listEntities } from '../../utilities/pagination-filtering.utility';
 
 const register = async (
   params: RegisterUserDTO,
@@ -219,7 +221,7 @@ const updateMe = async (params: UpdateUserDTO) => {
   return await userRepository.save(user);
 };
 
-const list = async (params: IUserQueryParams) => {
+const lists = async (params: IUserQueryParams) => {
   let userRepo = dataSource
     .getRepository(User)
     .createQueryBuilder('user')
@@ -254,6 +256,22 @@ const list = async (params: IUserQueryParams) => {
     }
   }
   return { response, pagination: pagRes.pagination };
+};
+
+const list = async (params: IBaseQueryParams) => {
+  const userRepository = dataSource.getRepository(User);
+  return await listEntities(userRepository, params, 'user', {
+    relations: ['details', 'role'],
+    searchFields: [
+      'firstName',
+      'lastName',
+      'email',
+      'details.phone',
+    ],
+    validSortBy: ['email', 'firstName', 'id'],
+    validSortOrder: ['ASC', 'DESC'],
+    toResponseDTO: toUserResponseDTO,
+  });
 };
 
 const remove = async (params: IDeleteById) => {

@@ -7,8 +7,12 @@ export interface IDetailById {
 }
 
 export interface IBaseQueryParams {
+  keyword?: string;
+  pagination?: string;
   limit: number;
   page: number;
+  sortBy?: string;
+  sortOrder?: 'ASC' | 'DESC';
 }
 
 export interface IOverrideRequest {

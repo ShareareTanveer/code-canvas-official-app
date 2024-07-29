@@ -1,16 +1,18 @@
 import httpStatusCodes from 'http-status-codes';
 import IController from '../../interfaces/IController';
 import ApiResponse from '../../utilities/api-response.utility';
-import sectionService from '../../services/core/contact-us.service';
+import service from '../../services/core/contact-us.service';
 import {
   CreateContactUsDTO,
   UpdateContactUsDTO,
 } from '../../services/dto/core/contact-us.dto';
+import ApiUtility from '../../utilities/api.utility';
+import { IBaseQueryParams } from 'common.interface';
 
 const getById: IController = async (req, res) => {
   try {
     const id: number = parseInt(req.params.id, 10);
-    const data = await sectionService.getById(id);
+    const data = await service.getById(id);
     return ApiResponse.result(res, data, httpStatusCodes.OK);
   } catch (e) {
     return ApiResponse.error(res, httpStatusCodes.NOT_FOUND, e.message);
@@ -19,41 +21,93 @@ const getById: IController = async (req, res) => {
 
 const list: IController = async (req, res) => {
   try {
-    const data = await sectionService.list();
-    return ApiResponse.result(res, data, httpStatusCodes.OK);
+    const pagination = ApiUtility.getQueryParam(req, 'pagination');
+    const limit = ApiUtility.getQueryParam(req, 'limit');
+    const page = ApiUtility.getQueryParam(req, 'page');
+    const keyword = ApiUtility.getQueryParam(req, 'keyword');
+    const sortOrder = ApiUtility.getQueryParam(req, 'sortOrder');
+    const sortBy = ApiUtility.getQueryParam(req, 'sortBy');
+    const params: IBaseQueryParams = {
+      pagination,
+      limit,
+      page,
+      keyword,
+      sortOrder,
+      sortBy,
+    };
+    const data = await service.list(params);
+    return ApiResponse.result(
+      res,
+      data.response,
+      httpStatusCodes.OK,
+      null,
+      data.pagination,
+    );
   } catch (e) {
-    return ApiResponse.error(res, httpStatusCodes.BAD_REQUEST, e.message);
+    return ApiResponse.error(
+      res,
+      httpStatusCodes.BAD_REQUEST,
+      e.message,
+    );
   }
 };
 
 const create: IController = async (req, res) => {
   try {
-    const params: CreateContactUsDTO = req.body;
-    const data = await sectionService.create(params);
+    const params: CreateContactUsDTO = {
+      phone: req.body.phone,
+      email: req.body.email,
+      address: req.body.address,
+      company: req.body.company,
+      subject: req.body.subject,
+      message: req.body.message,
+      fullName: req.body.fullName,
+    };
+    const data = await service.create(params);
     return ApiResponse.result(res, data, httpStatusCodes.CREATED);
   } catch (e) {
-    return ApiResponse.error(res, httpStatusCodes.BAD_REQUEST, e.message);
+    return ApiResponse.error(
+      res,
+      httpStatusCodes.BAD_REQUEST,
+      e.message,
+    );
   }
 };
 
 const update: IController = async (req, res) => {
   try {
     const id: number = parseInt(req.params.id, 10);
-    const params: UpdateContactUsDTO = req.body;
-    const data = await sectionService.update(id, params);
+    const params: UpdateContactUsDTO = {
+      phone: req.body.phone,
+      email: req.body.email,
+      address: req.body.address,
+      company: req.body.company,
+      subject: req.body.subject,
+      message: req.body.message,
+      fullName: req.body.fullName,
+    };
+    const data = await service.update(id, params);
     return ApiResponse.result(res, data, httpStatusCodes.OK);
   } catch (e) {
-    return ApiResponse.error(res, httpStatusCodes.BAD_REQUEST, e.message);
+    return ApiResponse.error(
+      res,
+      httpStatusCodes.BAD_REQUEST,
+      e.message,
+    );
   }
 };
 
 const remove: IController = async (req, res) => {
   try {
     const id: number = parseInt(req.params.id, 10);
-    await sectionService.remove(id);
+    await service.remove(id);
     return ApiResponse.result(res, {}, httpStatusCodes.OK);
   } catch (e) {
-    return ApiResponse.error(res, httpStatusCodes.BAD_REQUEST, e.message);
+    return ApiResponse.error(
+      res,
+      httpStatusCodes.BAD_REQUEST,
+      e.message,
+    );
   }
 };
 

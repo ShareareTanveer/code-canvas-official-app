@@ -1,21 +1,37 @@
+import { listEntities } from '../../utilities/pagination-filtering.utility';
 import dataSource from '../../configs/orm.config';
 import { Tag } from '../../entities/tag/tag.entity';
-import { CreateTagDTO, TagResponseDTO, UpdateTagDTO } from '../dto/tag/tag.dto';
+import {
+  CreateTagDTO,
+  TagResponseDTO,
+  UpdateTagDTO,
+} from '../dto/tag/tag.dto';
 import { toTagResponseDTO } from './mapper/tag.mapper';
+import { IBaseQueryParams } from 'common.interface';
 
 const repository = dataSource.getRepository(Tag);
 
 const getById = async (id: number): Promise<TagResponseDTO> => {
-  const entity = await repository.findOne({where: {id}});
+  const entity = await repository.findOne({ where: { id } });
   if (!entity) {
-    throw new Error('Tag not found',);
+    throw new Error('Tag not found');
   }
   return toTagResponseDTO(entity);
 };
 
-const list = async (): Promise<TagResponseDTO[]> => {
-  const entities = await repository.find();
-  return entities.map(toTagResponseDTO);
+const list = async (params: IBaseQueryParams) => {
+  return await listEntities(repository, params, 'tag', {
+    relations: ['products'],
+    searchFields: [
+      'name',
+      'products.title',
+      'products.slug',
+      'products.category.name',
+    ],
+    validSortBy: ['name', 'id'],
+    validSortOrder: ['ASC', 'DESC'],
+    toResponseDTO: toTagResponseDTO,
+  });
 };
 
 const create = async (
@@ -40,7 +56,7 @@ const update = async (
 };
 
 const remove = async (id: number): Promise<void> => {
-  const entity = await repository.findOne({where: {id}});
+  const entity = await repository.findOne({ where: { id } });
   if (!entity) {
     throw new Error('Tag not found');
   }
@@ -53,5 +69,5 @@ export default {
   list,
   create,
   update,
-  remove
+  remove,
 };

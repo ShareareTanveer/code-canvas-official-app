@@ -13,6 +13,8 @@ import {
 import { OurServiceImage } from '../../entities/ourService/our-service-image.entity';
 import { OurServiceFAQ } from '../../entities/ourService/our-service-faq.entity';
 import { In } from 'typeorm';
+import { IBaseQueryParams } from 'common.interface';
+import { listEntities } from '../../utilities/pagination-filtering.utility';
 
 const repository = dataSource.getRepository(OurService);
 const faqRepository = dataSource.getRepository(OurServiceFAQ);
@@ -31,9 +33,19 @@ const getById = async (
   return toOurServiceDetailResponseDTO(entity);
 };
 
-const list = async (): Promise<OurServiceResponseDTO[]> => {
-  const entities = await repository.find({ relations: ['images'] });
-  return entities.map(toOurServiceResponseDTO);
+const list = async (params: IBaseQueryParams) => {
+  return await listEntities(
+    repository,
+    params,
+    'ourservice',
+    {
+      relations: ['images'],
+      searchFields: ['title', 'subtitle', 'slug'],
+      validSortBy: ['title', 'id'],
+      validSortOrder: ['ASC', 'DESC'],
+      toResponseDTO: toOurServiceResponseDTO
+    }
+  );
 };
 
 const create = async (

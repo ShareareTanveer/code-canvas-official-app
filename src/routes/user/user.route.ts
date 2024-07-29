@@ -62,6 +62,68 @@ const router = express.Router();
  * /user:
  *   get:
  *     summary: Get all users
+ *     parameters:
+ *       - in: query
+ *         name: keyword
+ *         schema:
+ *           type: string
+ *         description: Search keyword to filter users by email, phone, or user name.
+ *       - in: query
+ *         name: pagination
+ *         schema:
+ *           type: string
+ *         description: set pagination to true if you want to use pagination.
+ *       - in: query
+ *         name: user
+ *         schema:
+ *           type: string
+ *         description: Filter users by user name.
+ *       - in: query
+ *         name: sortBy
+ *         schema:
+ *           type: string
+ *           enum:
+ *             - email
+ *             - firstName
+ *             - phone
+ *         description: Field to sort users by. 
+ *         examples:
+ *           email:
+ *             summary: Sort by email
+ *             value: email
+ *           firstName:
+ *             summary: Sort by firstName
+ *             value: firstName
+ *           phone:
+ *             summary: Sort by phone
+ *             value: phone
+ *       - in: query
+ *         name: sortOrder
+ *         schema:
+ *           type: string
+ *           enum:
+ *             - ASC
+ *             - DESC
+ *         description: Sort order. 
+ *         examples:
+ *           ASC:
+ *             summary: Sort in ascending order
+ *             value: ASC
+ *           DESC:
+ *             summary: Sort in descending order
+ *             value: DESC
+ *       - in: query
+ *         name: limit
+ *         schema:
+ *           type: integer
+ *           example: 10
+ *         description: Number of users to return.
+ *       - in: query
+ *         name: page
+ *         schema:
+ *           type: integer
+ *           example: 1
+ *         description: Page number for pagination.
  *     tags: [User]
  *     security:
  *       - bearerAuth: []

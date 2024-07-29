@@ -4,6 +4,8 @@ import { Cart } from '../../entities/cart/cart.entity';
 import { AddToCartDTO, CartResponseDTO } from '../dto/cart/cart.dto';
 import { toCartResponseDTO } from './mapper/cart.mapper';
 import { Product } from '../../entities/product/product.entity';
+import { IBaseQueryParams } from 'common.interface';
+import { listEntities } from '../../utilities/pagination-filtering.utility';
 
 const repository = dataSource.getRepository(Cart);
 const productRepository = dataSource.getRepository(Product);
@@ -19,11 +21,14 @@ const getById = async (id: string): Promise<CartResponseDTO> => {
   return toCartResponseDTO(entity);
 };
 
-const list = async (): Promise<CartResponseDTO[]> => {
-  const entities = await repository.find({
+const list = async (params: IBaseQueryParams) => {
+  return await listEntities(repository, params, 'cart', {
     relations: ['products', 'user'],
+    searchFields: ['products.title', 'user.email'],
+    validSortBy: ['cart.id'],
+    validSortOrder: ['ASC', 'DESC'],
+    toResponseDTO: toCartResponseDTO,
   });
-  return entities.map(toCartResponseDTO);
 };
 
 const toggleCartProduct = async (
@@ -64,10 +69,11 @@ const toggleCartProduct = async (
   return { data: toCartResponseDTO(updatedCart), added };
 };
 
-
-
 const remove = async (id: string, user: User): Promise<void> => {
-  const cart = await repository.findOne({ where: { id }, relations: ['user'] });
+  const cart = await repository.findOne({
+    where: { id },
+    relations: ['user'],
+  });
   if (!cart) {
     throw new Error('Cart not found');
   }
@@ -77,7 +83,6 @@ const remove = async (id: string, user: User): Promise<void> => {
 
   await repository.remove(cart);
 };
-
 
 export default {
   getById,

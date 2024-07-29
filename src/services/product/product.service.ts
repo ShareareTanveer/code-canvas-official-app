@@ -5,17 +5,16 @@ import { Category } from '../../entities/category/category.entity';
 import {
   CreateProductDTO,
   ProductDetailResponseDTO,
-  ProductResponseDTO,
   UpdateProductDTO,
 } from '../dto/product/product.dto';
 import {
   toProductDetailResponseDTO,
   toProductResponseDTO,
 } from './mapper/product.mapper';
-import ApiUtility from '../../utilities/api.utility';
-import { IProductQueryParams } from 'product.interface';
 import { In } from 'typeorm';
 import { Tag } from '../../entities/tag/tag.entity';
+import { listEntities } from '../../utilities/pagination-filtering.utility';
+import { IBaseQueryParams } from 'common.interface';
 
 const repository = dataSource.getRepository(Product);
 const categoryRepository = dataSource.getRepository(Category);
@@ -28,61 +27,29 @@ const getById = async (
     where: { id },
     relations: ['images', 'category', 'tags', 'reviews'],
   });
-  console.log(entity)
-  console.log(typeof entity.price)
+  console.log(entity);
+  console.log(typeof entity.price);
   if (!entity) {
     throw new Error('Product not found');
   }
   return toProductDetailResponseDTO(entity);
 };
 
-const list = async (params: IProductQueryParams) => {
-  let productRepo = repository
-    .createQueryBuilder('product')
-    .leftJoinAndSelect('product.category', 'category')
-    .leftJoinAndSelect('product.images', 'images')
-    .leftJoinAndSelect('product.tags', 'tags');
-
-  if (params.keyword) {
-    productRepo = productRepo.andWhere(
-      '(LOWER(product.title) LIKE LOWER(:keyword) OR LOWER(product.slug) LIKE LOWER(:keyword) OR LOWER(category.name) LIKE LOWER(:keyword) OR LOWER(tags.name) LIKE LOWER(:keyword))',
-      { keyword: `%${params.keyword}%` },
-    );
-  }
-
-  if (params.sortBy && params.sortOrder) {
-    const validSortBy = ['title', 'price'];
-    const validSortOrder = ['ASC', 'DESC'];
-  
-    if (validSortBy.includes(params.sortBy) && validSortOrder.includes(params.sortOrder.toUpperCase())) {
-      productRepo = productRepo.orderBy(`product.${params.sortBy}`, params.sortOrder.toUpperCase() as 'ASC' | 'DESC');
-    }
-  }
-  
-  
-
-  // Pagination
-  const paginationRepo = productRepo;
-  const total = await paginationRepo.getMany();
-  const pagRes = ApiUtility.getPagination(
-    total.length,
-    params.limit,
-    params.page,
-  );
-
-  productRepo = productRepo
-    .limit(params.limit)
-    .offset(ApiUtility.getOffset(params.limit, params.page));
-  const products = await productRepo.getMany();
-
-  const response = [];
-  if (products && products.length) {
-    for (const item of products) {
-      response.push(toProductResponseDTO(item));
-    }
-  }
-  return { response, pagination: pagRes.pagination };
+const list = async (params: IBaseQueryParams) => {
+  return await listEntities(repository, params, 'product', {
+    relations: ['category', 'tags', 'images'],
+    searchFields: [
+      'product.title',
+      'product.slug',
+      'category.name',
+      'tags.name',
+    ],
+    validSortBy: ['title', 'price', 'id'],
+    validSortOrder: ['ASC', 'DESC'],
+    toResponseDTO: toProductResponseDTO,
+  });
 };
+
 
 const create = async (
   params: CreateProductDTO,
@@ -94,7 +61,7 @@ const create = async (
   if (!category) {
     throw new Error(`Category with ID ${params.category} not found`);
   }
-  
+
   const product = new Product();
   product.category = category;
   product.title = params.title;
@@ -106,9 +73,10 @@ const create = async (
   product.is_documented = params.is_documented || false;
 
   if (params.tags) {
-    const tagEntities =
-      await tagRepository.findBy({ id: In(params.tags) })
-      product.tags = tagEntities;
+    const tagEntities = await tagRepository.findBy({
+      id: In(params.tags),
+    });
+    product.tags = tagEntities;
   }
 
   if (params.images && params.images.length > 0) {
@@ -156,9 +124,10 @@ const update = async (
     product.is_documented = params.is_documented;
 
   if (params.tags) {
-    const tagEntities =
-      await tagRepository.findBy({ id: In(params.tags) })
-      product.tags = tagEntities;
+    const tagEntities = await tagRepository.findBy({
+      id: In(params.tags),
+    });
+    product.tags = tagEntities;
   }
 
   if (params.images && params.images.length > 0) {

@@ -1,3 +1,4 @@
+import { IBaseQueryParams } from 'common.interface';
 import dataSource from '../../configs/orm.config';
 import { GenericPageSectionItem } from '../../entities/core/generic-page-section-item.entity';
 import { GenericPageSection } from '../../entities/core/generic-page-section.entity';
@@ -7,6 +8,7 @@ import {
   UpdateGenericPageSectionItemDTO,
 } from '../dto/core/generic-page-section-item.dto';
 import { toGenericPageSectionItemResponseDTO } from './mapper/generic-page-section-item.mapper';
+import { listEntities } from '../../utilities/pagination-filtering.utility';
 
 const repository = dataSource.getRepository(GenericPageSectionItem);
 const sectionRepository = dataSource.getRepository(GenericPageSection);
@@ -14,16 +16,29 @@ const sectionRepository = dataSource.getRepository(GenericPageSection);
 const getById = async (
   id: number,
 ): Promise<GenericPageSectionItemResponseDTO> => {
-  const entity = await repository.findOne({ where: { id }, relations: ['genericPageSection'] });
+  const entity = await repository.findOne({
+    where: { id },
+    relations: ['genericPageSection'],
+  });
   if (!entity) {
     throw new Error('GenericPageSectionItem not found');
   }
   return toGenericPageSectionItemResponseDTO(entity);
 };
 
-const list = async (): Promise<GenericPageSectionItemResponseDTO[]> => {
-  const entities = await repository.find({relations: ['genericPageSection']});
-  return entities.map(toGenericPageSectionItemResponseDTO);
+const list = async (params: IBaseQueryParams) => {
+  return await listEntities(
+    repository,
+    params,
+    'genericpagesectionitem',
+    {
+      relations: ['genericPageSection'],
+      searchFields: ['title', 'subtitle'],
+      validSortBy: ['title', 'id'],
+      validSortOrder: ['ASC', 'DESC'],
+      toResponseDTO: toGenericPageSectionItemResponseDTO,
+    },
+  );
 };
 
 const create = async (
@@ -47,7 +62,10 @@ const update = async (
   id: number,
   params: UpdateGenericPageSectionItemDTO,
 ): Promise<GenericPageSectionItemResponseDTO> => {
-  const entity = await repository.findOne({ where: { id }, relations: ['genericPageSection'] });
+  const entity = await repository.findOne({
+    where: { id },
+    relations: ['genericPageSection'],
+  });
   if (!entity) {
     throw new Error('GenericPageSectionItem not found');
   }

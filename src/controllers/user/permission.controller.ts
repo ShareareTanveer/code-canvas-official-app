@@ -1,7 +1,7 @@
 import httpStatusCodes from 'http-status-codes';
 import IController from '../../interfaces/IController';
 import ApiResponse from '../../utilities/api-response.utility';
-import permissionService from '../../services/auth/permission.service';
+import service from '../../services/auth/permission.service';
 import { CreatePermissionDTO, UpdatePermissionDTO } from '../../services/dto/permission/create-update-permission.dto';
 
 const create: IController = async (req, res) => {
@@ -11,7 +11,7 @@ const create: IController = async (req, res) => {
       codename: req.body.codename,
       entity_name: req.body.entity_name,
     };
-    const permission = await permissionService.create(params);
+    const permission = await service.create(params);
     return ApiResponse.result(res, permission, httpStatusCodes.CREATED);
   } catch (e) {
     console.error('Error creating role:', e);
@@ -27,7 +27,7 @@ const update: IController = async (req, res) => {
       codename: req.body.codename,
       entity_name: req.body.entity_name,
     };
-    const role = await permissionService.update(id, params);
+    const role = await service.update(id, params);
     return ApiResponse.result(res, role, httpStatusCodes.OK);
   } catch (e) {
     console.error('Error updating role:', e);
@@ -37,7 +37,7 @@ const update: IController = async (req, res) => {
 
 const list: IController = async (req, res) => {
   try {
-    const data = await permissionService.list();
+    const data = await service.list();
     return ApiResponse.result(res, data, httpStatusCodes.OK, null);
   } catch (e) {
     ApiResponse.exception(res, e);

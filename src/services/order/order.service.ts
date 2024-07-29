@@ -9,6 +9,8 @@ import {
 import { toOrderResponseDTO } from './mapper/order.mapper';
 import { Cart } from '../../entities/cart/cart.entity';
 import { EOrderStaus } from '../../enum/order-status.enum';
+import { IBaseQueryParams } from 'common.interface';
+import { listEntities } from '../../utilities/pagination-filtering.utility';
 
 const repository = dataSource.getRepository(Order);
 const cartRepository = dataSource.getRepository(Cart);
@@ -24,11 +26,19 @@ const getById = async (id: string): Promise<OrderResponseDTO> => {
   return toOrderResponseDTO(entity);
 };
 
-const list = async (): Promise<OrderResponseDTO[]> => {
-  const entities = await repository.find({
+const list = async (params: IBaseQueryParams) => {
+  return await listEntities(repository, params, 'order', {
     relations: ['items', 'user', 'items.product','items.product.images'],
+    searchFields: [
+      'items.product.title',
+      'items.product.slug',
+      'user.email',
+      'items.product.tags.name',
+    ],
+    validSortBy: ['totalPrice', 'price', 'id'],
+    validSortOrder: ['ASC', 'DESC'],
+    toResponseDTO: toOrderResponseDTO,
   });
-  return entities.map(toOrderResponseDTO);
 };
 
 const create = async (

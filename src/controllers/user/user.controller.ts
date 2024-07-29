@@ -7,8 +7,8 @@ import ApiUtility from '../../utilities/api.utility';
 import Encryption from '../../utilities/encryption.utility';
 import { verifyOTP } from '../../utilities/otp.utility';
 import IController from '../../interfaces/IController';
-import userService from '../../services/user/user.service';
-import { IDeleteById, IDetailById } from '../../interfaces/common.interface';
+import service from '../../services/user/user.service';
+import { IBaseQueryParams, IDeleteById, IDetailById } from '../../interfaces/common.interface';
 import { IUpdateUser, IUserQueryParams } from '../../interfaces/user.interface';
 import { loginDTO, resetPasswordDTO, sendEmailOtpDTO, verifyEmailOtpDTO } from '../../services/dto/auth/auth.dto';
 import { CreateUserDTO, RegisterUserDTO, UpdateUserByAdminDTO, UpdateUserDTO } from '../../services/dto/user/user.dto';
@@ -27,7 +27,7 @@ const register: IController = async (req, res) => {
       gender: req.body.gender,
     };
 
-    const user = await userService.register(params);
+    const user = await service.register(params);
     return ApiResponse.result(res, user, httpStatusCodes.CREATED);
   } catch (e) {
     if (e.code === constants.ERROR_CODE.DUPLICATED) {
@@ -58,7 +58,7 @@ const create: IController = async (req, res) => {
       role: req.body.role,
     };
 
-    const user = await userService.create(params);
+    const user = await service.create(params);
     return ApiResponse.result(res, user, httpStatusCodes.CREATED);
   } catch (e) {
     if (e.code === constants.ERROR_CODE.DUPLICATED) {
@@ -82,7 +82,7 @@ const login: IController = async (req, res) => {
       email: req.body.email,
       password: req.body.password,
     };
-    const user = await userService.login(params);
+    const user = await service.login(params);
     const cookie: any = await generateUserCookie(user.id);
     const access_token = cookie.value;
     const data = {
@@ -113,7 +113,7 @@ export const sendEmailOtp: IController = async (req, res) => {
       email: req.body.email,
     };
 
-    await userService.sendEmailOtp(params);
+    await service.sendEmailOtp(params);
 
     return ApiResponse.result(
       res,
@@ -132,7 +132,7 @@ export const verifyEmailOtp: IController = async (req, res) => {
       email: req.body.email,
       otp: req.body.otp,
     };
-    const isValid =  await userService.verifyEmailOtp(params);
+    const isValid =  await service.verifyEmailOtp(params);
     if (!isValid) {
       return ApiResponse.error(res, 400, 'Invalid or expired OTP');
     }
@@ -184,7 +184,7 @@ export const resetPassword: IController = async (req, res) => {
     }
     const email = decoded.data.pending_user;
     const hashedPassword = await bcrypt.hash(newPassword, 10);
-    const result = await userService.resetPassword(
+    const result = await service.resetPassword(
       email,
       hashedPassword,
     );
@@ -239,7 +239,7 @@ const detail: IController = async (req, res) => {
     const params: IDetailById = {
       id: parseInt(req.params.id, 10),
     };
-    const data = await userService.detail(params);
+    const data = await service.detail(params);
     return ApiResponse.result(res, data, httpStatusCodes.OK);
   } catch (e) {
     ApiResponse.exception(res, e);
@@ -257,7 +257,7 @@ const update: IController = async (req, res) => {
       gender: req.body.gender,
       role: req.body.role,
     };
-    const user = await userService.update(params);
+    const user = await service.update(params);
     return ApiResponse.result(res, user, httpStatusCodes.OK);
   } catch (e) {
     ApiResponse.exception(res, e);
@@ -275,7 +275,7 @@ const updateMe: IController = async (req, res) => {
       address: req.body.address,
       gender: req.body.gender,
     };
-    const user = await userService.updateMe(params);
+    const user = await service.updateMe(params);
     return ApiResponse.result(res, user, httpStatusCodes.OK);
   } catch (e) {
     ApiResponse.exception(res, e);
@@ -284,11 +284,21 @@ const updateMe: IController = async (req, res) => {
 
 const list: IController = async (req, res) => {
   try {
+    const pagination = ApiUtility.getQueryParam(req, 'pagination');
     const limit = ApiUtility.getQueryParam(req, 'limit');
     const page = ApiUtility.getQueryParam(req, 'page');
     const keyword = ApiUtility.getQueryParam(req, 'keyword');
-    const params: IUserQueryParams = { limit, page, keyword };
-    const data = await userService.list(params);
+    const sortOrder = ApiUtility.getQueryParam(req, 'sortOrder');
+    const sortBy = ApiUtility.getQueryParam(req, 'sortBy');
+    const params: IBaseQueryParams = {
+      pagination,
+      limit,
+      page,
+      keyword,
+      sortOrder,
+      sortBy,
+    };
+    const data = await service.list(params);
     return ApiResponse.result(
       res,
       data.response,
@@ -297,7 +307,8 @@ const list: IController = async (req, res) => {
       data.pagination,
     );
   } catch (e) {
-    ApiResponse.exception(res, e);
+    console.error(e);
+    ApiResponse.exception(res, e.message);
   }
 };
 
@@ -306,7 +317,7 @@ const remove: IController = async (req, res) => {
     const params: IDeleteById = {
       id: parseInt(req.params.id, 10),
     };
-    await userService.remove(params);
+    await service.remove(params);
     return ApiResponse.result(res, params, httpStatusCodes.OK);
   } catch (e) {
     return ApiResponse.error(

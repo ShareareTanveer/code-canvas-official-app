@@ -1,3 +1,4 @@
+import { IBaseQueryParams } from 'common.interface';
 import dataSource from '../../configs/orm.config';
 import { ContactUs } from '../../entities/core/contact-us.entity';
 import {
@@ -6,6 +7,7 @@ import {
   UpdateContactUsDTO,
 } from '../dto/core/contact-us.dto';
 import { toContactUsResponseDTO } from './mapper/contact-us.mapper';
+import { listEntities } from '../../utilities/pagination-filtering.utility';
 
 const repository = dataSource.getRepository(ContactUs);
 
@@ -17,9 +19,13 @@ const getById = async (id: number): Promise<ContactUsResponseDTO> => {
   return toContactUsResponseDTO(entity);
 };
 
-const list = async (): Promise<ContactUsResponseDTO[]> => {
-  const entities = await repository.find();
-  return entities.map(toContactUsResponseDTO);
+const list = async (params: IBaseQueryParams) => {
+  return await listEntities(repository, params, 'contactus', {
+    searchFields: ['email', 'phone'],
+    validSortBy: ['email', 'phone', 'id'],
+    validSortOrder: ['ASC', 'DESC'],
+    toResponseDTO: toContactUsResponseDTO,
+  });
 };
 
 const create = async (
@@ -38,7 +44,7 @@ const update = async (
   if (!entity) {
     throw new Error('ContactUs not found');
   }
-  
+
   Object.assign(entity, {
     phone: params.phone ?? entity.phone,
     email: params.email ?? entity.email,

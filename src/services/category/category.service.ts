@@ -1,7 +1,9 @@
+import { listEntities } from '../../utilities/pagination-filtering.utility';
 import dataSource from '../../configs/orm.config';
 import { Category } from '../../entities/category/category.entity';
 import { CreateCategoryDTO, CategoryResponseDTO, UpdateCategoryDTO } from '../dto/category/category.dto';
 import { toCategoryResponseDTO } from './mapper/category.mapper';
+import { IBaseQueryParams } from 'common.interface';
 
 const repository = dataSource.getRepository(Category);
 
@@ -13,9 +15,18 @@ const getById = async (id: number): Promise<CategoryResponseDTO> => {
   return toCategoryResponseDTO(entity);
 };
 
-const list = async (): Promise<CategoryResponseDTO[]> => {
-  const entities = await repository.find();
-  return entities.map(toCategoryResponseDTO);
+const list = async (params: IBaseQueryParams) => {
+  return await listEntities(
+    repository,
+    params,
+    'category',
+    {
+      searchFields: ['name'],
+      validSortBy: ['name', 'id'],
+      validSortOrder: ['ASC', 'DESC'],
+      toResponseDTO: toCategoryResponseDTO
+    }
+  );
 };
 
 const create = async (

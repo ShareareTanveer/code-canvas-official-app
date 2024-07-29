@@ -19,6 +19,64 @@ const router = express.Router();
  *     tags:
  *       - Cart
  *     summary: Get list of Carts
+ *     parameters:
+ *       - in: query
+ *         name: keyword
+ *         schema:
+ *           type: string
+ *         description: Search keyword to filter products by title, slug, or category name or tag name.
+ *       - in: query
+ *         name: pagination
+ *         schema:
+ *           type: string
+ *         description: set pagination to true if you want to use pagination.
+ *       - in: query
+ *         name: category
+ *         schema:
+ *           type: string
+ *         description: Filter products by category name.
+ *       - in: query
+ *         name: sortBy
+ *         schema:
+ *           type: string
+ *           enum:
+ *             - id
+ *             - price
+ *         description: Field to sort products by. 
+ *         examples:
+ *           id:
+ *             summary: Sort by product id
+ *             value: id
+ *           price:
+ *             summary: Sort by product price
+ *             value: price
+ *       - in: query
+ *         name: sortOrder
+ *         schema:
+ *           type: string
+ *           enum:
+ *             - ASC
+ *             - DESC
+ *         description: Sort order. 
+ *         examples:
+ *           ASC:
+ *             summary: Sort in ascending order
+ *             value: ASC
+ *           DESC:
+ *             summary: Sort in descending order
+ *             value: DESC
+ *       - in: query
+ *         name: limit
+ *         schema:
+ *           type: integer
+ *           example: 10
+ *         description: Number of products to return.
+ *       - in: query
+ *         name: page
+ *         schema:
+ *           type: integer
+ *           example: 1
+ *         description: Page number for pagination.
  *     responses:
  *       200:
  *         description: Cart list retrieved successfully
