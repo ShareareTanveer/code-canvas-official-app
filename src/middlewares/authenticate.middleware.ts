@@ -1,3 +1,4 @@
+import { URL } from 'url';
 import express, { NextFunction } from 'express';
 import httpStatusCodes from 'http-status-codes';
 import ApiResponse from '../utilities/api-response.utility';
@@ -9,17 +10,22 @@ import userService from '../services/user/user.service';
 import IRequest from '../interfaces/IRequest';
 import dataSource from '../configs/orm.config';
 import constants from '../constants';
-
 export default async (
   req: IRequest,
   res: express.Response,
-  next: express.NextFunction,
+  next: NextFunction,
 ) => {
-  if (
-    constants.APPLICATION.authorizationIgnorePath.indexOf(
-      `${req.originalUrl}`,
-    ) === -1
-  ) {
+  const parsedUrl = new URL(
+    req.originalUrl,
+    `http://${req.headers.host}`,
+  ).pathname;
+
+  const shouldIgnoreAuth =
+    constants.APPLICATION.authorizationIgnorePath.some(
+      (path) => parsedUrl === path,
+    );
+    
+  if (!shouldIgnoreAuth) {
     const authorizationHeader = ApiUtility.getCookieFromRequest(
       req,
       constants.COOKIE.COOKIE_USER,
@@ -72,7 +78,7 @@ export const checkPermission = (action: string, modelName: string) => {
         return res
           .status(403)
           .json({ message: 'Unauthorized: Permission not found' });
-      } 
+      }
       if (!user.role) {
         return res
           .status(403)
