@@ -267,7 +267,7 @@ const router = express.Router();
  *     requestBody:
  *       required: true
  *       content:
- *         application/json:
+ *         multipart/form-data:
  *           schema:
  *             $ref: '#/components/schemas/MeDTO'
  *     responses:
@@ -287,6 +287,7 @@ const router = express.Router();
 router.get('/me', userController.me);
 router.patch(
   '/me',
+  upload.single("image"),
   validateDTO(UpdateUserDTO),
   userController.updateMe,
 );
@@ -294,7 +295,7 @@ router.patch(
 router.get('/', checkPermission('read', 'user'), userController.list);
 router.post(
   '/',
-  checkPermission('create', 'user'),
+  // checkPermission('create', 'user'),
   upload.single("image"),
   validateDTO(CreateUserDTO),
   userController.create,
@@ -306,7 +307,8 @@ router.get(
 );
 router.patch(
   '/:id',
-  checkPermission('update', 'user'),
+  // checkPermission('update', 'user'),
+  upload.single("image"),
   validateDTO(UpdateUserByAdminDTO),
   userController.update,
 );

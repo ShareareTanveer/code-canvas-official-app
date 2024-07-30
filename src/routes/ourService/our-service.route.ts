@@ -1,7 +1,11 @@
 import express from 'express';
 import { validateDTO } from '../../middlewares/dto-validator.middleware';
-import { CreateOurServiceDTO, UpdateOurServiceDTO } from '../../services/dto/ourService/our-service.dto';
+import {
+  CreateOurServiceDTO,
+  UpdateOurServiceDTO,
+} from '../../services/dto/ourService/our-service.dto';
 import ourServiceController from '../../controllers/ourService/our-service.controller';
+import { upload } from '../../middlewares/multer.middleware';
 
 const router = express.Router();
 
@@ -88,7 +92,7 @@ const router = express.Router();
  *           enum:
  *             - title
  *             - price
- *         description: Field to sort products by. 
+ *         description: Field to sort products by.
  *         examples:
  *           title:
  *             summary: Sort by product title
@@ -103,7 +107,7 @@ const router = express.Router();
  *           enum:
  *             - ASC
  *             - DESC
- *         description: Sort order. 
+ *         description: Sort order.
  *         examples:
  *           ASC:
  *             summary: Sort in ascending order
@@ -259,9 +263,33 @@ router.delete('/:id', ourServiceController.remove);
  *     requestBody:
  *       required: true
  *       content:
- *         application/json:
+ *         multipart/form-data:
  *           schema:
- *             $ref: '#/components/schemas/OurService'
+ *             type: object
+ *             properties:
+ *               title:
+ *                 type: string
+ *               subtitle:
+ *                 type: string
+ *               slug:
+ *                 type: string
+ *               description:
+ *                 type: string
+ *               icon:
+ *                 type: string
+ *               keyPoints:
+ *                 type: array
+ *                 items:
+ *                   type: object
+ *               faqs:
+ *                 type: array
+ *                 items:
+ *                   type: object
+ *               images:
+ *                 type: array
+ *                 items:
+ *                   type: string
+ *                   format: binary
  *     responses:
  *       201:
  *         description: OurService created successfully
@@ -292,7 +320,12 @@ router.delete('/:id', ourServiceController.remove);
  *                       type: string
  *                       example: "Error message"
  */
-router.post('/', validateDTO(CreateOurServiceDTO), ourServiceController.create);
+router.post(
+  '/',
+  upload.array('images'),
+  // validateDTO(CreateOurServiceDTO), 
+  ourServiceController.create,
+);
 
 /**
  * @swagger
@@ -312,9 +345,33 @@ router.post('/', validateDTO(CreateOurServiceDTO), ourServiceController.create);
  *     requestBody:
  *       required: true
  *       content:
- *         application/json:
+ *         multipart/form-data:
  *           schema:
- *             $ref: '#/components/schemas/OurService'
+ *             type: object
+ *             properties:
+ *               title:
+ *                 type: string
+ *               subtitle:
+ *                 type: string
+ *               slug:
+ *                 type: string
+ *               description:
+ *                 type: string
+ *               icon:
+ *                 type: string
+ *               keyPoints:
+ *                 type: array
+ *                 items:
+ *                   type: object
+ *               faqs:
+ *                 type: array
+ *                 items:
+ *                   type: object
+ *               images:
+ *                 type: array
+ *                 items:
+ *                   type: string
+ *                   format: binary
  *     responses:
  *       200:
  *         description: OurService updated successfully
@@ -359,11 +416,11 @@ router.post('/', validateDTO(CreateOurServiceDTO), ourServiceController.create);
  *                   properties:
  *                     message:
  *                       type: string
- *                       example: "Error message"
  */
 router.patch(
   '/:id',
-  validateDTO(UpdateOurServiceDTO),
+  upload.array('images'),
+  // validateDTO(UpdateOurServiceDTO),
   ourServiceController.update,
 );
 

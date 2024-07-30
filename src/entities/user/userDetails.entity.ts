@@ -23,6 +23,11 @@ export class UserDetail {
   @IsOptional()
   image: string;
 
+  @Column({ nullable: true })
+  @IsString()
+  @IsOptional()
+  cloudinary_image_public_id: string;
+
   @Column({ type: 'enum', enum: EGender, nullable: true })
   @IsNotEmpty()
   @IsEnum(EGender, { message: 'Gender must be Male, Female, or Other' })

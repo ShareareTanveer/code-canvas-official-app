@@ -30,20 +30,10 @@ import {
   UpdateUserDTO,
 } from '../../services/dto/user/user.dto';
 import constants from '../../constants';
-import uploadOnCloud from '../../utilities/cloudiary.utility';
 
 const register: IController = async (req, res) => {
   try {
     const imageLocalFile = req.file?.path;
-    let imageUrl;
-    if (imageLocalFile) {
-      const uploadImage = await uploadOnCloud(imageLocalFile);
-      if (!uploadImage) {
-        throw new Error('Image could not be uploaded');
-      }
-      imageUrl = uploadImage.secure_url;
-    }
-
     const params: RegisterUserDTO = {
       email: req.body.email,
       password: req.body.password,
@@ -52,7 +42,7 @@ const register: IController = async (req, res) => {
       phone: req.body.phone,
       address: req.body.address,
       gender: req.body.gender,
-      ...(imageUrl && { image: imageUrl }),
+      image: imageLocalFile,
     };
 
     const user = await service.register(params);
@@ -74,14 +64,6 @@ const register: IController = async (req, res) => {
 const create: IController = async (req, res) => {
   try {
     const imageLocalFile = req.file?.path;
-    let imageUrl;
-    if (imageLocalFile) {
-      const uploadImage = await uploadOnCloud(imageLocalFile);
-      if (!uploadImage) {
-        throw new Error('Image could not be uploaded');
-      }
-      imageUrl = uploadImage.secure_url;
-    }
     const params: CreateUserDTO = {
       email: req.body.email,
       password: req.body.password,
@@ -91,7 +73,7 @@ const create: IController = async (req, res) => {
       address: req.body.address,
       gender: req.body.gender,
       role: req.body.role,
-      ...(imageUrl && { image: imageUrl }),
+      image: imageLocalFile,
     };
     const user = await service.create(params);
     return ApiResponse.result(res, user, httpStatusCodes.CREATED);
@@ -280,6 +262,7 @@ const detail: IController = async (req, res) => {
 
 const update: IController = async (req, res) => {
   try {
+    const imageLocalFile = req.file?.path;
     const params: UpdateUserByAdminDTO = {
       id: parseInt(req.params.id, 10),
       firstName: req.body.firstName,
@@ -288,6 +271,7 @@ const update: IController = async (req, res) => {
       address: req.body.address,
       gender: req.body.gender,
       role: req.body.role,
+      image: imageLocalFile,
     };
     const user = await service.update(params);
     return ApiResponse.result(res, user, httpStatusCodes.OK);
@@ -298,6 +282,7 @@ const update: IController = async (req, res) => {
 
 const updateMe: IController = async (req, res) => {
   try {
+    const imageLocalFile = req.file?.path;
     const params: UpdateUserDTO = {
       id: req.user.id,
       firstName: req.body.firstName,
@@ -305,6 +290,7 @@ const updateMe: IController = async (req, res) => {
       phone: req.body.phone,
       address: req.body.address,
       gender: req.body.gender,
+      image: imageLocalFile,
     };
     const user = await service.updateMe(params);
     return ApiResponse.result(res, user, httpStatusCodes.OK);

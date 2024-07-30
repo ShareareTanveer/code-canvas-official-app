@@ -21,6 +21,10 @@ import {
   UpdateUserByAdminDTO,
   UpdateUserDTO,
 } from '../dto/user/user.dto';
+import {
+  deleteFromCloud,
+  uploadOnCloud,
+} from '../../utilities/cloudiary.utility';
 
 const register = async (
   params: RegisterUserDTO,
@@ -31,6 +35,17 @@ const register = async (
 
   if (!role) {
     throw new Error(`User Role not found`);
+  }
+
+  let imageUrl;
+  let cloudiaryPublicId;
+  if (params.image) {
+    const uploadImage = await uploadOnCloud(params.image);
+    if (!uploadImage) {
+      throw new Error('Image could not be uploaded');
+    }
+    imageUrl = uploadImage.secure_url;
+    cloudiaryPublicId = uploadImage.public_id;
   }
 
   const user = new User();
@@ -45,9 +60,9 @@ const register = async (
   userDetail.address = params.address;
   userDetail.gender = params.gender;
 
-  if (params.image) {
-    userDetail.image = params.image;
-  }
+  if (imageUrl) userDetail.image = imageUrl;
+  if (imageUrl)
+    userDetail.cloudinary_image_public_id = cloudiaryPublicId;
 
   user.details = userDetail;
 
@@ -66,6 +81,17 @@ const create = async (
     throw new Error(`Role with ID ${params.role} not found`);
   }
 
+  let imageUrl;
+  let cloudiaryPublicId;
+  if (params.image) {
+    const uploadImage = await uploadOnCloud(params.image);
+    if (!uploadImage) {
+      throw new Error('Image could not be uploaded');
+    }
+    imageUrl = uploadImage.secure_url;
+    cloudiaryPublicId = uploadImage.public_id;
+  }
+
   const user = new User();
   user.email = params.email;
   user.password = await Encryption.generateHash(params.password, 10);
@@ -78,9 +104,9 @@ const create = async (
   userDetail.address = params.address;
   userDetail.gender = params.gender;
 
-  if (params.image) {
-    userDetail.image = params.image;
-  }
+  if (imageUrl) userDetail.image = imageUrl;
+  if (imageUrl)
+    userDetail.cloudinary_image_public_id = cloudiaryPublicId;
 
   user.details = userDetail;
 
@@ -195,6 +221,20 @@ const update = async (params: UpdateUserByAdminDTO) => {
     throw new StringError('User does not exist');
   }
 
+  let imageUrl;
+  let cloudiaryPublicId;
+  if (params.image) {
+    const uploadImage = await uploadOnCloud(params.image);
+    if (!uploadImage) {
+      throw new Error('Image could not be uploaded');
+    }
+    imageUrl = uploadImage.secure_url;
+    cloudiaryPublicId = uploadImage.public_id;
+  }
+
+  if (imageUrl && user.details.cloudinary_image_public_id)
+    deleteFromCloud(user.details.cloudinary_image_public_id);
+
   if (params.firstName !== undefined) user.firstName = params.firstName;
   if (params.role !== undefined) user.role = role;
   if (params.lastName !== undefined) user.lastName = params.lastName;
@@ -202,6 +242,10 @@ const update = async (params: UpdateUserByAdminDTO) => {
   if (params.address !== undefined)
     user.details.address = params.address;
   if (params.gender !== undefined) user.details.gender = params.gender;
+
+  if (imageUrl) user.details.image = imageUrl;
+  if (imageUrl)
+    user.details.cloudinary_image_public_id = cloudiaryPublicId;
 
   return await userRepository.save(user);
 };
@@ -213,10 +257,22 @@ const updateMe = async (params: UpdateUserDTO) => {
     where: { id: params.id },
     relations: ['details'],
   });
-
   if (!user) {
     throw new StringError('User does not exist');
   }
+
+  let imageUrl;
+  let cloudiaryPublicId;
+  if (params.image) {
+    const uploadImage = await uploadOnCloud(params.image);
+    if (!uploadImage) {
+      throw new Error('Image could not be uploaded');
+    }
+    imageUrl = uploadImage.secure_url;
+    cloudiaryPublicId = uploadImage.public_id;
+  }
+  if (imageUrl && user.details.cloudinary_image_public_id)
+    deleteFromCloud(user.details.cloudinary_image_public_id);
 
   if (params.firstName !== undefined) user.firstName = params.firstName;
   if (params.lastName !== undefined) user.lastName = params.lastName;
@@ -224,6 +280,10 @@ const updateMe = async (params: UpdateUserDTO) => {
   if (params.address !== undefined)
     user.details.address = params.address;
   if (params.gender !== undefined) user.details.gender = params.gender;
+
+  if (imageUrl) user.details.image = imageUrl;
+  if (imageUrl)
+    user.details.cloudinary_image_public_id = cloudiaryPublicId;
 
   return await userRepository.save(user);
 };

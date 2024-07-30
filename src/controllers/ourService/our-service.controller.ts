@@ -54,7 +54,17 @@ const list: IController = async (req, res) => {
 
 const create: IController = async (req, res) => {
   try {
-    const params: CreateOurServiceDTO = req.body;
+    const imageLocalFiles = (req.files as Express.Multer.File[]).map(file => file);
+    const params: CreateOurServiceDTO = {
+      title: req.body.title,
+      subtitle: req.body.subtitle,
+      slug: req.body.slug,
+      description: req.body.description,
+      icon: req.body.icon,
+      faqs: req.body.faqs,
+      keyPoints: req.body.keyPoints,
+      images: imageLocalFiles,
+    };
     const data = await service.create(params);
     return ApiResponse.result(res, data, httpStatusCodes.CREATED);
   } catch (e) {
@@ -68,8 +78,18 @@ const create: IController = async (req, res) => {
 
 const update: IController = async (req, res) => {
   try {
+    const imageLocalFiles = (req.files as Express.Multer.File[]).map(file => file);
     const id: number = parseInt(req.params.id, 10);
-    const params: UpdateOurServiceDTO = req.body;
+    const params: UpdateOurServiceDTO = {
+      title: req.body.title,
+      subtitle: req.body.subtitle,
+      slug: req.body.slug,
+      description: req.body.description,
+      icon: req.body.icon,
+      faqs: req.body.faqs,
+      keyPoints: req.body.keyPoints,
+      images: imageLocalFiles,
+    };;
     const data = await service.update(id, params);
     return ApiResponse.result(res, data, httpStatusCodes.OK);
   } catch (e) {

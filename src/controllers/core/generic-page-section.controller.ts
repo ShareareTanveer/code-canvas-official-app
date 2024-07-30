@@ -8,7 +8,7 @@ import {
 } from '../../services/dto/core/generic-page-section.dto';
 import ApiUtility from '../../utilities/api.utility';
 import { IBaseQueryParams } from 'common.interface';
-import uploadOnCloud from '../../utilities/cloudiary.utility';
+import {uploadOnCloud} from '../../utilities/cloudiary.utility';
 
 const getById: IController = async (req, res) => {
   try {

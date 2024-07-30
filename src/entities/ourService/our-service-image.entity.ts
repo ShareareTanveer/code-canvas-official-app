@@ -4,7 +4,7 @@ import {
   Column,
   ManyToOne,
 } from 'typeorm';
-import { IsNotEmpty, IsString } from 'class-validator';
+import { IsNotEmpty, IsOptional, IsString } from 'class-validator';
 import { OurService } from './our-service.entity';
 
 @Entity()
@@ -16,6 +16,11 @@ export class OurServiceImage {
   @IsString()
   @IsNotEmpty()
   image: string;
+
+  @Column({ nullable: true })
+  @IsString()
+  @IsOptional()
+  cloudinary_image_public_id: string;
 
   @ManyToOne(() => OurService, (service) => service.images, {
     onDelete: 'CASCADE',
