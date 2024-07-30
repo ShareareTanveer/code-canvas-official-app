@@ -24,7 +24,7 @@ const options: any = {
         description: 'Development server',
       },
       {
-        url: 'https://ems-passport.onrender.com',
+        url: 'https://code-canvas-official-app.onrender.com',
         description: 'Production server',
       },
     ],
