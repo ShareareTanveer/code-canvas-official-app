@@ -17,14 +17,14 @@ export default async (
 ) => {
   const parsedUrl = new URL(
     req.originalUrl,
-    `http://${req.headers.host}`,
+    `https://${req.headers.host}`,
   ).pathname;
 
   const shouldIgnoreAuth =
     constants.APPLICATION.authorizationIgnorePath.some(
       (path) => parsedUrl === path,
     );
-    
+
   if (!shouldIgnoreAuth) {
     const authorizationHeader = ApiUtility.getCookieFromRequest(
       req,
