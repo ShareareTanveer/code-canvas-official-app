@@ -42,23 +42,12 @@ const options: any = {
         bearerAuth: [],
       },
     ],
-    tags: [
-      // Define your tags here
-      {
-        name: 'Auth',
-        description: 'Endpoints related to authentication',
-      },
-      {
-        name: 'User',
-        description: 'Endpoints related to user management',
-      },
-      {
-        name: 'Role',
-        description: 'Endpoints related to roles and permissions',
-      },
-    ],
   },
-  apis: ['src/routes/*.ts', 'src/routes/**/*.ts'],
+  apis: [
+    'src/swagger/components/**/*.ts',
+    'src/swagger/paths/**/*.ts',
+    'src/swagger/tags/**/*.ts',
+  ],
 };
 
 const swaggerSpec = swaggerJsdoc(options);
