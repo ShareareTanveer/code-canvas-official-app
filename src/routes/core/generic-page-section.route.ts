@@ -35,7 +35,7 @@ const router = express.Router();
  *         keyPoints:
  *           type: array
  *           items:
- *             type: object
+ *             type: string
  *             properties:
  *               point:
  *                 type: string
@@ -213,11 +213,11 @@ router.delete('/:id', genericPageSectionController.remove);
  *               keyPoints:
  *                 type: array
  *                 items:
- *                   type: object
+ *                   type: string
  *                   properties:
  *                     point:
  *                       type: string
- *                 example: [{"point":"Key point"}]
+ *                 example: [string]
  *               description:
  *                 type: string
  *                 example: "Detailed description"
@@ -299,7 +299,7 @@ router.post(
  *               keyPoints:
  *                 type: array
  *                 items:
- *                   type: object
+ *                   type: string
  *                   properties:
  *                     point:
  *                       type: string
@@ -368,5 +368,5 @@ router.patch(
   validateDTO(UpdateGenericPageSectionDTO),
   genericPageSectionController.update,
 );
-
+ 
 export default router;

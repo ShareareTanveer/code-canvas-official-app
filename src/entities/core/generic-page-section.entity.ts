@@ -37,9 +37,10 @@ export class GenericPageSection {
   @IsString()
   image: string;
 
-  @Column('json', { nullable: true })
+  @Column('simple-array', { nullable: true })
   @IsArray()
-  keyPoints: object[];
+  @IsString({ each: true })
+  keyPoints: string[];
 
   @OneToMany(
     () => GenericPageSectionItem,

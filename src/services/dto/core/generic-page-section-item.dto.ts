@@ -12,7 +12,7 @@ export class GenericPageSectionItemResponseDTO {
   id: number;
   title: string;
   subtitle: string;
-  keyPoints: object[];
+  keyPoints: string[];
   description?: string;
   icon?: string;
   image?: string;
@@ -32,7 +32,7 @@ export class CreateGenericPageSectionItemDTO {
 
   @IsArray()
   @IsOptional()
-  keyPoints?: object[];
+  keyPoints: string[];
 
   @IsString()
   @IsOptional()
@@ -64,7 +64,7 @@ export class UpdateGenericPageSectionItemDTO {
 
   @IsArray()
   @IsOptional()
-  keyPoints?: object[];
+  keyPoints: string[];
 
   @IsString()
   @IsOptional()

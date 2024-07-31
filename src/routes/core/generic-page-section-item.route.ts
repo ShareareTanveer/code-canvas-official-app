@@ -51,7 +51,7 @@ const router = express.Router();
  *                       keyPoints:
  *                         type: array
  *                         items:
- *                           type: object
+ *                           type: string
  *                           properties:
  *                             point:
  *                               type: string
@@ -125,7 +125,7 @@ router.get('/', genericPageSectionItemController.list);
  *                     keyPoints:
  *                       type: array
  *                       items:
- *                         type: object
+ *                         type: string
  *                         properties:
  *                           point:
  *                             type: string
@@ -226,7 +226,7 @@ router.delete('/:id', genericPageSectionItemController.remove);
  *               keyPoints:
  *                 type: array
  *                 items:
- *                   type: object
+ *                   type: string
  *                   properties:
  *                     point:
  *                       type: string
