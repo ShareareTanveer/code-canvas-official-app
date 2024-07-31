@@ -13,6 +13,10 @@ export function validateDTO(dtoClass: any) {
         .filter((item: string) => item);
     }
 
+    if (typeof req.body.faqs === 'string') {
+      req.body.faqs = JSON.parse(req.body.faqs);
+    }
+
     const dtoObject = plainToInstance(dtoClass, req.body);
     validate(dtoObject).then((errors: ValidationError[]) => {
       if (errors.length > 0) {

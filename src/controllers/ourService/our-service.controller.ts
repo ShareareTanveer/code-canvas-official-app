@@ -88,7 +88,8 @@ const update: IController = async (req, res) => {
       icon: req.body.icon,
       faqs: req.body.faqs,
       keyPoints: req.body.keyPoints,
-      images: imageLocalFiles,
+      addImages: imageLocalFiles,
+      deleteImages: req.body.deleteImages,
     };;
     const data = await service.update(id, params);
     return ApiResponse.result(res, data, httpStatusCodes.OK);

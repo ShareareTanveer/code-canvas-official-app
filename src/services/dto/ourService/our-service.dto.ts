@@ -27,7 +27,7 @@ export class OurServiceDetailResponseDTO {
   slug: string;
   description: string;
   icon: string;
-  keyPoints: object[];
+  keyPoints: string[];
   images: OurServiceImageResponseDTO[];
   faqs: CreateOurServiceFAQResponseDTO[];
 }
@@ -58,7 +58,7 @@ export class CreateOurServiceDTO {
 
   @IsArray()
   @IsOptional()
-  keyPoints?: object[];
+  keyPoints?: string[];
 
   // @IsArray()
   // @IsNotEmpty()
@@ -94,8 +94,11 @@ export class UpdateOurServiceDTO {
 
   @IsArray()
   @IsOptional()
-  keyPoints?: object[];
+  keyPoints?: string[];
 
   @IsOptional()
-  images?: Express.Multer.File[];
+  addImages?: Express.Multer.File[];
+
+  @IsOptional()
+  deleteImages?: number[];
 }

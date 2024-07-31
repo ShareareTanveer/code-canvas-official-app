@@ -58,7 +58,6 @@ const create = async (
   service.description = params.description;
   service.icon = params.icon || '';
   service.keyPoints = params.keyPoints || [];
-
   if (params.faqs && params.faqs.length > 0) {
     service.faqs = params.faqs.map((data) => {
       const faq = new OurServiceFAQ();
@@ -68,14 +67,12 @@ const create = async (
     });
   }
 
-  // Handle Image Uploads
   if (params.images && params.images.length > 0) {
     const uploadPromises = params.images.map((file) =>
       uploadOnCloud(file.path),
     );
     const uploadResults = await Promise.all(uploadPromises);
 
-    // Filter out any failed uploads
     const validResults = uploadResults.filter(
       (result) => result !== null,
     );
@@ -87,8 +84,7 @@ const create = async (
         image.cloudinary_image_public_id = result.public_id;
         return image;
       });
-    }
-    else{
+    } else {
       throw new Error('Failed to upload all images');
     }
   }
@@ -113,9 +109,11 @@ const update = async (
   if (params.title !== undefined) service.title = params.title;
   if (params.subtitle !== undefined) service.subtitle = params.subtitle;
   if (params.slug !== undefined) service.slug = params.slug;
-  if (params.description !== undefined) service.description = params.description;
+  if (params.description !== undefined)
+    service.description = params.description;
   if (params.icon !== undefined) service.icon = params.icon;
-  if (params.keyPoints !== undefined) service.keyPoints = params.keyPoints;
+  if (params.keyPoints !== undefined)
+    service.keyPoints = params.keyPoints;
 
   if (params.faqs && params.faqs.length > 0) {
     const faqsEntities = await faqRepository.findBy({
@@ -123,7 +121,9 @@ const update = async (
     });
 
     service.faqs = faqsEntities.map((faqEntity) => {
-      const matchingFaq = params.faqs.find((faq) => faq.id === faqEntity.id);
+      const matchingFaq = params.faqs.find(
+        (faq) => faq.id === faqEntity.id,
+      );
       if (matchingFaq) {
         faqEntity.question = matchingFaq.question;
         faqEntity.answer = matchingFaq.answer;
@@ -132,23 +132,15 @@ const update = async (
     });
   }
 
-  // Handle Image Uploads
-  if (params.images && params.images.length > 0) {
-    const uploadPromises = params.images.map((file) => uploadOnCloud(file.path));
+  if (params.addImages && params.addImages.length > 0) {
+    const uploadPromises = params.addImages.map((file) =>
+      uploadOnCloud(file.path),
+    );
     const uploadResults = await Promise.all(uploadPromises);
-
-    // Filter out any failed uploads
-    const validResults = uploadResults.filter((result) => result !== null);
-
+    const validResults = uploadResults.filter(
+      (result) => result !== null,
+    );
     if (validResults.length > 0) {
-      // Delete existing images from Cloudinary
-      for (const existingImage of service.images) {
-        if (existingImage.cloudinary_image_public_id) {
-          await deleteFromCloud(existingImage.cloudinary_image_public_id);
-        }
-      }
-
-      // Update the service images
       service.images = validResults.map((result) => {
         const image = new OurServiceImage();
         image.image = result.secure_url;
@@ -158,18 +150,36 @@ const update = async (
     }
   }
 
-  // Save the updated service entity
-  const savedEntity = await repository.save(service);
+  if (params.deleteImages && params.deleteImages.length > 0) {
+    const imageEntities = await imageRepository.findBy({
+      id: In(params.deleteImages),
+    });
 
-  // Map the saved entity to the response DTO
+    const deletePromises = imageEntities.map((image) => {
+      if (image.cloudinary_image_public_id) {
+        return deleteFromCloud(image.cloudinary_image_public_id);
+      }
+    });
+    await Promise.all(deletePromises);
+    await imageRepository.remove(imageEntities);
+  }
+
+  const savedEntity = await repository.save(service);
   return toOurServiceDetailResponseDTO(savedEntity);
 };
 
 const remove = async (id: number): Promise<void> => {
-  const entity = await repository.findOne({ where: { id } });
+  const entity = await repository.findOne({ where: { id }, relations: ["images"] });
   if (!entity) {
     throw new Error('OurService not found');
   }
+  
+  for (const item of entity.images) {
+    if (item.cloudinary_image_public_id) {
+      await deleteFromCloud(item.cloudinary_image_public_id);
+    }
+  }
+
   await repository.remove(entity);
 };
 

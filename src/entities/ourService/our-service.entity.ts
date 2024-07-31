@@ -45,7 +45,8 @@ export class OurService extends BaseEntity {
   @IsString()
   icon?: string;
 
-  @Column('json', { nullable: true })
+  @Column('simple-array', { nullable: true })
   @IsArray()
-  keyPoints?: object[];
+  @IsString({ each: true })
+  keyPoints: string[];
 }

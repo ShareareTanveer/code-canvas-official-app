@@ -44,8 +44,8 @@ const router = express.Router();
  *         keyPoints:
  *           type: array
  *           items:
- *             type: object
- *           example: [{"key": "value"}]
+ *             type: string
+ *           example: string
  *         images:
  *           type: array
  *           items:
@@ -280,11 +280,16 @@ router.delete('/:id', ourServiceController.remove);
  *               keyPoints:
  *                 type: array
  *                 items:
- *                   type: object
+ *                   type: string
  *               faqs:
  *                 type: array
  *                 items:
  *                   type: object
+ *                   properties:
+ *                     question:
+ *                       type: string
+ *                     answer:
+ *                       type: string
  *               images:
  *                 type: array
  *                 items:
@@ -323,7 +328,7 @@ router.delete('/:id', ourServiceController.remove);
 router.post(
   '/',
   upload.array('images'),
-  // validateDTO(CreateOurServiceDTO), 
+  validateDTO(CreateOurServiceDTO),
   ourServiceController.create,
 );
 
@@ -362,12 +367,21 @@ router.post(
  *               keyPoints:
  *                 type: array
  *                 items:
- *                   type: object
+ *                   type: string
  *               faqs:
  *                 type: array
  *                 items:
  *                   type: object
- *               images:
+ *                   properties:
+ *                     question:
+ *                       type: string
+ *                     answer:
+ *                       type: string
+ *               deleteImages:
+ *                 type: array
+ *                 items:
+ *                   type: integer
+ *               addImages:
  *                 type: array
  *                 items:
  *                   type: string
@@ -419,8 +433,8 @@ router.post(
  */
 router.patch(
   '/:id',
-  upload.array('images'),
-  // validateDTO(UpdateOurServiceDTO),
+  upload.array('addImages'),
+  validateDTO(UpdateOurServiceDTO),
   ourServiceController.update,
 );
 
