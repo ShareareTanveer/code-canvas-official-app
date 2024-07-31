@@ -46,7 +46,7 @@ export class CreateGenericPageSectionItemDTO {
   @IsOptional()
   image?: string;
 
-  @IsNumber()
+  // @IsNumber()
   @IsNotEmpty()
   genericPageSection?: number;
 }
@@ -78,7 +78,7 @@ export class UpdateGenericPageSectionItemDTO {
   @IsOptional()
   image?: string;
 
-  @IsNumber()
+  // @IsNumber()
   @IsOptional()
   genericPageSection?: number;
 }

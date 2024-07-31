@@ -5,7 +5,7 @@ import {
   OneToMany,
   JoinColumn,
 } from 'typeorm';
-import { IsArray, IsString } from 'class-validator';
+import { IsArray, IsOptional, IsString } from 'class-validator';
 import { GenericPageSectionItem } from './generic-page-section-item.entity';
 
 @Entity()
@@ -36,6 +36,11 @@ export class GenericPageSection {
   @Column({ nullable: true, default: null })
   @IsString()
   image: string;
+  
+  @Column({ nullable: true })
+  @IsString()
+  @IsOptional()
+  cloudinary_image_public_id: string;
 
   @Column('simple-array', { nullable: true })
   @IsArray()

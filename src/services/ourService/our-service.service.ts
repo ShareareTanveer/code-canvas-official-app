@@ -110,7 +110,6 @@ const update = async (
     throw new Error(`OurService with ID ${id} not found`);
   }
 
-  // Update basic fields
   if (params.title !== undefined) service.title = params.title;
   if (params.subtitle !== undefined) service.subtitle = params.subtitle;
   if (params.slug !== undefined) service.slug = params.slug;
@@ -118,7 +117,6 @@ const update = async (
   if (params.icon !== undefined) service.icon = params.icon;
   if (params.keyPoints !== undefined) service.keyPoints = params.keyPoints;
 
-  // Handle FAQs update
   if (params.faqs && params.faqs.length > 0) {
     const faqsEntities = await faqRepository.findBy({
       id: In(params.faqs.map((faq) => faq.id)),

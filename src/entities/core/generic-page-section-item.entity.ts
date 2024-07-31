@@ -4,7 +4,7 @@ import {
   Column,
   ManyToOne,
 } from 'typeorm';
-import { IsArray, IsString } from 'class-validator';
+import { IsArray, IsOptional, IsString } from 'class-validator';
 import { GenericPageSection } from './generic-page-section.entity';
 
 @Entity()
@@ -36,6 +36,11 @@ export class GenericPageSectionItem {
   @Column({ nullable: true, default: null })
   @IsString()
   image: string;
+
+  @Column({ nullable: true })
+  @IsString()
+  @IsOptional()
+  cloudinary_image_public_id: string;
 
   @ManyToOne(
     () => GenericPageSection,
