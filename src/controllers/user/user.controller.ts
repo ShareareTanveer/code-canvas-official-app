@@ -14,10 +14,6 @@ import {
   IDetailById,
 } from '../../interfaces/common.interface';
 import {
-  IUpdateUser,
-  IUserQueryParams,
-} from '../../interfaces/user.interface';
-import {
   loginDTO,
   resetPasswordDTO,
   sendEmailOtpDTO,

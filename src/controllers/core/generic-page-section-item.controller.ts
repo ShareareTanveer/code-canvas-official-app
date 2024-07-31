@@ -56,14 +56,6 @@ const list: IController = async (req, res) => {
 const create: IController = async (req, res) => {
   try {
     const imageLocalFile = req.file?.path;
-    let imageUrl;
-    if (imageLocalFile) {
-      const uploadImage = await uploadOnCloud(imageLocalFile);
-      if (!uploadImage) {
-        throw new Error('Image could not be uploaded');
-      }
-      imageUrl = uploadImage.secure_url;
-    }
     const params: CreateGenericPageSectionItemDTO = {
       title: req.body.title,
       subtitle: req.body.subtitle,
@@ -71,7 +63,7 @@ const create: IController = async (req, res) => {
       keyPoints: req.body.keyPoints,
       icon: req.body.icon,
       genericPageSection: req.body.genericPageSection,
-      ...(imageUrl && { image: imageUrl }),
+      image: imageLocalFile,
     };
     const data = await service.create(params);
     return ApiResponse.result(res, data, httpStatusCodes.CREATED);
@@ -86,16 +78,8 @@ const create: IController = async (req, res) => {
 
 const update: IController = async (req, res) => {
   try {
-    const imageLocalFile = req.file?.path;
-    let imageUrl;
-    if (imageLocalFile) {
-      const uploadImage = await uploadOnCloud(imageLocalFile);
-      if (!uploadImage) {
-        throw new Error('Image could not be uploaded');
-      }
-      imageUrl = uploadImage.secure_url;
-    }
     const id: number = parseInt(req.params.id, 10);
+    const imageLocalFile = req.file?.path;
     const params: UpdateGenericPageSectionItemDTO = {
       title: req.body.title,
       subtitle: req.body.subtitle,
@@ -103,7 +87,7 @@ const update: IController = async (req, res) => {
       keyPoints: req.body.keyPoints,
       icon: req.body.icon,
       genericPageSection: req.body.genericPageSection,
-      ...(imageUrl && { image: imageUrl }),
+      image: imageLocalFile,
     };
     const data = await service.update(id, params);
     return ApiResponse.result(res, data, httpStatusCodes.OK);
