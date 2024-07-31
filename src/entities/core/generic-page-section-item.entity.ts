@@ -20,9 +20,10 @@ export class GenericPageSectionItem {
   @IsString()
   subtitle: string;
 
-  @Column('json', { nullable: true })
+  @Column('simple-array', { nullable: true })
   @IsArray()
-  keyPoints: object[];
+  @IsString({ each: true })
+  keyPoints: string[];
 
   @Column({ nullable: true, default: null })
   @IsString()
