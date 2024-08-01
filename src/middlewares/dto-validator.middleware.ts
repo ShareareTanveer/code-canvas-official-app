@@ -7,16 +7,13 @@ export function validateDTO(dtoClass: any) {
   return (req: Request, res: Response, next: NextFunction) => {
 
     if (typeof req.body.keyPoints === 'string') {
-      req.body.keyPoints = req.body.keyPoints
-        .split(',')
-        .map((item: string) => item.trim())
-        .filter((item: string) => item);
+      req.body.keyPoints = JSON.parse(req.body.keyPoints);
     }
 
     if (typeof req.body.faqs === 'string') {
       req.body.faqs = JSON.parse(req.body.faqs);
     }
-
+    
     const dtoObject = plainToInstance(dtoClass, req.body);
     validate(dtoObject).then((errors: ValidationError[]) => {
       if (errors.length > 0) {
