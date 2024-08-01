@@ -17,7 +17,6 @@ import { IBaseQueryParams } from 'common.interface';
 import { listEntities } from '../../utilities/pagination-filtering.utility';
 import {
   deleteFromCloud,
-  uploadMultipleOnCloud,
   uploadOnCloud,
 } from '../../utilities/cloudiary.utility';
 

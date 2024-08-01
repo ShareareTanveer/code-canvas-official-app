@@ -60,13 +60,13 @@ export class CreateOurServiceDTO {
   @IsOptional()
   keyPoints?: string[];
 
-  // @IsArray()
-  // @IsNotEmpty()
   // @IsFile({
   //   allowedExtensions: ['jpg', 'jpeg', 'png', 'gif'],
   //   maxSizeInBytes: 5 * 1024 * 1024,
   // })
-  images?: Express.Multer.File[];
+  // @IsNotEmpty()
+  @IsArray()
+  images: Express.Multer.File[];
 }
 
 export class UpdateOurServiceDTO {
@@ -97,8 +97,10 @@ export class UpdateOurServiceDTO {
   keyPoints?: string[];
 
   @IsOptional()
+  @IsArray()
   addImages?: Express.Multer.File[];
 
   @IsOptional()
+  @IsArray()
   deleteImages?: number[];
 }

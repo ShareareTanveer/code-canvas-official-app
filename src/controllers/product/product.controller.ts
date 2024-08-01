@@ -58,6 +58,7 @@ const list: IController = async (req, res) => {
 
 const create: IController = async (req, res) => {
   try {
+    const imageLocalFiles = (req.files as Express.Multer.File[]).map(file => file);
     const params: CreateProductDTO = {
       category: req.body.category,
       title: req.body.title,
@@ -67,8 +68,8 @@ const create: IController = async (req, res) => {
       support_for: req.body.support_for,
       price: req.body.price,
       is_documented: req.body.is_documented,
-      images: req.body.images,
       tags: req.body.tags,
+      images: imageLocalFiles,
     };
     const data = await service.create(params);
     return ApiResponse.result(res, data, httpStatusCodes.CREATED);
@@ -84,6 +85,7 @@ const create: IController = async (req, res) => {
 const update: IController = async (req, res) => {
   try {
     const id: number = parseInt(req.params.id, 10);
+    const imageLocalFiles = (req.files as Express.Multer.File[]).map(file => file);
     const params: UpdateProductDTO = {
       category: req.body.category,
       title: req.body.title,
@@ -93,7 +95,8 @@ const update: IController = async (req, res) => {
       support_for: req.body.support_for,
       price: req.body.price,
       is_documented: req.body.is_documented,
-      images: req.body.images,
+      addImages: imageLocalFiles,
+      deleteImages: req.body.deleteImages,
       tags: req.body.tags,
     };
     const data = await service.update(id, params);

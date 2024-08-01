@@ -15,10 +15,15 @@ import { In } from 'typeorm';
 import { Tag } from '../../entities/tag/tag.entity';
 import { listEntities } from '../../utilities/pagination-filtering.utility';
 import { IBaseQueryParams } from 'common.interface';
+import {
+  deleteFromCloud,
+  uploadOnCloud,
+} from '../..//utilities/cloudiary.utility';
 
 const repository = dataSource.getRepository(Product);
 const categoryRepository = dataSource.getRepository(Category);
 const tagRepository = dataSource.getRepository(Tag);
+const imageRepository = dataSource.getRepository(ProductImage);
 
 const getById = async (
   id: number,
@@ -27,8 +32,6 @@ const getById = async (
     where: { id },
     relations: ['images', 'category', 'tags', 'reviews'],
   });
-  console.log(entity);
-  console.log(typeof entity.price);
   if (!entity) {
     throw new Error('Product not found');
   }
@@ -49,7 +52,6 @@ const list = async (params: IBaseQueryParams) => {
     toResponseDTO: toProductResponseDTO,
   });
 };
-
 
 const create = async (
   params: CreateProductDTO,
@@ -80,14 +82,27 @@ const create = async (
   }
 
   if (params.images && params.images.length > 0) {
-    product.images = params.images.map((url) => {
-      const image = new ProductImage();
-      image.image = url;
-      return image;
-    });
+    const uploadPromises = params.images.map((file) =>
+      uploadOnCloud(file.path),
+    );
+    const uploadResults = await Promise.all(uploadPromises);
+
+    const validResults = uploadResults.filter(
+      (result) => result !== null,
+    );
+
+    if (validResults.length > 0) {
+      product.images = validResults.map((result) => {
+        const image = new ProductImage();
+        image.image = result.secure_url;
+        image.cloudinary_image_public_id = result.public_id;
+        return image;
+      });
+    } else {
+      throw new Error('Failed to upload all images');
+    }
   }
   const savedEntity = await repository.save(product);
-  console.log(savedEntity);
   return toProductDetailResponseDTO(savedEntity);
 };
 
@@ -130,12 +145,36 @@ const update = async (
     product.tags = tagEntities;
   }
 
-  if (params.images && params.images.length > 0) {
-    product.images = params.images.map((url) => {
-      const image = new ProductImage();
-      image.image = url;
-      return image;
+  if (params.addImages && params.addImages.length > 0) {
+    const uploadPromises = params.addImages.map((file) =>
+      uploadOnCloud(file.path),
+    );
+    const uploadResults = await Promise.all(uploadPromises);
+    const validResults = uploadResults.filter(
+      (result) => result !== null,
+    );
+    if (validResults.length > 0) {
+      product.images = validResults.map((result) => {
+        const image = new ProductImage();
+        image.image = result.secure_url;
+        image.cloudinary_image_public_id = result.public_id;
+        return image;
+      });
+    }
+  }
+
+  if (params.deleteImages && params.deleteImages.length > 0) {
+    const imageEntities = await imageRepository.findBy({
+      id: In(params.deleteImages),
     });
+
+    const deletePromises = imageEntities.map((image) => {
+      if (image.cloudinary_image_public_id) {
+        return deleteFromCloud(image.cloudinary_image_public_id);
+      }
+    });
+    await Promise.all(deletePromises);
+    await imageRepository.remove(imageEntities);
   }
   const savedEntity = await repository.save(product);
 
@@ -143,9 +182,17 @@ const update = async (
 };
 
 const remove = async (id: number): Promise<void> => {
-  const entity = await repository.findOne({ where: { id } });
+  const entity = await repository.findOne({
+    where: { id },
+    relations: ['images'],
+  });
   if (!entity) {
     throw new Error('Product not found');
+  }
+  for (const item of entity.images) {
+    if (item.cloudinary_image_public_id) {
+      await deleteFromCloud(item.cloudinary_image_public_id);
+    }
   }
   await repository.remove(entity);
 };

@@ -1,4 +1,5 @@
 import {
+  IsArray,
   IsBoolean,
   IsNotEmpty,
   IsNumber,
@@ -72,10 +73,10 @@ export class CreateProductDTO {
   is_documented: boolean;
 
   @IsOptional()
-  images?: string[];
+  images?: Express.Multer.File[];
 
   @IsOptional()
-  tags?: string[];
+  tags?: number[];
 }
 
 export class UpdateProductDTO {
@@ -112,8 +113,13 @@ export class UpdateProductDTO {
   is_documented: boolean;
 
   @IsOptional()
-  images?: string[];
+  addImages?: Express.Multer.File[];
 
   @IsOptional()
-  tags?: string[];
+  @IsArray()
+  deleteImages?: number[];
+
+  @IsOptional()
+  @IsArray()
+  tags?: number[];
 }

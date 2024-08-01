@@ -1,5 +1,5 @@
 import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn } from 'typeorm';
-import { IsNotEmpty, IsString } from 'class-validator';
+import { IsNotEmpty, IsOptional, IsString } from 'class-validator';
 import { Product } from './product.entity';
 
 @Entity()
@@ -11,6 +11,11 @@ export class ProductImage {
   @IsString()
   @IsNotEmpty()
   image: string;
+
+  @Column({ nullable: true })
+  @IsString()
+  @IsOptional()
+  cloudinary_image_public_id: string;
 
   // @ManyToOne(() => Product, (product) => product.images, { cascade: true, onDelete: "CASCADE" })
   // @JoinColumn()
