@@ -154,6 +154,7 @@ export class SimpleUserResponseDTO {
   id?: number;
   firstName?: string;
   lastName?: string;
+  status?: boolean;
   email?: string;
   details?: UserDetailResponseDTO;
   role?: SimpleRoleResponseDTO;

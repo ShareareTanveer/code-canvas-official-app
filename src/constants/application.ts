@@ -10,12 +10,14 @@ export default {
   },
   env: {
     authSecret: process.env.TOKEN_SECRET_KEY || 'test',
-    AUTH_PASSWORD_SECRET: process.env.AUTH_PASSWORD_SECRET || 'test',
+    AUTH_RESET_PASSWORD_SECRET: process.env.AUTH_RESET_PASSWORD_SECRET || 'test',
+    AUTH_REGISTER_SECRET: process.env.AUTH_REGISTER_SECRET || 'test',
   },
   authorizationIgnorePath: [
     '/',
     '/auth/send-email-otp',
     '/auth/verify-email-otp',
+    '/auth/verify-email',
     '/auth/change-password',
     '/auth/register',
     '/auth/login',

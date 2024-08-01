@@ -17,6 +17,7 @@ import {
   loginDTO,
   resetPasswordDTO,
   sendEmailOtpDTO,
+  verifyEmailDTO,
   verifyEmailOtpDTO,
 } from '../../services/dto/auth/auth.dto';
 import {
@@ -26,6 +27,8 @@ import {
   UpdateUserDTO,
 } from '../../services/dto/user/user.dto';
 import constants from '../../constants';
+import { MailData } from 'mail-data.interface';
+import { userSignUp } from '../../services/mail/mail.service';
 
 const register: IController = async (req, res) => {
   try {
@@ -42,6 +45,15 @@ const register: IController = async (req, res) => {
     };
 
     const user = await service.register(params);
+    const cookie: any = await generateRegisterCookie(user.email);
+    const access_token = cookie.value;
+    const mailDataSignUp: MailData<{ hash: string }> = {
+      data: {
+        hash: access_token,
+      },
+      to: 'ominuzhat@gmail.com',
+    };
+    userSignUp(mailDataSignUp);
     return ApiResponse.result(res, user, httpStatusCodes.CREATED);
   } catch (e) {
     const statusCode =
@@ -54,6 +66,65 @@ const register: IController = async (req, res) => {
         : e?.message;
 
     return ApiResponse.error(res, statusCode, message);
+  }
+};
+
+const verifyEmail: IController = async (req, res) => {
+  try {
+    const authorizationHeader = ApiUtility.getCookieFromRequest(
+      req,
+      constants.COOKIE.COOKIE_REGISTER_USER,
+    );
+
+    if (!authorizationHeader) {
+      return ApiResponse.error(
+        res,
+        httpStatusCodes.UNAUTHORIZED,
+        'Invalid or expired token',
+      );
+    }
+    const decoded: any = jwt.verify(
+      authorizationHeader,
+      constants.APPLICATION.env.AUTH_REGISTER_SECRET,
+    );
+    if (!decoded || !decoded.data.registered_user) {
+      return ApiResponse.error(
+        res,
+        httpStatusCodes.UNAUTHORIZED,
+        'Invalid or expired token',
+      );
+    }
+    const params = {
+      email: decoded.data.registered_user,
+    };
+    const user = await service.verifyEmail(params);
+    if (!user.id || !user.status) {
+      throw new Error('Could not verified user');
+    }
+    ApiResponse.deleteCookie(
+      res,
+      constants.COOKIE.COOKIE_REGISTER_USER,
+    );
+    const cookie: any = await generateUserCookie(user.id);
+    const access_token = cookie.value;
+    const data = {
+      access_token,
+      user,
+    };
+    return ApiResponse.result(res, data, httpStatusCodes.OK, cookie);
+  } catch (e) {
+    if (e instanceof StringError) {
+      return ApiResponse.error(
+        res,
+        httpStatusCodes.BAD_REQUEST,
+        e?.message,
+      );
+    }
+    return ApiResponse.error(
+      res,
+      httpStatusCodes.UNAUTHORIZED,
+      e.message,
+    );
   }
 };
 
@@ -96,6 +167,9 @@ const login: IController = async (req, res) => {
       password: req.body.password,
     };
     const user = await service.login(params);
+    if (!user.status && user.role.name !== 'Admin') {
+      throw new Error('You acount is not active');
+    }
     const cookie: any = await generateUserCookie(user.id);
     const access_token = cookie.value;
     const data = {
@@ -104,18 +178,10 @@ const login: IController = async (req, res) => {
     };
     return ApiResponse.result(res, data, httpStatusCodes.OK, cookie);
   } catch (e) {
-    if (e instanceof StringError) {
-      return ApiResponse.error(
-        res,
-        httpStatusCodes.BAD_REQUEST,
-        e?.message,
-      );
-    }
     return ApiResponse.error(
       res,
       httpStatusCodes.BAD_REQUEST,
-      'Something went wrong',
-      e?.message,
+      e.message,
     );
   }
 };
@@ -131,6 +197,32 @@ export const sendEmailOtp: IController = async (req, res) => {
     return ApiResponse.result(
       res,
       { message: 'OTP sent successfully to your email' },
+      httpStatusCodes.OK,
+    );
+  } catch (e) {
+    console.error(e);
+    return ApiResponse.error(res, 500, e.message);
+  }
+};
+
+export const sendResetPasswordEmail: IController = async (req, res) => {
+  try {
+    const params: sendEmailOtpDTO = {
+      email: req.body.email,
+    };
+    const user = await service.sendResetPasswordEmail(params);
+    const cookie: any = await generateResetPasswordCookie(user.email);
+    const access_token = cookie.value;
+    const mailDataSignUp: MailData<{ hash: string }> = {
+      data: {
+        hash: access_token,
+      },
+      to: 'ominuzhat@gmail.com',
+    };
+    userSignUp(mailDataSignUp);
+    return ApiResponse.result(
+      res,
+      { message: 'Quick Link is sent  to your email' },
       httpStatusCodes.OK,
     );
   } catch (e) {
@@ -185,7 +277,7 @@ export const resetPassword: IController = async (req, res) => {
     }
     const decoded: any = jwt.verify(
       authorizationHeader,
-      constants.APPLICATION.env.AUTH_PASSWORD_SECRET,
+      constants.APPLICATION.env.AUTH_RESET_PASSWORD_SECRET,
     );
 
     if (!decoded || !decoded.data.pending_user) {
@@ -360,6 +452,16 @@ const generateResetPasswordCookie = async (email: string) => {
   };
 };
 
+const generateRegisterCookie = async (email: string) => {
+  return {
+    key: constants.COOKIE.COOKIE_REGISTER_USER,
+    value: await Encryption.generateRegisterCookie(
+      constants.COOKIE.COOKIE_REGISTER_USER,
+      email,
+    ),
+  };
+};
+
 export default {
   register,
   create,
@@ -373,6 +475,7 @@ export default {
   logout,
   sendEmailOtp,
   verifyEmailOtp,
+  verifyEmail,
   resetPassword,
   generateResetPasswordCookie,
 };

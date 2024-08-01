@@ -48,7 +48,20 @@ export default class Encryption {
     data[key] = value;
     return await jwt.sign(
       { data },
-      constants.APPLICATION.env.AUTH_PASSWORD_SECRET,
+      constants.APPLICATION.env.AUTH_RESET_PASSWORD_SECRET,
+      {
+        expiresIn:
+          constants.APPLICATION.timers.resetPasswordCookieExpiry,
+      },
+    );
+  }  
+  
+  static async generateRegisterCookie(key: string, value: string) {
+    const data: { [key: string]: string } = {};
+    data[key] = value;
+    return await jwt.sign(
+      { data },
+      constants.APPLICATION.env.AUTH_REGISTER_SECRET,
       {
         expiresIn:
           constants.APPLICATION.timers.resetPasswordCookieExpiry,

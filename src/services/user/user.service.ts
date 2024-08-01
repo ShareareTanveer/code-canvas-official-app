@@ -7,7 +7,11 @@ import ApiUtility from '../../utilities/api.utility';
 import Encryption from '../../utilities/encryption.utility';
 import { generateOTP, verifyOTP } from '../../utilities/otp.utility';
 import { listEntities } from '../../utilities/pagination-filtering.utility';
-import { loginDTO, verifyEmailOtpDTO } from '../dto/auth/auth.dto';
+import {
+  loginDTO,
+  verifyEmailDTO,
+  verifyEmailOtpDTO,
+} from '../dto/auth/auth.dto';
 import { toUserResponseDTO } from './mapper/user.mapper';
 import {
   IBaseQueryParams,
@@ -158,6 +162,32 @@ export const sendEmailOtp = async (params: { email: string }) => {
   } catch (error) {
     throw new Error('Failed to send OTP. Please try again later.');
   }
+};
+
+export const verifyEmail = async (params: { email: string }) => {
+  const userRepository = dataSource.getRepository(User);
+  const user = await userRepository.findOne({
+    where: { email: params.email },
+  });
+
+  if (!user) {
+    throw new StringError('Your email has not been registered');
+  }
+  user.status = true;
+
+  const savedUser = await dataSource.getRepository(User).save(user);
+  return toUserResponseDTO(savedUser);
+};
+
+export const sendResetPasswordEmail = async (params: { email: string }) => {
+  const userRepository = dataSource.getRepository(User);
+  const user = await userRepository.findOne({
+    where: { email: params.email },
+  });
+  if (!user) {
+    throw new StringError('Your email has not been registered');
+  }
+  return toUserResponseDTO(user);
 };
 
 export const verifyEmailOtp = async (params: verifyEmailOtpDTO) => {
@@ -336,6 +366,8 @@ export default {
   list,
   remove,
   sendEmailOtp,
+  sendResetPasswordEmail,
+  verifyEmail,
   verifyEmailOtp,
   resetPassword,
 };

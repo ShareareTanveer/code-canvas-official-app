@@ -11,5 +11,6 @@ export const toUserResponseDTO = (
     email: entity.email,
     details: entity.details,
     role: entity.role,
+    status: entity.status,
   };
 };

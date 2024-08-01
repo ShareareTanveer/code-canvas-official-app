@@ -81,6 +81,11 @@ router.post(
   userController.register,
 );
 
+router.post(
+  '/verify-email',
+  userController.verifyEmail,
+);
+
 /**
  * @swagger
  * /auth/login:
