@@ -16,7 +16,6 @@ import {
   loginDTO,
   resetPasswordDTO,
   sendEmailDTO,
-  verifyEmailDTO,
 } from '../../services/dto/auth/auth.dto';
 import {
   CreateUserDTO,
@@ -26,7 +25,7 @@ import {
 } from '../../services/dto/user/user.dto';
 import constants from '../../constants';
 import { MailData } from 'mail-data.interface';
-import { userSignUp } from '../../services/mail/mail.service';
+import { forgotPassword, userSignUp } from '../../services/mail/mail.service';
 
 const register: IController = async (req, res) => {
   try {
@@ -204,10 +203,10 @@ export const sendResetPasswordEmail: IController = async (req, res) => {
       to: 'ominuzhat@gmail.com',
     };
     console.log(access_token)
-    userSignUp(mailDataSignUp);
+    forgotPassword(mailDataSignUp);
     return ApiResponse.result(
       res,
-      { message: 'Quick Link is sent  to your email' },
+      { message: 'Quick Link is sent to your email' },
       httpStatusCodes.OK,
     );
   } catch (e) {

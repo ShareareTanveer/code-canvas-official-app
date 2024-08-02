@@ -71,28 +71,9 @@ async function userSignUp(mailData: MailData<{ hash: string }>): Promise<void> {
   }
 }
 
-async function usersendOTP(mailData: MailData<{ otp: number }>): Promise<void> {
-  await sendMail({
-    to: mailData.to,
-    subject: authMailMessage.verifyOTP.title,
-    text: `${authMailMessage.verifyOTP.title} ${mailData.data.otp}`,
-    templatePath: path.join(__dirname, '../mail/mail-templates/verify.hbs'),
-    context: {
-      title: authMailMessage.verifyOTP.title,
-      actionTitle: authMailMessage.verifyOTP.title,
-      app_name: process.env.APP_NAME,
-      text1: authMailMessage.verifyOTP.text1,
-      text2: authMailMessage.verifyOTP.text2,
-      text3: authMailMessage.verifyOTP.text3,
-      otp: mailData.data.otp,
-    },
-  });
-}
-
-async function forgotPassword(mailData: MailData<{ hash: string; tokenExpires: number }>): Promise<void> {
-  const url = new URL(`${process.env.BASE_APP_URL}/password-change`);
+async function forgotPassword(mailData: MailData<{ hash: string }>): Promise<void> {
+  const url = new URL(`${process.env.BASE_APP_URL}/authentication/change-password`);
   url.searchParams.set('hash', mailData.data.hash);
-  url.searchParams.set('expires', mailData.data.tokenExpires.toString());
 
   await sendMail({
     to: mailData.to,
@@ -136,7 +117,6 @@ async function confirmNewEmail(mailData: MailData<{ hash: string }>): Promise<vo
 export {
   twoFactorAuth,
   userSignUp,
-  usersendOTP,
   forgotPassword,
   confirmNewEmail,
 };

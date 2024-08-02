@@ -11,12 +11,6 @@ export class sendEmailDTO {
   email: string;
 }
 
-export class verifyEmailDTO {
-  @IsString()
-  @IsNotEmpty()
-  hash: string;
-}
-
 export class resetPasswordDTO {
   @IsNotEmpty()
   @IsStrongPassword()
