@@ -69,6 +69,7 @@ const create = async (
   product.title = params.title;
   product.slug = params.slug;
   product.description = params.description;
+  product.subtitle = params.subtitle;
   product.live_link = params.live_link || null;
   product.support_for = params.support_for || null;
   product.price = params.price;
@@ -130,6 +131,7 @@ const update = async (
   }
 
   if (params.title) product.title = params.title;
+  if (params.subtitle) product.subtitle = params.subtitle;
   if (params.slug) product.slug = params.slug;
   if (params.description) product.description = params.description;
   if (params.live_link) product.live_link = params.live_link;

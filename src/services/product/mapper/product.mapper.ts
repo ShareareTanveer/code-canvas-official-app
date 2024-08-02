@@ -23,6 +23,7 @@ export const toProductDetailResponseDTO = (
     id: entity.id,
     category: entity.category,
     title: entity.title,
+    subtitle: entity.subtitle,
     slug: entity.slug,
     description: entity.description,
     live_link: entity.live_link,

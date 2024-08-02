@@ -27,6 +27,7 @@ export class ProductDetailResponseDTO {
   id?: number;
   category: CategoryResponseDTO;
   title: string;
+  subtitle: string;
   slug: string;
   description: string;
   live_link: string;
@@ -47,6 +48,10 @@ export class CreateProductDTO {
   @IsNotEmpty()
   @IsString()
   title: string;
+
+  @IsNotEmpty()
+  @IsString()
+  subtitle: string;
 
   @IsNotEmpty()
   @IsString()
@@ -87,6 +92,10 @@ export class UpdateProductDTO {
   @IsOptional()
   @IsString()
   title: string;
+
+  @IsOptional()
+  @IsString()
+  subtitle: string;
 
   @IsOptional()
   @IsString()

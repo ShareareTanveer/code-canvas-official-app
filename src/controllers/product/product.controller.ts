@@ -62,6 +62,7 @@ const create: IController = async (req, res) => {
     const params: CreateProductDTO = {
       category: req.body.category,
       title: req.body.title,
+      subtitle: req.body.subtitle,
       slug: req.body.slug,
       description: req.body.description,
       live_link: req.body.live_link,
@@ -89,6 +90,7 @@ const update: IController = async (req, res) => {
     const params: UpdateProductDTO = {
       category: req.body.category,
       title: req.body.title,
+      subtitle: req.body.subtitle,
       slug: req.body.slug,
       description: req.body.description,
       live_link: req.body.live_link,

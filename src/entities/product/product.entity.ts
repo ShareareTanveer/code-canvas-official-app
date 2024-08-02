@@ -46,6 +46,9 @@ export class Product  {
   @Column('decimal', { precision: 10, scale: 2, nullable: false, transformer: new DecimalColumnTransformer()  })
   price: number;
 
+  @Column({ nullable: true })
+  subtitle?: string;
+
   @Column({ default: false })
   @IsBoolean()
   is_documented: boolean;
