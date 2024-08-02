@@ -65,8 +65,9 @@ export class CreateOurServiceDTO {
   //   maxSizeInBytes: 5 * 1024 * 1024,
   // })
   // @IsNotEmpty()
-  @IsArray()
-  images: Express.Multer.File[];
+  // @IsArray()
+  @IsOptional()
+  images?: Express.Multer.File[];
 }
 
 export class UpdateOurServiceDTO {

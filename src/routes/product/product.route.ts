@@ -1,7 +1,11 @@
 import express from 'express';
 import productController from '../../controllers/product/product.controller';
 import { validateDTO } from '../../middlewares/dto-validator.middleware';
-import { CreateProductDTO, UpdateProductDTO } from '../../services/dto/product/product.dto';
+import {
+  CreateProductDTO,
+  UpdateProductDTO,
+} from '../../services/dto/product/product.dto';
+import { upload } from '../../middlewares/multer.middleware';
 
 const router = express.Router();
 
@@ -60,7 +64,7 @@ const router = express.Router();
  *           type: integer
  *           nullable: true
  *           example: null
- * 
+ *
  *     CreateProductDTO:
  *       type: object
  *       properties:
@@ -94,7 +98,7 @@ const router = express.Router();
  *           items:
  *             type: string
  *           example: ["image1.jpg", "image2.jpg"]
- * 
+ *
  *     UpdateProductDTO:
  *       type: object
  *       properties:
@@ -165,7 +169,7 @@ const router = express.Router();
  *           enum:
  *             - title
  *             - price
- *         description: Field to sort products by. 
+ *         description: Field to sort products by.
  *         examples:
  *           title:
  *             summary: Sort by product title
@@ -180,7 +184,7 @@ const router = express.Router();
  *           enum:
  *             - ASC
  *             - DESC
- *         description: Sort order. 
+ *         description: Sort order.
  *         examples:
  *           ASC:
  *             summary: Sort in ascending order
@@ -289,7 +293,7 @@ router.get('/:id', productController.getById);
  *       201:
  *         description: Product created successfully
  *         content:
- *           application/json:
+ *            multipart/form-data:
  *             schema:
  *               $ref: '#/components/schemas/Product'
  *       409:
@@ -301,7 +305,12 @@ router.get('/:id', productController.getById);
  *               error:
  *                 message: "Conflict error message"
  */
-router.post('/', validateDTO(CreateProductDTO), productController.create);
+router.post(
+  '/',
+  upload.array('images'),
+  validateDTO(CreateProductDTO),
+  productController.create,
+);
 
 /**
  * @swagger
@@ -334,7 +343,12 @@ router.post('/', validateDTO(CreateProductDTO), productController.create);
  *       404:
  *         description: Product not found
  */
-router.patch('/:id', validateDTO(UpdateProductDTO), productController.update);
+router.patch(
+  '/:id',
+  upload.array('addImages'),
+  validateDTO(UpdateProductDTO),
+  productController.update,
+);
 
 /**
  * @swagger
