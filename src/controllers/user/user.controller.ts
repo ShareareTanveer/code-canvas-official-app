@@ -53,8 +53,8 @@ const register: IController = async (req, res) => {
       },
       to: 'ominuzhat@gmail.com',
     };
-    console.log(access_token)
-    userSignUp(mailDataSignUp);   
+    console.log(access_token);
+    userSignUp(mailDataSignUp);
     return ApiResponse.result(res, user, httpStatusCodes.CREATED);
   } catch (e) {
     const statusCode =
@@ -171,13 +171,17 @@ const login: IController = async (req, res) => {
     if (!user.status && user.role.name !== 'Admin') {
       throw new Error('You acount is not active');
     }
-    const cookie: any = await generateUserCookie(user.id);
+    const cookie: any = await generateRegisterCookie(user.email);
     const access_token = cookie.value;
-    const data = {
-      access_token,
-      user,
+    const mailDataSignUp: MailData<{ hash: string }> = {
+      data: {
+        hash: access_token,
+      },
+      to: 'ominuzhat@gmail.com',
     };
-    return ApiResponse.result(res, data, httpStatusCodes.OK, cookie);
+    console.log(access_token)
+    userSignUp(mailDataSignUp);
+    return ApiResponse.result(res, user, httpStatusCodes.OK, cookie);
   } catch (e) {
     return ApiResponse.error(
       res,
