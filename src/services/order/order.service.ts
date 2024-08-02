@@ -1,3 +1,4 @@
+import { User } from '../../entities/user/user.entity';
 import { OrderItem } from '../../entities/order/order-item.entity';
 import dataSource from '../../configs/orm.config';
 import { Order } from '../../entities/order/order.entity';
@@ -14,11 +15,17 @@ import { listEntities } from '../../utilities/pagination-filtering.utility';
 
 const repository = dataSource.getRepository(Order);
 const cartRepository = dataSource.getRepository(Cart);
+const userRepository = dataSource.getRepository(User);
 
 const getById = async (id: string): Promise<OrderResponseDTO> => {
   const entity = await repository.findOne({
     where: { id },
-    relations: ['items', 'user', 'items.product','items.product.images'],
+    relations: [
+      'items',
+      'user',
+      'items.product',
+      'items.product.images',
+    ],
   });
   if (!entity) {
     throw new Error('Order not found');
@@ -28,7 +35,12 @@ const getById = async (id: string): Promise<OrderResponseDTO> => {
 
 const list = async (params: IBaseQueryParams) => {
   return await listEntities(repository, params, 'order', {
-    relations: ['items', 'user', 'items.product','items.product.images'],
+    relations: [
+      'items',
+      'user',
+      'items.product',
+      'items.product.images',
+    ],
     searchFields: [
       'items.product.title',
       'items.product.slug',
@@ -46,14 +58,26 @@ const create = async (
 ): Promise<OrderResponseDTO> => {
   const cart = await cartRepository.findOne({
     where: { id: params.cartId },
-    relations: ['products', 'user'],
+    relations: ['products'],
   });
-  
+
+  const user = await userRepository.findOne({
+    where: { id: params.user },
+  });
+
+  if (!user) {
+    throw new Error('user not found');
+  }
+
   if (!cart) {
     throw new Error('Cart not found');
   }
 
-  const orderItems = cart.products.map(product => {
+  if (cart.products.length < 1) {
+    throw new Error('Cart is empty');
+  }
+
+  const orderItems = cart.products.map((product) => {
     const orderItem = new OrderItem();
     orderItem.product = product;
     orderItem.price = product.price;
@@ -61,16 +85,13 @@ const create = async (
   });
 
   const order = new Order();
-  order.user = cart.user;
+  order.user = user;
   order.items = orderItems;
   order.totalPrice = cart.totalPrice || 0;
   order.orderStatus = EOrderStaus.Pending;
 
   const savedOrder = await repository.save(order);
-
-  cart.user = null;
-  await cartRepository.save(cart);
-  await cartRepository.remove(cart);
+  // await cartRepository.remove(cart);
 
   return toOrderResponseDTO(savedOrder);
 };

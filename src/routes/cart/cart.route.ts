@@ -208,6 +208,9 @@ router.delete('/:id', cartController.remove);
  *               product:
  *                 type: integer
  *                 example: 1
+ *               cartId:
+ *                 type: string
+ *                 example: asfiluaeg7863bjkbk
  *     responses:
  *       201:
  *         description: Product added to cart

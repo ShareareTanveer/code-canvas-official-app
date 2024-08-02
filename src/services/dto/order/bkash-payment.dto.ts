@@ -1,5 +1,5 @@
 export class BkashPaymentExecuteResponseDTO {
-    cartId: string;
+    orderId: string;
     merchantInvoiceNumber: string;
     paymentExecuteTime: string;
     paymentBkashNumber: string;

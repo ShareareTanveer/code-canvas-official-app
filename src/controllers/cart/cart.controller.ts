@@ -2,7 +2,6 @@ import httpStatusCodes from 'http-status-codes';
 import IController from '../../interfaces/IController';
 import ApiResponse from '../../utilities/api-response.utility';
 import service from '../../services/cart/cart.service';
-import { User } from '../../entities/user/user.entity';
 import { AddToCartDTO } from '../../services/dto/cart/cart.dto';
 import ApiUtility from '../../utilities/api.utility';
 import { IBaseQueryParams } from 'common.interface';
@@ -54,19 +53,14 @@ const create: IController = async (req, res) => {
   try {
     const params: AddToCartDTO = {
       product: req.body.product,
+      cartId: req.body.cartId,
     };
-    const user: User = req.user;
     const { data, added } = await service.toggleCartProduct(
       params,
-      user,
     );
     const status = added
       ? httpStatusCodes.CREATED
       : httpStatusCodes.ACCEPTED;
-    const message = added
-      ? 'Product added to cart'
-      : 'Product removed from cart';
-    console.log(message, status);
     return ApiResponse.result(res, data, status);
   } catch (e) {
     return ApiResponse.error(
@@ -80,8 +74,7 @@ const create: IController = async (req, res) => {
 const remove: IController = async (req, res) => {
   try {
     const id: string = req.params.id;
-    const user: User = req.user;
-    await service.remove(id, user);
+    await service.remove(id);
     return ApiResponse.result(
       res,
       { message: 'Cart deleted successfully' },

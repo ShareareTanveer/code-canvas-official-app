@@ -19,9 +19,6 @@ export class Cart {
   @JoinTable()
   products: Product[];
 
-  @OneToOne(() => User, (user) => user.cart)
-  user: User;
-
   @Column('decimal', { precision: 10, scale: 2, nullable: true, transformer: new DecimalColumnTransformer() })
   totalPrice: number;
 }

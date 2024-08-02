@@ -48,10 +48,6 @@ export class User extends BaseEntity {
 
   @OneToMany(() => Review, (review) => review.user)
   reviews: Review[];
-
-  @OneToOne(() => Cart, (cart) => cart.user, { cascade: true })
-  @JoinColumn()
-  cart: Cart;
   
   @OneToMany(() => Order, (order) => order.user, { cascade: true })
   @JoinColumn()

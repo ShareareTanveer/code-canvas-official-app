@@ -13,7 +13,7 @@ const productRepository = dataSource.getRepository(Product);
 const getById = async (id: string): Promise<CartResponseDTO> => {
   const entity = await repository.findOne({
     where: { id },
-    relations: ['products', 'user'],
+    relations: ['products'],
   });
   if (!entity) {
     throw new Error('Cart not found');
@@ -23,8 +23,8 @@ const getById = async (id: string): Promise<CartResponseDTO> => {
 
 const list = async (params: IBaseQueryParams) => {
   return await listEntities(repository, params, 'cart', {
-    relations: ['products', 'user'],
-    searchFields: ['products.title', 'user.email'],
+    relations: ['products'],
+    searchFields: ['products.title'],
     validSortBy: ['cart.id'],
     validSortOrder: ['ASC', 'DESC'],
     toResponseDTO: toCartResponseDTO,
@@ -33,7 +33,6 @@ const list = async (params: IBaseQueryParams) => {
 
 const toggleCartProduct = async (
   params: AddToCartDTO,
-  user: User,
 ): Promise<{ data: CartResponseDTO; added: boolean }> => {
   const product = await productRepository.findOne({
     where: { id: params.product },
@@ -43,13 +42,17 @@ const toggleCartProduct = async (
     throw new Error('Product not found');
   }
 
-  let cart = await repository.findOne({
-    where: { user: { id: user.id } },
-    relations: ['products', 'user'],
-  });
+  let cart;
+
+  if (params.cartId) {
+    cart = await repository.findOne({
+      where: { id: params.cartId },
+      relations: ['products'],
+    });
+  }
 
   if (!cart) {
-    cart = repository.create({ user, products: [], totalPrice: 0 });
+    cart = repository.create({ products: [], totalPrice: 0 });
   }
 
   const productExists = cart.products.some((p) => p.id === product.id);
@@ -69,17 +72,13 @@ const toggleCartProduct = async (
   return { data: toCartResponseDTO(updatedCart), added };
 };
 
-const remove = async (id: string, user: User): Promise<void> => {
+const remove = async (id: string): Promise<void> => {
   const cart = await repository.findOne({
     where: { id },
-    relations: ['user'],
   });
   if (!cart) {
     throw new Error('Cart not found');
   }
-
-  cart.user = null;
-  await repository.save(cart);
 
   await repository.remove(cart);
 };

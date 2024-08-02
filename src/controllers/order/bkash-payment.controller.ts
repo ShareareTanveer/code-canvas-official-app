@@ -6,35 +6,45 @@ import ApiResponse from '../../utilities/api-response.utility';
 import { v4 as uuidv4 } from 'uuid';
 import { CreateOrderDTO } from '../../services/dto/order/order.dto';
 import bkashPaymentService from '../../services/order/bkash-payment.service';
-import service from '../../services/cart/cart.service';
 import { BkashPaymentExecuteResponseDTO } from '../../services/dto/order/bkash-payment.dto';
+import orderService from '../../services/order/order.service';
 
-const createPayment: IController = async (
-  req: Request,
-  res: Response,
-) => {
-  const params: CreateOrderDTO = {
-    cartId: req.body.cartId,
-  };
+const createPayment: IController = async (req, res) => {
   try {
-    const cart  = await service.getById(params.cartId);
+    let user;
+    if (req.user.role.name !== 'User') {
+      if (!req.body.user) {
+        throw new Error('user is required');
+      }
+      user = req.body.user;
+    }
+    user = req.user.id;
+    const params: CreateOrderDTO = {
+      cartId: req.body.cartId,
+      user,
+    };
+    const order = await orderService.create(params);
     const token = await getToken();
+    console.log('token', token)
+    console.log('order', order)
     const { data }: any = await axios.post(
       process.env.bkash_create_payment_url,
       {
         mode: '0011',
-        payerReference: cart.id,
+        payerReference: order.id,
         callbackURL: `${process.env.BASE_SERVER_URL}/payment/bkash/callback`,
-        amount: cart.totalPrice,
+        amount: order.totalPrice,
         currency: 'BDT',
         intent: 'sale',
         merchantInvoiceNumber: `Inv${uuidv4().slice(0, 5)}`,
       },
       { headers: getHeaders(token) },
     );
+    console.log('data', data);
     const resData = { bkashURL: data.bkashURL };
     return ApiResponse.result(res, resData, httpStatusCodes.OK);
   } catch (e) {
+    console.log("e",e)
     return ApiResponse.error(res, httpStatusCodes.NOT_FOUND, e.message);
   }
 };
@@ -57,16 +67,18 @@ const handleCallback = async (req: Request, res: Response) => {
       );
       if (data && data.statusCode === '0000') {
         const params: BkashPaymentExecuteResponseDTO = {
-          cartId: data.payerReference,
+          orderId: data.payerReference,
           paymentID: data.paymentID,
           paymentExecuteTime: data.paymentExecuteTime,
           merchantInvoiceNumber: data.merchantInvoiceNumber,
           paymentBkashNumber: data.customerMsisdn,
           trxID: data.trxID,
           paymentPortal: 'bkash',
-        }
+        };
         await bkashPaymentService.syncData(params);
-        return res.redirect(`${redirectBase}success?paymentID=${data.paymentID}&amount=${data.amount}&trxID=${data.trxID}`);
+        return res.redirect(
+          `${redirectBase}success?paymentID=${data.paymentID}&amount=${data.amount}&trxID=${data.trxID}`,
+        );
       } else {
         console.log('error');
         return res.redirect(

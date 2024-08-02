@@ -6,7 +6,6 @@ export const toCartResponseDTO = (
 ): CartResponseDTO => {
   return {
     id: entity.id,
-    user: entity.user,
     products: entity.products,
     totalPrice: entity.totalPrice,
   };

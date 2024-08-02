@@ -10,50 +10,52 @@ import userService from '../services/user/user.service';
 import IRequest from '../interfaces/IRequest';
 import dataSource from '../configs/orm.config';
 import constants from '../constants';
+
+const shouldIgnoreAuth = (path: string): boolean => {
+  return (
+    constants.APPLICATION.authorizationIgnorePath.includes(path) ||
+    constants.APPLICATION.authorizationIgnoreRegex.some((regex) =>
+      regex.test(path),
+    )
+  );
+};
+
 export default async (
   req: IRequest,
   res: express.Response,
   next: NextFunction,
 ) => {
-  const parsedUrl = new URL(
-    req.originalUrl,
-    `https://${req.headers.host}`,
-  ).pathname;
+  const path = req.path;
 
-  const shouldIgnoreAuth =
-    constants.APPLICATION.authorizationIgnorePath.some(
-      (path) => parsedUrl === path,
-    );
-
-  if (!shouldIgnoreAuth) {
-    const authorizationHeader = ApiUtility.getCookieFromRequest(
-      req,
-      constants.COOKIE.COOKIE_USER,
-    );
-
-    if (authorizationHeader) {
-      const decoded = await Encryption.verifyCookie(
-        authorizationHeader,
-      );
-
-      if (decoded) {
-        const user = await userService.getById({
-          id: decoded.data[constants.COOKIE.KEY_USER_ID],
-        });
-        if (user) {
-          // @ts-ignore
-          req.user = user;
-        } else {
-          return ApiResponse.error(res, httpStatusCodes.UNAUTHORIZED);
-        }
-      } else {
-        return ApiResponse.error(res, httpStatusCodes.UNAUTHORIZED);
-      }
-    } else {
-      return ApiResponse.error(res, httpStatusCodes.FORBIDDEN);
-    }
+  if (shouldIgnoreAuth(path)) {
+    return next();
   }
 
+  const authorizationHeader = ApiUtility.getCookieFromRequest(
+    req,
+    constants.COOKIE.COOKIE_USER,
+  );
+
+  if (!authorizationHeader) {
+    return ApiResponse.error(res, httpStatusCodes.FORBIDDEN);
+  }
+
+  const decoded = await Encryption.verifyCookie(authorizationHeader);
+
+  if (!decoded) {
+    return ApiResponse.error(res, httpStatusCodes.UNAUTHORIZED);
+  }
+
+  const user = await userService.getById({
+    id: decoded.data[constants.COOKIE.KEY_USER_ID],
+  });
+
+  if (!user) {
+    return ApiResponse.error(res, httpStatusCodes.UNAUTHORIZED);
+  }
+
+  // @ts-ignore
+  req.user = user;
   next();
 };
 

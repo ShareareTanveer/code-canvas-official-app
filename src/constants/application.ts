@@ -10,7 +10,8 @@ export default {
   },
   env: {
     authSecret: process.env.TOKEN_SECRET_KEY || 'test',
-    AUTH_RESET_PASSWORD_SECRET: process.env.AUTH_RESET_PASSWORD_SECRET || 'test',
+    AUTH_RESET_PASSWORD_SECRET:
+      process.env.AUTH_RESET_PASSWORD_SECRET || 'test',
     AUTH_REGISTER_SECRET: process.env.AUTH_REGISTER_SECRET || 'test',
   },
   authorizationIgnorePath: [
@@ -31,5 +32,10 @@ export default {
     '/tag',
     '/product',
     '/our-service',
+  ],
+  authorizationIgnoreRegex: [
+    /^\/product\/\d+$/,
+    /^\/our-service\/\d+$/,
+    /^\/cart\/\d+$/,
   ],
 };
