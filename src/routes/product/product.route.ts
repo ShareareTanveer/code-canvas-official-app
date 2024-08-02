@@ -74,6 +74,9 @@ const router = express.Router();
  *         title:
  *           type: string
  *           example: "Product Title"
+ *         subtitle:
+ *           type: string
+ *           example: "Updated Product subtitle"
  *         slug:
  *           type: string
  *           example: "product-title"
@@ -108,6 +111,9 @@ const router = express.Router();
  *         title:
  *           type: string
  *           example: "Updated Product Title"
+ *         subtitle:
+ *           type: string
+ *           example: "Updated Product subtitle"
  *         slug:
  *           type: string
  *           example: "updated-product-title"
