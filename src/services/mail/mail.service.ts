@@ -79,7 +79,7 @@ async function forgotPassword(mailData: MailData<{ hash: string }>): Promise<voi
     to: mailData.to,
     subject: authMailMessage.forgotPassword.title,
     text: `${url.toString()} ${authMailMessage.forgotPassword.title}`,
-    templatePath: path.join(__dirname, '../mail/mail-templates/reset-password.hbs'),
+    templatePath: path.join(__dirname, '../mailer/mailTemplates/reset-password.hbs'),
     context: {
       title: authMailMessage.forgotPassword.title,
       url: url.toString(),
