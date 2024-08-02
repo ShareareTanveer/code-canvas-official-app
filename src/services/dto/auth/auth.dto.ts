@@ -1,25 +1,14 @@
 import {
   IsEmail,
   IsNotEmpty,
-  IsNumber,
   IsString,
   IsStrongPassword,
 } from 'class-validator';
 
-export class sendEmailOtpDTO {
+export class sendEmailDTO {
   @IsEmail()
   @IsNotEmpty()
   email: string;
-}
-
-export class verifyEmailOtpDTO {
-  @IsEmail()
-  @IsNotEmpty()
-  email: string;
-
-  @IsNotEmpty()
-  @IsNumber()
-  otp: number;
 }
 
 export class verifyEmailDTO {

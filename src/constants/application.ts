@@ -6,7 +6,7 @@ export default {
   },
   timers: {
     userCookieExpiry: '1d',
-    resetPasswordCookieExpiry: '5m',
+    resetPasswordCookieExpiry: '15m',
   },
   env: {
     authSecret: process.env.TOKEN_SECRET_KEY || 'test',

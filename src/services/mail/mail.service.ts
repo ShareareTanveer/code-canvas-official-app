@@ -48,23 +48,27 @@ async function twoFactorAuth(mailData: MailData<{ hash: string }>): Promise<void
 }
 
 async function userSignUp(mailData: MailData<{ hash: string }>): Promise<void> {
-  const url = new URL(`${process.env.BASE_APP_URL}/confirm-email`);
-  url.searchParams.set('hash', mailData.data.hash);
-
-  await sendMail({
-    to: mailData.to,
-    subject: authMailMessage.userSignUp.title,
-    text: `${url.toString()} ${authMailMessage.userSignUp.title}`,
-    templatePath: path.join(__dirname, '../mailer/mailTemplates/activation.hbs'),
-    context: {
-      title: authMailMessage.userSignUp.title,
-      url: url.toString(),
-      actionTitle: authMailMessage.userSignUp.title,
-      text1: authMailMessage.userSignUp.text1,
-      text2: authMailMessage.userSignUp.text2,
-      text3: authMailMessage.userSignUp.text3,
-    },
-  });
+  try {
+    const url = new URL(`${process.env.BASE_APP_URL}/confirm-email`);
+    url.searchParams.set('hash', mailData.data.hash);
+  
+    await sendMail({
+      to: mailData.to,
+      subject: authMailMessage.userSignUp.title,
+      text: `${url.toString()} ${authMailMessage.userSignUp.title}`,
+      templatePath: path.join(__dirname, '../mailer/mailTemplates/activation.hbs'),
+      context: {
+        title: authMailMessage.userSignUp.title,
+        url: url.toString(),
+        actionTitle: authMailMessage.userSignUp.title,
+        text1: authMailMessage.userSignUp.text1,
+        text2: authMailMessage.userSignUp.text2,
+        text3: authMailMessage.userSignUp.text3,
+      },
+    });
+  } catch (error) {
+    return;
+  }
 }
 
 async function usersendOTP(mailData: MailData<{ otp: number }>): Promise<void> {

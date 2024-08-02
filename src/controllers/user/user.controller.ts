@@ -5,7 +5,6 @@ import { StringError } from '../../errors/string.error';
 import ApiResponse from '../../utilities/api-response.utility';
 import ApiUtility from '../../utilities/api.utility';
 import Encryption from '../../utilities/encryption.utility';
-import { verifyOTP } from '../../utilities/otp.utility';
 import IController from '../../interfaces/IController';
 import service from '../../services/user/user.service';
 import {
@@ -16,9 +15,8 @@ import {
 import {
   loginDTO,
   resetPasswordDTO,
-  sendEmailOtpDTO,
+  sendEmailDTO,
   verifyEmailDTO,
-  verifyEmailOtpDTO,
 } from '../../services/dto/auth/auth.dto';
 import {
   CreateUserDTO,
@@ -129,6 +127,36 @@ const verifyEmail: IController = async (req, res) => {
   }
 };
 
+const login: IController = async (req, res) => {
+  try {
+    const params: loginDTO = {
+      email: req.body.email,
+      password: req.body.password,
+    };
+    const user = await service.login(params);
+    if (!user.status && user.role.name !== 'Admin') {
+      throw new Error('You acount is not active'); 
+    }
+    const cookie: any = await generateRegisterCookie(user.email);
+    const access_token = cookie.value;
+    const mailDataSignUp: MailData<{ hash: string }> = {
+      data: {
+        hash: access_token,
+      },
+      to: 'ominuzhat@gmail.com',
+    };
+    console.log(access_token);
+    userSignUp(mailDataSignUp);
+    return ApiResponse.result(res, user, httpStatusCodes.OK);
+  } catch (e) {
+    return ApiResponse.error(
+      res,
+      httpStatusCodes.BAD_REQUEST,
+      e.message,
+    );
+  }
+};
+
 const create: IController = async (req, res) => {
   try {
     const imageLocalFile = req.file?.path;
@@ -161,58 +189,9 @@ const create: IController = async (req, res) => {
   }
 };
 
-const login: IController = async (req, res) => {
-  try {
-    const params: loginDTO = {
-      email: req.body.email,
-      password: req.body.password,
-    };
-    const user = await service.login(params);
-    if (!user.status && user.role.name !== 'Admin') {
-      throw new Error('You acount is not active');
-    }
-    const cookie: any = await generateRegisterCookie(user.email);
-    const access_token = cookie.value;
-    const mailDataSignUp: MailData<{ hash: string }> = {
-      data: {
-        hash: access_token,
-      },
-      to: 'ominuzhat@gmail.com',
-    };
-    console.log(access_token)
-    userSignUp(mailDataSignUp);
-    return ApiResponse.result(res, user, httpStatusCodes.OK, cookie);
-  } catch (e) {
-    return ApiResponse.error(
-      res,
-      httpStatusCodes.BAD_REQUEST,
-      e.message,
-    );
-  }
-};
-
-export const sendEmailOtp: IController = async (req, res) => {
-  try {
-    const params: sendEmailOtpDTO = {
-      email: req.body.email,
-    };
-
-    await service.sendEmailOtp(params);
-
-    return ApiResponse.result(
-      res,
-      { message: 'OTP sent successfully to your email' },
-      httpStatusCodes.OK,
-    );
-  } catch (e) {
-    console.error(e);
-    return ApiResponse.error(res, 500, e.message);
-  }
-};
-
 export const sendResetPasswordEmail: IController = async (req, res) => {
   try {
-    const params: sendEmailOtpDTO = {
+    const params: sendEmailDTO = {
       email: req.body.email,
     };
     const user = await service.sendResetPasswordEmail(params);
@@ -224,6 +203,7 @@ export const sendResetPasswordEmail: IController = async (req, res) => {
       },
       to: 'ominuzhat@gmail.com',
     };
+    console.log(access_token)
     userSignUp(mailDataSignUp);
     return ApiResponse.result(
       res,
@@ -232,27 +212,6 @@ export const sendResetPasswordEmail: IController = async (req, res) => {
     );
   } catch (e) {
     console.error(e);
-    return ApiResponse.error(res, 500, e.message);
-  }
-};
-
-export const verifyEmailOtp: IController = async (req, res) => {
-  try {
-    const params: verifyEmailOtpDTO = {
-      email: req.body.email,
-      otp: req.body.otp,
-    };
-    const isValid = await service.verifyEmailOtp(params);
-    if (!isValid) {
-      return ApiResponse.error(res, 400, 'Invalid or expired OTP');
-    }
-    const cookie = await generateResetPasswordCookie(params.email);
-    const data = {
-      message: 'OTP verified successfully',
-      accessToken: cookie.value,
-    };
-    return ApiResponse.result(res, data, httpStatusCodes.OK);
-  } catch (e) {
     return ApiResponse.error(res, 500, e.message);
   }
 };
@@ -447,6 +406,7 @@ const generateUserCookie = async (userId: number) => {
     ),
   };
 };
+
 const generateResetPasswordCookie = async (email: string) => {
   return {
     key: constants.COOKIE.COOKIE_RESET_PASSWORD,
@@ -478,9 +438,8 @@ export default {
   list,
   remove,
   logout,
-  sendEmailOtp,
-  verifyEmailOtp,
   verifyEmail,
   resetPassword,
   generateResetPasswordCookie,
+  sendResetPasswordEmail
 };

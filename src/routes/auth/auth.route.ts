@@ -1,6 +1,6 @@
 import express from 'express';
 import userController from '../../controllers/user/user.controller';
-import { loginDTO, resetPasswordDTO, sendEmailOtpDTO, verifyEmailOtpDTO } from '../../services/dto/auth/auth.dto';
+import { loginDTO, resetPasswordDTO, sendEmailDTO } from '../../services/dto/auth/auth.dto';
 import { validateDTO } from '../../middlewares/dto-validator.middleware';
 import { RegisterUserDTO } from '../../services/dto/user/user.dto';
 import { upload } from '../../middlewares/multer.middleware';
@@ -159,9 +159,10 @@ router.post(
  */
 router.post('/login', validateDTO(loginDTO), userController.login);
 
+
 /**
  * @swagger
- * /auth/send-email-otp:
+ * /auth/send-reset-password-email:
  *   post:
  *     tags:
  *       - Auth
@@ -196,62 +197,9 @@ router.post('/login', validateDTO(loginDTO), userController.login);
  *                 message: "Internal Server Error"
  */
 router.post(
-  '/send-email-otp',
-  validateDTO(sendEmailOtpDTO),
-  userController.sendEmailOtp,
-);
-
-/**
- * @swagger
- * /auth/verify-email-otp:
- *   post:
- *     tags:
- *       - Auth
- *     summary: Verify the OTP sent to the user's email
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             properties:
- *               email:
- *                 type: string
- *                 format: email
- *                 example: "user@example.com"
- *               otp:
- *                 type: integer
- *                 example: 123456
- *     responses:
- *       200:
- *         description: Verified successfully
- *         content:
- *           application/json:
- *             example:
- *               success: true
- *               data:
- *                 message: "OTP verified successfully"
- *       400:
- *         description: Invalid OTP or email
- *         content:
- *           application/json:
- *             example:
- *               success: false
- *               error:
- *                 message: "Invalid OTP or email"
- *       500:
- *         description: Internal server error
- *         content:
- *           application/json:
- *             example:
- *               success: false
- *               error:
- *                 message: "Internal Server Error"
- */
-router.post(
-  '/verify-email-otp',
-  validateDTO(verifyEmailOtpDTO),
-  userController.verifyEmailOtp,
+  '/send-reset-password-email',
+  validateDTO(sendEmailDTO),
+  userController.sendResetPasswordEmail,
 );
 
 /**

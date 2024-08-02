@@ -5,12 +5,9 @@ import { User } from '../../entities/user/user.entity';
 import { UserDetail } from '../../entities/user/userDetails.entity';
 import ApiUtility from '../../utilities/api.utility';
 import Encryption from '../../utilities/encryption.utility';
-import { generateOTP, verifyOTP } from '../../utilities/otp.utility';
 import { listEntities } from '../../utilities/pagination-filtering.utility';
 import {
   loginDTO,
-  verifyEmailDTO,
-  verifyEmailOtpDTO,
 } from '../dto/auth/auth.dto';
 import { toUserResponseDTO } from './mapper/user.mapper';
 import {
@@ -139,31 +136,6 @@ const login = async (params: loginDTO) => {
   throw new StringError('Your password is not correct');
 };
 
-export const sendEmailOtp = async (params: { email: string }) => {
-  const userRepository = dataSource.getRepository(User);
-  const user = await userRepository.findOne({
-    where: { email: params.email },
-  });
-
-  if (!user) {
-    throw new StringError('Your email has not been registered');
-  }
-
-  const otp = await generateOTP(params.email);
-  console.log(otp);
-  try {
-    // await transporter.sendMail({
-    //   from: process.env.DEFAULT_MAIL,
-    //   to: [user.email],
-    //   subject: 'OTP for Password Reset',
-    //   text: `Your OTP for password reset: ${otp}`,
-    // });
-    return otp;
-  } catch (error) {
-    throw new Error('Failed to send OTP. Please try again later.');
-  }
-};
-
 export const verifyEmail = async (params: { email: string }) => {
   const userRepository = dataSource.getRepository(User);
   const user = await userRepository.findOne({
@@ -188,10 +160,6 @@ export const sendResetPasswordEmail = async (params: { email: string }) => {
     throw new StringError('Your email has not been registered');
   }
   return toUserResponseDTO(user);
-};
-
-export const verifyEmailOtp = async (params: verifyEmailOtpDTO) => {
-  return await verifyOTP(params.email, params.otp);
 };
 
 export const resetPassword = async (
@@ -365,9 +333,7 @@ export default {
   updateMe,
   list,
   remove,
-  sendEmailOtp,
   sendResetPasswordEmail,
   verifyEmail,
-  verifyEmailOtp,
   resetPassword,
 };
