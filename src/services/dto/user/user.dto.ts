@@ -40,9 +40,9 @@ export class RegisterUserDTO extends BaseDTO {
   @IsString()
   address?: string;
 
-  @IsNotEmpty()
+  @IsOptional()
   @IsEnum(EGender)
-  gender: EGender;
+  gender?: EGender;
 
   @IsOptional()
   @IsString()
@@ -77,12 +77,12 @@ export class CreateUserDTO extends BaseDTO {
   @IsString()
   address?: string;
 
-  @IsNotEmpty()
+  @IsOptional()
   @IsEnum(EGender)
   gender: EGender;
 
   @IsNotEmpty()
-  // @IsNumber()
+  @IsNumber()
   role: number;
 
   @IsOptional()

@@ -53,7 +53,8 @@ const register: IController = async (req, res) => {
       },
       to: 'ominuzhat@gmail.com',
     };
-    userSignUp(mailDataSignUp);
+    console.log(access_token)
+    userSignUp(mailDataSignUp);   
     return ApiResponse.result(res, user, httpStatusCodes.CREATED);
   } catch (e) {
     const statusCode =

@@ -81,6 +81,34 @@ router.post(
   userController.register,
 );
 
+/**
+ * @swagger
+ * /auth/verify-email:
+ *   post:
+ *     tags:
+ *       - Auth
+ *     summary: Verify here
+ *     responses:
+ *       200:
+ *         description: Logged in successfully
+ *         content:
+ *           application/json:
+ *             example:
+ *               success: true
+ *               data:
+ *                 id: 1
+ *                 email: "user@example.com"
+ *                 firstName: "John"
+ *                 lastName: "Doe"
+ *       400:
+ *         description: Bad request
+ *         content:
+ *           application/json:
+ *             example:
+ *               success: false
+ *               error:
+ *                 message: "Invalid email or password"
+ */
 router.post(
   '/verify-email',
   userController.verifyEmail,
