@@ -49,7 +49,7 @@ async function twoFactorAuth(mailData: MailData<{ hash: string }>): Promise<void
 
 async function userSignUp(mailData: MailData<{ hash: string }>): Promise<void> {
   try {
-    const url = new URL(`${process.env.BASE_APP_URL}/confirm-email`);
+    const url = new URL(`${process.env.BASE_APP_URL}/authentication`);
     url.searchParams.set('hash', mailData.data.hash);
   
     await sendMail({
