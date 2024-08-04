@@ -12,5 +12,6 @@ export const toUserResponseDTO = (
     details: entity.details,
     role: entity.role,
     status: entity.status,
+    customer: entity.customer,
   };
 };

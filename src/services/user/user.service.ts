@@ -180,7 +180,7 @@ const getById = async (params: IDetailById) => {
   try {
     const data = await dataSource
       .getRepository(User)
-      .findOne({ where: { id: params.id }, relations: ['role'] });
+      .findOne({ where: { id: params.id }, relations: ['role', 'customer'] });
     return ApiUtility.sanitizeUser(data);
   } catch (e) {
     return null;

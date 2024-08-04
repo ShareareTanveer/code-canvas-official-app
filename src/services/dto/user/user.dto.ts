@@ -155,6 +155,7 @@ export class SimpleUserResponseDTO {
   firstName?: string;
   lastName?: string;
   status?: boolean;
+  customer?: any;
   email?: string;
   details?: UserDetailResponseDTO;
   role?: SimpleRoleResponseDTO;
