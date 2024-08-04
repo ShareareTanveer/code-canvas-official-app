@@ -11,6 +11,7 @@ import { IBaseQueryParams } from 'common.interface';
 import { CustomerCompany } from '../../entities/customer/customer-company-details.entity';
 import { CustomerContactPerson } from '../../entities/customer/customer-contact-person.entity';
 import { User } from '../../entities/user/user.entity';
+import { uploadOnCloud } from '../../utilities/cloudiary.utility';
 
 const customerRepository = dataSource.getRepository(Customer);
 const userRepository = dataSource.getRepository(User);
@@ -22,7 +23,7 @@ const contactPersonRepository = dataSource.getRepository(
 const getById = async (id: number): Promise<CustomerResponseDTO> => {
   const entity = await customerRepository.findOne({
     where: { id },
-    relations: ['company', 'contactPersons', 'user'],
+    relations: ['company', 'contactPerson', 'user'],
   });
   if (!entity) {
     throw new Error('Customer not found');
@@ -32,38 +33,69 @@ const getById = async (id: number): Promise<CustomerResponseDTO> => {
 
 const list = async (params: IBaseQueryParams) => {
   return await listEntities(customerRepository, params, 'customer', {
-    relations: ['company', 'contactPersons', 'user'],
+    relations: ['company', 'contactPerson', 'user'],
     toResponseDTO: toCustomerResponseDTO,
   });
 };
-
-const create = async (
-  params: CreateCustomerDTO,
-): Promise<CustomerResponseDTO> => {
+const create = async (params: CreateCustomerDTO) => {
   const user = await userRepository.findOne({
     where: { id: params.user },
   });
   if (!user) {
-    throw new Error('user not found');
+    throw new Error('User not found');
   }
-  const customerEntity = customerRepository.create({
+
+  const uploadFile = async (filePath: string | undefined) => {
+    if (filePath) {
+      const uploadImage = await uploadOnCloud(filePath);
+      if (!uploadImage) {
+        throw new Error('File could not be uploaded');
+      }
+      return {
+        url: uploadImage.secure_url,
+        publicId: uploadImage.public_id,
+      };
+    }
+    return null;
+  };
+
+  const passportAttachment = await uploadFile(
+    params.passportAttachment,
+  );
+  const otherAttachment = await uploadFile(params.otherAttachment);
+  const tradeLicenseAttachment = await uploadFile(
+    params.company.tradeLicenseAttachment,
+  );
+  const tinAttachment = await uploadFile(params.company.tinAttachment);
+  const logo = await uploadFile(params.company.logo);
+
+  const companyEntity = {
+    ...params.company,
+    tradeLicenseAttachment: tradeLicenseAttachment?.url,
+    tradeLicenseAttachmentPublicId: tradeLicenseAttachment?.publicId,
+    tinAttachment: tinAttachment?.url,
+    tinAttachmentPublicId: tinAttachment?.publicId,
+    logo: logo?.url,
+    logoPublicId: logo?.publicId,
+  };
+
+  const contactPersonEntity = {
+    ...params.contactPerson,
+  };
+
+  const customerEntity = {
     user: user,
     nidNumber: params.nidNumber,
-    passportAttachment: params.passportAttachment,
-    photo: params.photo,
-    otherAttachment: params.otherAttachment,
-  });
-  const companyEntity = companyRepository.create(params.company);
-  customerEntity.company = await companyRepository.save(companyEntity);
-  customerEntity.contactPersons = await Promise.all(
-    params.contactPersons.map((person) => {
-      const contactPersonEntity =
-        contactPersonRepository.create(person);
-      return contactPersonRepository.save(contactPersonEntity);
-    }),
-  );
-  const savedEntity = await customerRepository.save(customerEntity);
-  return toCustomerResponseDTO(savedEntity);
+    company: companyEntity,
+    contactPerson: contactPersonEntity,
+    passportAttachment: passportAttachment?.url,
+    passportAttachmentPublicId: passportAttachment?.publicId,
+    otherAttachment: otherAttachment?.url,
+    otherAttachmentPublicId: otherAttachment?.publicId,
+  };
+
+  const savedCustomer = await customerRepository.save(customerEntity);
+  return toCustomerResponseDTO(savedCustomer);
 };
 
 const update = async (
@@ -88,18 +120,6 @@ const update = async (
     }
   }
 
-  if (params.contactPersons) {
-    await contactPersonRepository.remove(entity.contactPersons);
-    entity.contactPersons = await Promise.all(
-      params.contactPersons.map((person) => {
-        const contactPersonEntity =
-          contactPersonRepository.create(person);
-        return contactPersonRepository.save(contactPersonEntity);
-      }),
-    );
-  }
-
-  Object.assign(entity, params);
   const updatedEntity = await customerRepository.save(entity);
   return toCustomerResponseDTO(updatedEntity);
 };
@@ -112,7 +132,7 @@ const remove = async (id: number): Promise<void> => {
   if (!entity) {
     throw new Error('Customer not found');
   }
-  await contactPersonRepository.remove(entity.contactPersons);
+  await contactPersonRepository.remove(entity.contactPerson);
   await companyRepository.remove(entity.company);
   await customerRepository.remove(entity);
   return;

@@ -42,6 +42,15 @@ export class CustomerCompany {
   logo: string;
 
   @Column({ length: 100, nullable: false })
+  tradeLicenseAttachmentPublicId: string;
+
+  @Column({ length: 100, nullable: false })
+  tinAttachmentPublicId: string;
+
+  @Column({ length: 100, nullable: false })
+  logoPublicId: string;
+
+  @Column({ length: 100, nullable: false })
   postCode: string;
 
   @Column({ length: 100, nullable: false })

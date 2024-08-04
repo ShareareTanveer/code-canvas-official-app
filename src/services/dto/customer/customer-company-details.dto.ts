@@ -1,6 +1,7 @@
 import {
   IsEmail,
   IsNotEmpty,
+  IsOptional,
   IsString,
 } from 'class-validator';
 
@@ -44,17 +45,14 @@ export class CreateCustomerCompanyDTO {
   @IsString()
   tradeLicenseNo: string;
 
-  @IsNotEmpty()
-  @IsString()
-  tradeLicenseAttachment: string;
+  @IsOptional()
+  tradeLicenseAttachment?: string;
 
-  @IsNotEmpty()
-  @IsString()
-  tinAttachment: string;
+  @IsOptional()
+  tinAttachment?: string;
 
-  @IsNotEmpty()
-  @IsString()
-  logo: string;
+  @IsOptional()
+  logo?: string;
 
   @IsNotEmpty()
   @IsString()

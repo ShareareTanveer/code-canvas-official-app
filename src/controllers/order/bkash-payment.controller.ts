@@ -25,15 +25,13 @@ const createPayment: IController = async (req, res) => {
     };
     const order = await orderService.create(params);
     const token = await getToken();
-    console.log('token', token)
-    console.log('order', order)
     const { data }: any = await axios.post(
       process.env.bkash_create_payment_url,
       {
         mode: '0011',
         payerReference: order.id,
         callbackURL: `${process.env.BASE_SERVER_URL}/payment/bkash/callback`,
-        amount: order.totalPrice,
+        amount: (order.totalPrice).toString(),
         currency: 'BDT',
         intent: 'sale',
         merchantInvoiceNumber: `Inv${uuidv4().slice(0, 5)}`,

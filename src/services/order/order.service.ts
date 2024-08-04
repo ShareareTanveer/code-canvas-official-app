@@ -1,4 +1,5 @@
 import { User } from '../../entities/user/user.entity';
+import { Customer } from '../../entities/customer/customer.entity';
 import { OrderItem } from '../../entities/order/order-item.entity';
 import dataSource from '../../configs/orm.config';
 import { Order } from '../../entities/order/order.entity';
@@ -16,6 +17,7 @@ import { listEntities } from '../../utilities/pagination-filtering.utility';
 const repository = dataSource.getRepository(Order);
 const cartRepository = dataSource.getRepository(Cart);
 const userRepository = dataSource.getRepository(User);
+const customerRepository = dataSource.getRepository(Customer);
 
 const getById = async (id: string): Promise<OrderResponseDTO> => {
   const entity = await repository.findOne({
@@ -64,6 +66,13 @@ const create = async (
   const user = await userRepository.findOne({
     where: { id: params.user },
   });
+  const customer = await customerRepository.findOne({
+    where: { user },
+  });
+
+  if (!customer) {
+    throw new Error('user must fill the customer form');
+  }
 
   if (!user) {
     throw new Error('user not found');

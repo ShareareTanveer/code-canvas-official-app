@@ -1,7 +1,11 @@
 import express from 'express';
 import { validateDTO } from '../../middlewares/dto-validator.middleware';
-import { CreateCustomerDTO, UpdateCustomerDTO } from '../../services/dto/customer/customer.dto';
+import {
+  CreateCustomerDTO,
+  UpdateCustomerDTO,
+} from '../../services/dto/customer/customer.dto';
 import customerController from '../../controllers/customer/customer.controller';
+import { upload } from '../../middlewares/multer.middleware';
 
 const router = express.Router();
 
@@ -19,27 +23,28 @@ const router = express.Router();
  *     Customer:
  *       type: object
  *       properties:
- *         user:
- *           type: integer
- *           example: 1
  *         nidNumber:
  *           type: string
  *           example: "123456789"
  *         passportAttachment:
  *           type: string
- *           example: "passport.pdf"
- *         photo:
- *           type: string
- *           example: "photo.jpg"
+ *           format: binary
  *         otherAttachment:
  *           type: string
- *           example: "document.pdf"
+ *           format: binary
+ *         tradeLicenseAttachment:
+ *           type: string
+ *           format: binary
+ *         tinAttachment:
+ *           type: string
+ *           format: binary
+ *         logo:
+ *           type: string
+ *           format: binary
  *         company:
  *           $ref: '#/components/schemas/CustomerCompanyResponseDTO'
- *         contactPersons:
- *           type: array
- *           items:
- *             $ref: '#/components/schemas/CustomerContactPersonResponseDTO'
+ *         contactPerson:
+ *           $ref: '#/components/schemas/CustomerContactPersonResponseDTO'
  *     CustomerContactPersonResponseDTO:
  *       type: object
  *       properties:
@@ -71,15 +76,6 @@ const router = express.Router();
  *         tradeLicenseNo:
  *           type: string
  *           example: "tradeLicenseNo"
- *         tradeLicenseAttachment:
- *           type: string
- *           example: "tradeLicenseAttachment"
- *         tinAttachment:
- *           type: string
- *           example: "tinAttachment"
- *         logo:
- *           type: string
- *           example: "logo"
  *         tinNo:
  *           type: string
  *           example: "tinNo"
@@ -271,7 +267,7 @@ router.delete('/:id', customerController.remove);
  *     requestBody:
  *       required: true
  *       content:
- *         application/json:
+ *         multipart/form-data:
  *           schema:
  *             $ref: '#/components/schemas/Customer'
  *     responses:
@@ -301,7 +297,18 @@ router.delete('/:id', customerController.remove);
  *                   type: string
  *                   example: "Conflict error message"
  */
-router.post('/', validateDTO(CreateCustomerDTO), customerController.create);
+router.post(
+  '/',
+  upload.fields([
+    { name: 'passportAttachment', maxCount: 1 },
+    { name: 'otherAttachment', maxCount: 1 },
+    { name: 'tradeLicenseAttachment', maxCount: 1 },
+    { name: 'tinAttachment', maxCount: 1 },
+    { name: 'logo', maxCount: 1 },
+  ]),
+  validateDTO(CreateCustomerDTO),
+  customerController.create,
+);
 
 /**
  * @swagger
@@ -364,6 +371,10 @@ router.post('/', validateDTO(CreateCustomerDTO), customerController.create);
  *                   type: string
  *                   example: "Customer not found"
  */
-router.patch('/:id', validateDTO(UpdateCustomerDTO), customerController.update);
+router.patch(
+  '/:id',
+  validateDTO(UpdateCustomerDTO),
+  customerController.update,
+);
 
 export default router;

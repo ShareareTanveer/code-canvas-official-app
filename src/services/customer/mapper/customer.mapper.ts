@@ -9,9 +9,8 @@ export const toCustomerResponseDTO = (
     user: entity.user,
     nidNumber: entity.nidNumber,
     company: entity.company,
-    contactPersons: entity.contactPersons,
+    contactPerson: entity.contactPerson,
     passportAttachment: entity.passportAttachment,
-    photo: entity.photo,
     otherAttachment: entity.otherAttachment,
   };
 };

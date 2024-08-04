@@ -54,14 +54,36 @@ const list: IController = async (req, res) => {
 
 const create: IController = async (req, res) => {
   try {
+    const files = req.files as
+      | { [fieldname: string]: Express.Multer.File[] }
+      | undefined;
+
     const params: CreateCustomerDTO = {
-      user: req.body.user,
-      company: req.body.company,
-      contactPersons: req.body.contactPersons,
+      user: req.user.id,
       nidNumber: req.body.nidNumber,
-      passportAttachment: req.body.passportAttachment,
-      photo: req.body.photo,
-      otherAttachment: req.body.otherAttachment,
+      company: {
+        name: req.body.company.name,
+        email: req.body.company.email,
+        city: req.body.company.city,
+        phone: req.body.company.phone,
+        address: req.body.company.address,
+        tradeLicenseNo: req.body.company.tradeLicenseNo,
+        tinNo: req.body.company.tinNo,
+        postCode: req.body.company.postCode,
+        tradeLicenseAttachment:
+          files?.tradeLicenseAttachment?.[0]?.path,
+        tinAttachment: files?.tinAttachment?.[0]?.path,
+        logo: files?.logo?.[0]?.path,
+      },
+      contactPerson: {
+        fullName: req.body.contactPerson.fullName,
+        email: req.body.contactPerson.email,
+        gender: req.body.contactPerson.gender,
+        phone: req.body.contactPerson.phone,
+        designation: req.body.contactPerson.designation,
+      },
+      passportAttachment: files?.passportAttachment?.[0]?.path,
+      otherAttachment: files?.otherAttachment?.[0]?.path,
     };
     const data = await service.create(params);
     return ApiResponse.result(res, data, httpStatusCodes.CREATED);
@@ -80,10 +102,9 @@ const update: IController = async (req, res) => {
     const params: UpdateCustomerDTO = {
       user: req.body.user,
       company: req.body.company,
-      contactPersons: req.body.contactPersons,
+      contactPerson: req.body.contactPersons,
       nidNumber: req.body.nidNumber,
       passportAttachment: req.body.passportAttachment,
-      photo: req.body.photo,
       otherAttachment: req.body.otherAttachment,
     };
     const data = await service.update(id, params);

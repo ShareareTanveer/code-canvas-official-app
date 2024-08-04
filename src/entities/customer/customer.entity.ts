@@ -23,19 +23,24 @@ export class Customer extends BaseEntity {
   user: User;
 
   @OneToOne(() => CustomerCompany, (company) => company.customer, {
+    eager: true,
+    onDelete: 'CASCADE',
     cascade: true,
   })
   @JoinColumn()
   company: CustomerCompany;
 
-  @OneToMany(
+  @OneToOne(
     () => CustomerContactPerson,
     (contactPerson) => contactPerson.customer,
     {
+      eager: true,
+      onDelete: 'CASCADE',
       cascade: true,
     },
   )
-  contactPersons: CustomerContactPerson[];
+  @JoinColumn()
+  contactPerson: CustomerContactPerson;
 
   @Column({ nullable: false })
   nidNumber: string;
@@ -43,9 +48,12 @@ export class Customer extends BaseEntity {
   @Column({ nullable: false })
   passportAttachment: string;
 
-  @Column({ nullable: true })
-  photo: string;
+  @Column({ nullable: false })
+  passportAttachmentPublicId: string;
 
   @Column({ nullable: true })
   otherAttachment?: string;
+
+  @Column({ nullable: true })
+  otherAttachmentPublicId?: string;
 }

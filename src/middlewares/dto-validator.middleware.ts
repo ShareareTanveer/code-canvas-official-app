@@ -13,6 +13,14 @@ export function validateDTO(dtoClass: any) {
       req.body.faqs = JSON.parse(req.body.faqs);
     }
     
+    if (typeof req.body.company === 'string') {
+      req.body.company = JSON.parse(req.body.company);
+    }
+    
+    if (typeof req.body.contactPerson === 'string') {
+      req.body.contactPerson = JSON.parse(req.body.contactPerson);
+    }
+    
     if (typeof req.body.price === 'string') {
       req.body.price = parseFloat(req.body.price);
     }    

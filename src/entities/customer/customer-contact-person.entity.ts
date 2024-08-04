@@ -1,4 +1,4 @@
-import { Entity, ManyToOne, PrimaryGeneratedColumn, Column } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, OneToOne } from 'typeorm';
 import { Customer } from './customer.entity';
 import { IsNotEmpty, IsEnum } from 'class-validator';
 import { EGender } from '../../enum/gender.enum';
@@ -25,7 +25,7 @@ export class CustomerContactPerson  {
   @Column()
   designation: string;
 
-  @ManyToOne(() => Customer, (customer) => customer.contactPersons, {
+  @OneToOne(() => Customer, (customer) => customer.contactPerson, {
     onDelete: 'CASCADE',
   })
   customer: Customer;

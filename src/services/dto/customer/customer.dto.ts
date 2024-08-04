@@ -7,49 +7,44 @@ export class CustomerResponseDTO {
   id?: number;
   user: SimpleUserResponseDTO;
   company: CustomerCompanyResponseDTO;
-  contactPersons: CustomerContactPersonResponseDTO[];
+  contactPerson: CustomerContactPersonResponseDTO;
   nidNumber: string;
   passportAttachment: string;
-  photo: string;
   otherAttachment?: string;
 }
 
 export class CreateCustomerDTO {
-  @IsNotEmpty()
-  user: number;
+  @IsOptional()
+  user?: number;
 
   @IsNotEmpty()
   company: CreateCustomerCompanyDTO;
 
   @IsNotEmpty()
-  contactPersons: CreateCustomerContactPersonDTO[];
+  contactPerson: CreateCustomerContactPersonDTO;
 
   @IsNotEmpty()
   @IsString()
   nidNumber: string;
 
-  @IsNotEmpty()
+  @IsOptional()
   @IsString()
-  passportAttachment: string;
-
-  @IsNotEmpty()
-  @IsString()
-  photo: string;
+  passportAttachment?: string;
 
   @IsOptional()
   @IsString()
-  otherAttachment: string;
+  otherAttachment?: string;
 }
 
 export class UpdateCustomerDTO {
   @IsOptional()
-  user: number;
+  user?: number;
 
   @IsOptional()
   company: CreateCustomerCompanyDTO;
 
   @IsOptional()
-  contactPersons: CreateCustomerContactPersonDTO[];
+  contactPerson: CreateCustomerContactPersonDTO;
 
   @IsOptional()
   @IsString()
@@ -57,13 +52,9 @@ export class UpdateCustomerDTO {
 
   @IsOptional()
   @IsString()
-  passportAttachment: string;
+  passportAttachment?: string;
 
   @IsOptional()
   @IsString()
-  photo: string;
-
-  @IsOptional()
-  @IsString()
-  otherAttachment: string;
+  otherAttachment?: string;
 }
