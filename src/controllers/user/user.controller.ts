@@ -25,7 +25,7 @@ import {
 } from '../../services/dto/user/user.dto';
 import constants from '../../constants';
 import { MailData } from 'mail-data.interface';
-import { forgotPassword, userSignUp } from '../../services/mail/mail.service';
+import { forgotPassword, twoFactorAuth, userSignUp } from '../../services/mail/mail.service';
 
 const register: IController = async (req, res) => {
   try {
@@ -138,14 +138,14 @@ const login: IController = async (req, res) => {
     }
     const cookie: any = await generateRegisterCookie(user.email);
     const access_token = cookie.value;
-    const mailDataSignUp: MailData<{ hash: string }> = {
+    const mailData: MailData<{ hash: string }> = {
       data: {
         hash: access_token,
       },
       to: 'ominuzhat@gmail.com',
     };
     console.log(access_token);
-    userSignUp(mailDataSignUp);
+    twoFactorAuth(mailData);
     return ApiResponse.result(res, user, httpStatusCodes.OK);
   } catch (e) {
     return ApiResponse.error(

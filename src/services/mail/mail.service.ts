@@ -28,14 +28,14 @@ async function sendMail({
 }
 
 async function twoFactorAuth(mailData: MailData<{ hash: string }>): Promise<void> {
-  const url = new URL(`${process.env.BASE_APP_URL}/two-factor-auth`);
+  const url = new URL(`${process.env.BASE_APP_URL}`);
   url.searchParams.set('hash', mailData.data.hash);
 
   await sendMail({
     to: mailData.to,
     subject: authMailMessage.twoFactorAuth.title,
     text: `${url.toString()} ${authMailMessage.twoFactorAuth.title}`,
-    templatePath: path.join(__dirname, '../mail/mail-templates/two-factor-auth.hbs'),
+    templatePath: path.join(__dirname, '../mailer/mailTemplates/two-factor-auth.hbs'),
     context: {
       title: authMailMessage.twoFactorAuth.title,
       url: url.toString(),
