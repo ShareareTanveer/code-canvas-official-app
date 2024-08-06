@@ -10,7 +10,7 @@ async function sendMail({
   subject,
   text,
   templatePath,
-  context
+  context,
 }: {
   to: string;
   subject: string;
@@ -27,15 +27,26 @@ async function sendMail({
   });
 }
 
-async function twoFactorAuth(mailData: MailData<{ hash: string }>): Promise<void> {
-  const url = new URL(`${process.env.BASE_APP_URL}`);
+async function twoFactorAuth(
+  mailData: MailData<{ hash: string }>,
+  web: number,
+): Promise<void> {
+  let url;
+  if (web) {
+    url = new URL(`${process.env.BASE_APP_URL}`);
+  } else {
+    url = new URL(`${process.env.BASE_DASBOARD_APP_URL}`);
+  }
   url.searchParams.set('hash', mailData.data.hash);
 
   await sendMail({
     to: mailData.to,
     subject: authMailMessage.twoFactorAuth.title,
     text: `${url.toString()} ${authMailMessage.twoFactorAuth.title}`,
-    templatePath: path.join(__dirname, '../mailer/mailTemplates/two-factor-auth.hbs'),
+    templatePath: path.join(
+      __dirname,
+      '../mailer/mailTemplates/two-factor-auth.hbs',
+    ),
     context: {
       title: authMailMessage.twoFactorAuth.title,
       url: url.toString(),
@@ -47,16 +58,21 @@ async function twoFactorAuth(mailData: MailData<{ hash: string }>): Promise<void
   });
 }
 
-async function userSignUp(mailData: MailData<{ hash: string }>): Promise<void> {
+async function userSignUp(
+  mailData: MailData<{ hash: string }>,
+): Promise<void> {
   try {
     const url = new URL(`${process.env.BASE_APP_URL}/authentication`);
     url.searchParams.set('hash', mailData.data.hash);
-  
+
     await sendMail({
       to: mailData.to,
       subject: authMailMessage.userSignUp.title,
       text: `${url.toString()} ${authMailMessage.userSignUp.title}`,
-      templatePath: path.join(__dirname, '../mailer/mailTemplates/activation.hbs'),
+      templatePath: path.join(
+        __dirname,
+        '../mailer/mailTemplates/activation.hbs',
+      ),
       context: {
         title: authMailMessage.userSignUp.title,
         url: url.toString(),
@@ -71,15 +87,22 @@ async function userSignUp(mailData: MailData<{ hash: string }>): Promise<void> {
   }
 }
 
-async function forgotPassword(mailData: MailData<{ hash: string }>): Promise<void> {
-  const url = new URL(`${process.env.BASE_APP_URL}/authentication/change-password`);
+async function forgotPassword(
+  mailData: MailData<{ hash: string }>,
+): Promise<void> {
+  const url = new URL(
+    `${process.env.BASE_APP_URL}/authentication/change-password`,
+  );
   url.searchParams.set('hash', mailData.data.hash);
 
   await sendMail({
     to: mailData.to,
     subject: authMailMessage.forgotPassword.title,
     text: `${url.toString()} ${authMailMessage.forgotPassword.title}`,
-    templatePath: path.join(__dirname, '../mailer/mailTemplates/reset-password.hbs'),
+    templatePath: path.join(
+      __dirname,
+      '../mailer/mailTemplates/reset-password.hbs',
+    ),
     context: {
       title: authMailMessage.forgotPassword.title,
       url: url.toString(),
@@ -93,7 +116,9 @@ async function forgotPassword(mailData: MailData<{ hash: string }>): Promise<voi
   });
 }
 
-async function confirmNewEmail(mailData: MailData<{ hash: string }>): Promise<void> {
+async function confirmNewEmail(
+  mailData: MailData<{ hash: string }>,
+): Promise<void> {
   const url = new URL(`${process.env.BASE_APP_URL}/confirm-new-email`);
   url.searchParams.set('hash', mailData.data.hash);
 
@@ -101,7 +126,10 @@ async function confirmNewEmail(mailData: MailData<{ hash: string }>): Promise<vo
     to: mailData.to,
     subject: authMailMessage.confirmNewEmail.title,
     text: `${url.toString()} ${authMailMessage.confirmNewEmail.title}`,
-    templatePath: path.join(__dirname, '../mail/mail-templates/confirm-new-email.hbs'),
+    templatePath: path.join(
+      __dirname,
+      '../mail/mail-templates/confirm-new-email.hbs',
+    ),
     context: {
       title: authMailMessage.confirmNewEmail.title,
       url: url.toString(),
@@ -114,9 +142,4 @@ async function confirmNewEmail(mailData: MailData<{ hash: string }>): Promise<vo
   });
 }
 
-export {
-  twoFactorAuth,
-  userSignUp,
-  forgotPassword,
-  confirmNewEmail,
-};
+export { twoFactorAuth, userSignUp, forgotPassword, confirmNewEmail };

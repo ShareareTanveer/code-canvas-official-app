@@ -128,6 +128,10 @@ const verifyEmail: IController = async (req, res) => {
 
 const login: IController = async (req, res) => {
   try {
+    let web = 1;
+    if (req.query.web && parseInt(req.query.web as string, 10) === 0) {
+      web = 0;
+    }
     const params: loginDTO = {
       email: req.body.email,
       password: req.body.password,
@@ -145,7 +149,7 @@ const login: IController = async (req, res) => {
       to: 'ominuzhat@gmail.com',
     };
     console.log(access_token);
-    twoFactorAuth(mailData);
+    twoFactorAuth(mailData, web);
     return ApiResponse.result(res, user, httpStatusCodes.OK);
   } catch (e) {
     return ApiResponse.error(
