@@ -33,9 +33,9 @@ async function twoFactorAuth(
 ): Promise<void> {
   let url;
   if (web) {
-    url = new URL(`${process.env.BASE_APP_URL}`);
+    url = new URL(`${process.env.BASE_APP_URL}/authentication`);
   } else {
-    url = new URL(`${process.env.BASE_DASBOARD_APP_URL}`);
+    url = new URL(`${process.env.BASE_DASBOARD_APP_URL}/login`);
   }
   url.searchParams.set('hash', mailData.data.hash);
 
