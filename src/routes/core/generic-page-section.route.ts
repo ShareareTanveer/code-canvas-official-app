@@ -6,8 +6,11 @@ import {
   UpdateGenericPageSectionDTO,
 } from '../../services/dto/core/generic-page-section.dto';
 import { upload } from '../../middlewares/multer.middleware';
+import { checkPermission } from '../../middlewares/authenticate.middleware';
+import constants from '../../constants';
 
 const router = express.Router();
+const model = constants.PERMISSION.MODEL.GENERIC_PAGE_SECTION
 
 /**
  * @swagger
@@ -185,7 +188,7 @@ router.get('/:id', genericPageSectionController.getById);
  *                       type: string
  *                       example: "Error message"
  */
-router.delete('/:id', genericPageSectionController.remove);
+router.delete('/:id', checkPermission(model), genericPageSectionController.remove);
 
 /**
  * @swagger
@@ -257,12 +260,7 @@ router.delete('/:id', genericPageSectionController.remove);
  *                       type: string
  *                       example: "Error message"
  */
-router.post(
-  '/',
-  upload.single('image'),
-  validateDTO(CreateGenericPageSectionDTO),
-  genericPageSectionController.create,
-);
+router.post('/', checkPermission(model), upload.single('image'), validateDTO(CreateGenericPageSectionDTO), genericPageSectionController.create);
 
 
 /**
@@ -362,11 +360,6 @@ router.post(
  *                       type: string
  *                       example: "Error message"
  */
-router.patch(
-  '/:id',
-  upload.single('image'),
-  validateDTO(UpdateGenericPageSectionDTO),
-  genericPageSectionController.update,
-);
+router.patch('/:id', checkPermission(model), upload.single('image'), validateDTO(UpdateGenericPageSectionDTO), genericPageSectionController.update);
  
 export default router;

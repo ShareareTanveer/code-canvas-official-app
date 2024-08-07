@@ -7,10 +7,12 @@ import {
   UpdateUserByAdminDTO,
   UpdateUserDTO,
 } from '../../services/dto/user/user.dto';
-import { IsAdmin } from '../../decorators/role-permission.decorator';
 import { upload } from '../../middlewares/multer.middleware';
+import constants from '../../constants';
 
 const router = express.Router();
+
+const model = constants.PERMISSION.MODEL.USER
 
 /**
  * @swagger
@@ -285,37 +287,12 @@ const router = express.Router();
  *         description: Internal server error
  */
 router.get('/me', userController.me);
-router.patch(
-  '/me',
-  upload.single("image"),
-  validateDTO(UpdateUserDTO),
-  userController.updateMe,
-);
+router.patch('/me', upload.single("image"), validateDTO(UpdateUserDTO), userController.updateMe);
 
-router.get('/', checkPermission('read', 'user'), userController.list);
-router.post(
-  '/',
-  // checkPermission('create', 'user'),
-  upload.single("image"),
-  validateDTO(CreateUserDTO),
-  userController.create,
-);
-router.get(
-  '/:id',
-  checkPermission('read', 'user'),
-  userController.detail,
-);
-router.patch(
-  '/:id',
-  // checkPermission('update', 'user'),
-  upload.single("image"),
-  validateDTO(UpdateUserByAdminDTO),
-  userController.update,
-);
-router.delete(
-  '/:id',
-  checkPermission('delete', 'user'),
-  userController.remove,
-);
+router.get('/', checkPermission(model), userController.list);
+router.get('/:id', checkPermission(model), userController.detail);
+router.post('/', checkPermission(model), upload.single("image"), validateDTO(CreateUserDTO), userController.create);
+router.patch('/:id', checkPermission(model), upload.single("image"), validateDTO(UpdateUserByAdminDTO), userController.update);
+router.delete('/:id', checkPermission(model), userController.remove);
 
 export default router;

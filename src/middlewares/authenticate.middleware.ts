@@ -1,4 +1,3 @@
-import { URL } from 'url';
 import express, { NextFunction } from 'express';
 import httpStatusCodes from 'http-status-codes';
 import ApiResponse from '../utilities/api-response.utility';
@@ -27,43 +26,57 @@ export default async (
 ) => {
   const path = req.path;
 
-  if (shouldIgnoreAuth(path)) {
-    return next();
-  }
-
   const authorizationHeader = ApiUtility.getCookieFromRequest(
     req,
     constants.COOKIE.COOKIE_USER,
   );
 
-  if (!authorizationHeader) {
-    return ApiResponse.error(res, httpStatusCodes.FORBIDDEN);
+  if (authorizationHeader) {
+    const decoded = await Encryption.verifyCookie(authorizationHeader);
+
+    if (decoded) {
+      const user = await userService.getById({
+        id: decoded.data[constants.COOKIE.KEY_USER_ID],
+      });
+
+      if (user) {
+        // @ts-ignore
+        req.user = user;
+      }
+    }
   }
 
-  const decoded = await Encryption.verifyCookie(authorizationHeader);
+  if (shouldIgnoreAuth(path)) {
+    return next();
+  }
 
-  if (!decoded) {
+  if (!authorizationHeader || !req.user) {
     return ApiResponse.error(res, httpStatusCodes.UNAUTHORIZED);
   }
 
-  const user = await userService.getById({
-    id: decoded.data[constants.COOKIE.KEY_USER_ID],
-  });
-
-  if (!user) {
-    return ApiResponse.error(res, httpStatusCodes.UNAUTHORIZED);
-  }
-
-  // @ts-ignore
-  req.user = user;
   next();
 };
 
-export const checkPermission = (action: string, modelName: string) => {
+export const checkPermission = (modelName: string) => {
   return async (req: any, res: any, next: NextFunction) => {
+    const action =
+      constants.PERMISSION.ACTION[
+        req.method as keyof typeof constants.PERMISSION.ACTION
+      ];
+    if (!action) {
+      return res
+        .status(400)
+        .json({ message: 'Invalid request method' });
+    }
     const userRepository = dataSource.getRepository(User);
     const permissionRepository = dataSource.getRepository(Permission);
     try {
+      const userId = req?.user?.id;
+      if (!userId) {
+        return res
+          .status(403)
+          .json({ message: 'Unauthorized: User is not logged in' });
+      }
       const user = await userRepository.findOne({
         where: { id: req.user.id },
         relations: ['role', 'role.permissions'],

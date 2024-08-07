@@ -18,13 +18,17 @@ async function sendMail({
   templatePath: string;
   context: Record<string, unknown>;
 }) {
-  await mailerService.sendMail({
-    to,
-    subject,
-    text,
-    templatePath,
-    context,
-  });
+  try {
+    await mailerService.sendMail({
+      to,
+      subject,
+      text,
+      templatePath,
+      context,
+    });
+  } catch (error) {
+    return;
+  }
 }
 
 async function twoFactorAuth(
@@ -61,30 +65,26 @@ async function twoFactorAuth(
 async function userSignUp(
   mailData: MailData<{ hash: string }>,
 ): Promise<void> {
-  try {
-    const url = new URL(`${process.env.BASE_APP_URL}/authentication`);
-    url.searchParams.set('hash', mailData.data.hash);
+  const url = new URL(`${process.env.BASE_APP_URL}/authentication`);
+  url.searchParams.set('hash', mailData.data.hash);
 
-    await sendMail({
-      to: mailData.to,
-      subject: authMailMessage.userSignUp.title,
-      text: `${url.toString()} ${authMailMessage.userSignUp.title}`,
-      templatePath: path.join(
-        __dirname,
-        '../mailer/mailTemplates/activation.hbs',
-      ),
-      context: {
-        title: authMailMessage.userSignUp.title,
-        url: url.toString(),
-        actionTitle: authMailMessage.userSignUp.title,
-        text1: authMailMessage.userSignUp.text1,
-        text2: authMailMessage.userSignUp.text2,
-        text3: authMailMessage.userSignUp.text3,
-      },
-    });
-  } catch (error) {
-    return;
-  }
+  await sendMail({
+    to: mailData.to,
+    subject: authMailMessage.userSignUp.title,
+    text: `${url.toString()} ${authMailMessage.userSignUp.title}`,
+    templatePath: path.join(
+      __dirname,
+      '../mailer/mailTemplates/activation.hbs',
+    ),
+    context: {
+      title: authMailMessage.userSignUp.title,
+      url: url.toString(),
+      actionTitle: authMailMessage.userSignUp.title,
+      text1: authMailMessage.userSignUp.text1,
+      text2: authMailMessage.userSignUp.text2,
+      text3: authMailMessage.userSignUp.text3,
+    },
+  });
 }
 
 async function forgotPassword(

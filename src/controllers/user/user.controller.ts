@@ -137,9 +137,6 @@ const login: IController = async (req, res) => {
       password: req.body.password,
     };
     const user = await service.login(params);
-    if (!user.status && user.role.name !== 'Admin') {
-      throw new Error('You acount is not active'); 
-    }
     const cookie: any = await generateRegisterCookie(user.email);
     const access_token = cookie.value;
     const mailData: MailData<{ hash: string }> = {

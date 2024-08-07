@@ -2,8 +2,11 @@ import express from 'express';
 import reviewController from '../../controllers/review/review.controller';
 import { validateDTO } from '../../middlewares/dto-validator.middleware';
 import { CreateReviewDTO, UpdateReviewDTO } from '../../services/dto/review/review.dto';
+import { checkPermission } from '../../middlewares/authenticate.middleware';
+import constants from '../../constants';
 
 const router = express.Router();
+const model = constants.PERMISSION.MODEL.REVIEW
 
 /**
  * @swagger
@@ -189,7 +192,7 @@ router.post('/', validateDTO(CreateReviewDTO), reviewController.create);
  *       404:
  *         description: Review not found
  */
-router.patch('/:id', validateDTO(UpdateReviewDTO), reviewController.update);
+router.patch('/:id', checkPermission(model), validateDTO(UpdateReviewDTO), reviewController.update);
 
 /**
  * @swagger
@@ -211,6 +214,6 @@ router.patch('/:id', validateDTO(UpdateReviewDTO), reviewController.update);
  *       404:
  *         description: Review not found
  */
-router.delete('/:id', reviewController.remove);
+router.delete('/:id', checkPermission(model), reviewController.remove);
 
 export default router;

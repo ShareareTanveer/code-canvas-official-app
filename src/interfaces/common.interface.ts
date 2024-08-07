@@ -13,7 +13,8 @@ export interface IBaseQueryParams {
   page: number;
   sortBy?: string;
   sortOrder?: 'ASC' | 'DESC';
-}
+  userId?: number;
+  isUser?: boolean;}
 
 export interface IOverrideRequest {
   code: number;

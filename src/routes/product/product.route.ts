@@ -6,8 +6,11 @@ import {
   UpdateProductDTO,
 } from '../../services/dto/product/product.dto';
 import { upload } from '../../middlewares/multer.middleware';
+import { checkPermission } from '../../middlewares/authenticate.middleware';
+import constants from '../../constants';
 
 const router = express.Router();
+const model = constants.PERMISSION.MODEL.PRODUCT
 
 /**
  * @swagger
@@ -311,12 +314,7 @@ router.get('/:id', productController.getById);
  *               error:
  *                 message: "Conflict error message"
  */
-router.post(
-  '/',
-  upload.array('images'),
-  validateDTO(CreateProductDTO),
-  productController.create,
-);
+router.post('/', checkPermission(model), upload.array('images'), validateDTO(CreateProductDTO), productController.create );
 
 /**
  * @swagger
@@ -349,12 +347,7 @@ router.post(
  *       404:
  *         description: Product not found
  */
-router.patch(
-  '/:id',
-  upload.array('addImages'),
-  validateDTO(UpdateProductDTO),
-  productController.update,
-);
+router.patch( '/:id', checkPermission(model), upload.array('addImages'), validateDTO(UpdateProductDTO), productController.update);
 
 /**
  * @swagger
@@ -381,6 +374,6 @@ router.patch(
  *               error:
  *                 message: "Error message"
  */
-router.delete('/:id', productController.remove);
+router.delete('/:id', checkPermission(model), productController.remove);
 
 export default router;

@@ -8,6 +8,7 @@ import {
 } from '../../services/dto/order/order.dto';
 import { IBaseQueryParams } from 'common.interface';
 import ApiUtility from '../../utilities/api.utility';
+import constants from '../../constants';
 
 const getById: IController = async (req, res) => {
   try {
@@ -21,6 +22,11 @@ const getById: IController = async (req, res) => {
 
 const list: IController = async (req, res) => {
   try {
+    let isUser = true;
+    const userId = req.user.id;
+    if (req.user.role.name !== constants.ROLE.USER) {
+      isUser = false;
+    }
     const pagination = ApiUtility.getQueryParam(req, 'pagination');
     const limit = ApiUtility.getQueryParam(req, 'limit');
     const page = ApiUtility.getQueryParam(req, 'page');
@@ -34,6 +40,8 @@ const list: IController = async (req, res) => {
       keyword,
       sortOrder,
       sortBy,
+      isUser,  
+      userId,
     };
     const data = await service.list(params);
     return ApiResponse.result(
@@ -54,17 +62,16 @@ const list: IController = async (req, res) => {
 
 const create: IController = async (req, res) => {
   try {
-    let user;
-    if (req.user.role.name !== 'User') {
+    let user=req.user.id;
+    if (req.user.role.name !== constants.ROLE.USER) {
       if (!req.body.user) {
         throw new Error('user is required');
       }
       user = req.body.user;
     }
-    user = req.user.id;
     const params: CreateOrderDTO = {
       cartId: req.body.cartId,
-      user
+      user,
     };
     const data = await service.create(params);
     return ApiResponse.result(res, data, httpStatusCodes.CREATED);

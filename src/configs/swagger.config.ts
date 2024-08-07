@@ -6,9 +6,9 @@ const options: any = {
     openapi: '3.0.0',
     info: {
       description:
-        'Employee Management System is Powerful app that manages all official operations',
+        'Code Canvas Creation API Documentation',
       version: '1.0.0',
-      title: 'EMS PASSPORT APP',
+      title: 'Code Canvas Creation Offcial Website',
       termsOfService: 'http://swagger.io/terms/',
       contact: {
         email: 'codecanvus@gmail.com',

@@ -11,19 +11,15 @@ interface QueryParams {
   limit?: number;
   page?: number;
   userId?: number;
-  isAdmin?: boolean;
+  isUser?: boolean;
 }
 
 const createQueryBuilder = <Entity>(
   repository: Repository<Entity>,
   modelName: string,
-  relations: string[],
 ): SelectQueryBuilder<Entity> => {
-  let repo = repository.createQueryBuilder(modelName);
-  relations.forEach((relation) => {
-    repo = repo.leftJoinAndSelect(`${modelName}.${relation}`, relation);
-  });
-  return repo;
+  let queryBuilder = repository.createQueryBuilder(modelName);
+  return queryBuilder;
 };
 
 const applyKeywordFilter = <Entity>(
@@ -38,18 +34,6 @@ const applyKeywordFilter = <Entity>(
     repo = repo.andWhere(`(${searchConditions})`, {
       keyword: `%${keyword}%`,
     });
-  }
-  return repo;
-};
-
-const applyIdFilter = <Entity>(
-  repo: SelectQueryBuilder<Entity>,
-  modelName: string,
-  userId?: number,
-  isAdmin?: boolean,
-): SelectQueryBuilder<Entity> => {
-  if (!isAdmin && userId) {
-    repo = repo.andWhere(`${modelName}.userId = :userId`, { userId });
   }
   return repo;
 };
@@ -75,7 +59,7 @@ const applySorting = <Entity>(
   return repo;
 };
 
-const applyPagination = async <Entity>(
+export const applyPagination = async <Entity>(
   repo: SelectQueryBuilder<Entity>,
   limit?: number,
   page?: number,
@@ -89,12 +73,24 @@ const applyPagination = async <Entity>(
   return { repo, pagination: null };
 };
 
+const applyUserIdFilter = <Entity>(
+  repo: SelectQueryBuilder<Entity>,
+  modelName: string,
+  userId?: number,
+  isUser?: boolean,
+): SelectQueryBuilder<Entity> => {
+  if (!isUser && userId) {
+    repo = repo.andWhere(`${modelName}.userId = :userId`, { userId });
+  }
+  return repo;
+};
+
 interface ListEntitiesOptions<Entity> {
   relations?: string[];
   searchFields?: string[];
   validSortBy?: string[];
   validSortOrder?: SortOrder[];
-  toResponseDTO: (entity: Entity) => any;
+  toResponseDTO?: (entity: Entity) => any;
 }
 
 export const listEntities = async <Entity>(
@@ -104,16 +100,14 @@ export const listEntities = async <Entity>(
   options: ListEntitiesOptions<Entity>,
 ) => {
   const {
-    relations = [],
     searchFields = [],
     validSortBy = [],
     validSortOrder = [],
     toResponseDTO,
   } = options;
 
-  let repo = createQueryBuilder(repository, modelName, relations);
+  let repo = createQueryBuilder(repository, modelName);
   repo = applyKeywordFilter(repo, searchFields, params.keyword);
-  repo = applyIdFilter(repo, modelName, params.userId, params.isAdmin);
   repo = applySorting(
     repo,
     validSortBy,
@@ -135,4 +129,35 @@ export const listEntities = async <Entity>(
   const entities = await repo.getMany();
   const response = entities.map(toResponseDTO);
   return { response };
+};
+
+export const listEntitiesUtill = async <Entity>(
+  repository: Repository<Entity>,
+  params: QueryParams,
+  modelName: string,
+  options: ListEntitiesOptions<Entity>,
+) => {
+  const {
+    searchFields = [],
+    validSortBy = [],
+    validSortOrder = [],
+  } = options;
+
+  let repo = createQueryBuilder(repository, modelName);
+  repo = applyKeywordFilter(repo, searchFields, params.keyword);
+  repo = applySorting(
+    repo,
+    validSortBy,
+    validSortOrder,
+    params.sortBy,
+    params.sortOrder,
+  );
+  repo = applyUserIdFilter(
+    repo,
+    modelName,
+    params.userId,
+    params.isUser,
+  );
+
+  return repo;
 };

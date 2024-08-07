@@ -2,8 +2,11 @@ import express from 'express';
 import orderController from '../../controllers/order/order.controller';
 import { validateDTO } from '../../middlewares/dto-validator.middleware';
 import { CreateOrderDTO, UpdateOrderDTO } from '../../services/dto/order/order.dto';
+import { checkPermission } from '../../middlewares/authenticate.middleware';
+import constants from '../../constants';
 
 const router = express.Router();
+const model = constants.PERMISSION.MODEL.ORDER
 
 /**
  * @swagger
@@ -139,7 +142,7 @@ router.get('/:id', orderController.getById);
  *                       type: string
  *                       example: "Error message"
  */
-router.delete('/:id', orderController.remove);
+router.delete('/:id', checkPermission(model), orderController.remove);
 
 /**
  * @swagger
@@ -225,10 +228,6 @@ router.post('/', validateDTO(CreateOrderDTO), orderController.create);
  *       500:
  *         description: Internal server error
  */
-router.patch(
-  '/:id',
-  validateDTO(UpdateOrderDTO),
-  orderController.update,
-);
+router.patch('/:id', checkPermission(model), validateDTO(UpdateOrderDTO), orderController.update);
 
 export default router;

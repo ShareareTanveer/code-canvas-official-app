@@ -2,8 +2,11 @@ import express from 'express';
 import categoryController from '../../controllers/category/category.controller';
 import { validateDTO } from '../../middlewares/dto-validator.middleware';
 import { CreateCategoryDTO, UpdateCategoryDTO } from '../../services/dto/category/category.dto';
+import { checkPermission } from '../../middlewares/authenticate.middleware';
+import constants from '../../constants';
 
 const router = express.Router();
+const model = constants.PERMISSION.MODEL.CATEGORY
 
 /**
  * @swagger
@@ -146,7 +149,7 @@ router.get('/:id', categoryController.getById);
  *               error:
  *                 message: "Error message"
  */
-router.delete('/:id', categoryController.remove);
+router.delete('/:id', checkPermission(model), categoryController.remove);
 
 /**
  * @swagger
@@ -184,7 +187,7 @@ router.delete('/:id', categoryController.remove);
  *               error:
  *                 message: "Error message"
  */
-router.post('/', validateDTO(CreateCategoryDTO), categoryController.create);
+router.post('/', checkPermission(model), validateDTO(CreateCategoryDTO), categoryController.create);
 
 /**
  * @swagger
@@ -222,10 +225,6 @@ router.post('/', validateDTO(CreateCategoryDTO), categoryController.create);
  *       500:
  *         description: Internal server error
  */
-router.patch(
-  '/:id',
-  validateDTO(UpdateCategoryDTO),
-  categoryController.update,
-);
+router.patch('/:id', checkPermission(model), validateDTO(UpdateCategoryDTO), categoryController.update);
 
 export default router;

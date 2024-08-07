@@ -2,8 +2,12 @@ import express from 'express';
 import officeInfoController from '../../controllers/core/office-info.controller';
 import { validateDTO } from '../../middlewares/dto-validator.middleware';
 import { CreateOfficeInfoDTO, UpdateOfficeInfoDTO } from '../../services/dto/core/office-info.dto';
+import { checkPermission } from '../../middlewares/authenticate.middleware';
+import constants from '../../constants';
 
 const router = express.Router();
+const model = constants.PERMISSION.MODEL.OFFICE_INFO
+
 
 /**
  * @swagger
@@ -197,7 +201,7 @@ router.get('/:id', officeInfoController.getById);
  *                       type: string
  *                       example: "Error message"
  */
-router.delete('/:id', officeInfoController.remove);
+router.delete('/:id', checkPermission(model), officeInfoController.remove);
 
 /**
  * @swagger
@@ -242,7 +246,7 @@ router.delete('/:id', officeInfoController.remove);
  *                       type: string
  *                       example: "Error message"
  */
-router.post('/', validateDTO(CreateOfficeInfoDTO), officeInfoController.create);
+router.post('/', checkPermission(model), validateDTO(CreateOfficeInfoDTO), officeInfoController.create);
 
 /**
  * @swagger
@@ -311,10 +315,6 @@ router.post('/', validateDTO(CreateOfficeInfoDTO), officeInfoController.create);
  *                       type: string
  *                       example: "Error message"
  */
-router.patch(
-  '/:id',
-  validateDTO(UpdateOfficeInfoDTO),
-  officeInfoController.update,
-);
+router.patch('/:id', checkPermission(model), validateDTO(UpdateOfficeInfoDTO), officeInfoController.update);
 
 export default router;

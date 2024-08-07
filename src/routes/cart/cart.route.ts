@@ -2,8 +2,12 @@ import express from 'express';
 import cartController from '../../controllers/cart/cart.controller';
 import { validateDTO } from '../../middlewares/dto-validator.middleware';
 import { AddToCartDTO } from '../../services/dto/cart/cart.dto';
+import { checkPermission } from '../../middlewares/authenticate.middleware';
+import constants from '../../constants';
 
 const router = express.Router();
+
+const model = constants.PERMISSION.MODEL.CART;
 
 /**
  * @swagger
@@ -109,7 +113,7 @@ const router = express.Router();
  *                       type: string
  *                       example: "Error message"
  */
-router.get('/', cartController.list);
+router.get('/', checkPermission(model), cartController.list);
 
 /**
  * @swagger

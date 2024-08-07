@@ -12,9 +12,14 @@ import { toOrderResponseDTO } from './mapper/order.mapper';
 import { Cart } from '../../entities/cart/cart.entity';
 import { EOrderStaus } from '../../enum/order-status.enum';
 import { IBaseQueryParams } from 'common.interface';
-import { listEntities } from '../../utilities/pagination-filtering.utility';
+import {
+  applyPagination,
+  listEntities,
+  listEntitiesUtill,
+} from '../../utilities/pagination-filtering.utility';
 
 const repository = dataSource.getRepository(Order);
+const orderItemRepository = dataSource.getRepository(OrderItem);
 const cartRepository = dataSource.getRepository(Cart);
 const userRepository = dataSource.getRepository(User);
 const customerRepository = dataSource.getRepository(Customer);
@@ -29,6 +34,7 @@ const getById = async (id: string): Promise<OrderResponseDTO> => {
       'items.product.images',
     ],
   });
+  console.log(entity);
   if (!entity) {
     throw new Error('Order not found');
   }
@@ -36,13 +42,7 @@ const getById = async (id: string): Promise<OrderResponseDTO> => {
 };
 
 const list = async (params: IBaseQueryParams) => {
-  return await listEntities(repository, params, 'order', {
-    relations: [
-      'items',
-      'user',
-      'items.product',
-      'items.product.images',
-    ],
+  let repo = await listEntitiesUtill(repository, params, 'order', {
     searchFields: [
       'items.product.title',
       'items.product.slug',
@@ -51,8 +51,27 @@ const list = async (params: IBaseQueryParams) => {
     ],
     validSortBy: ['totalPrice', 'price', 'id'],
     validSortOrder: ['ASC', 'DESC'],
-    toResponseDTO: toOrderResponseDTO,
   });
+
+  repo
+    .leftJoinAndSelect('order.user', 'user')
+    .leftJoinAndSelect('order.items', 'items')
+    .leftJoinAndSelect('items.product', 'product')
+    .leftJoinAndSelect('product.images', 'images');
+
+  if (params.pagination == 'true' || params.pagination == 'True') {
+    const { repo: paginatedRepo, pagination } = await applyPagination(
+      repo,
+      params.limit,
+      params.page,
+    );
+    const entities = await paginatedRepo.getMany();
+    const response = entities.map(toOrderResponseDTO);
+    return { response, pagination };
+  }
+  const entities = await repo.getMany();
+  const response = entities.map(toOrderResponseDTO);
+  return { response };
 };
 
 const create = async (
@@ -86,20 +105,20 @@ const create = async (
     throw new Error('Cart is empty');
   }
 
+  const order = new Order();
+  order.user = user;
+  order.totalPrice = cart.totalPrice || 0;
+  order.orderStatus = EOrderStaus.Pending;
+
   const orderItems = cart.products.map((product) => {
     const orderItem = new OrderItem();
     orderItem.product = product;
     orderItem.price = product.price;
+    orderItem.order = order;
     return orderItem;
   });
-
-  const order = new Order();
-  order.user = user;
-  order.items = orderItems;
-  order.totalPrice = cart.totalPrice || 0;
-  order.orderStatus = EOrderStaus.Pending;
-
   const savedOrder = await repository.save(order);
+  orderItemRepository.save(orderItems);
   // await cartRepository.remove(cart);
 
   return toOrderResponseDTO(savedOrder);

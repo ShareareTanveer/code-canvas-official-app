@@ -6,8 +6,11 @@ import {
 } from '../../services/dto/ourService/our-service.dto';
 import ourServiceController from '../../controllers/ourService/our-service.controller';
 import { upload } from '../../middlewares/multer.middleware';
+import { checkPermission } from '../../middlewares/authenticate.middleware';
+import constants from '../../constants';
 
 const router = express.Router();
+const model = constants.PERMISSION.MODEL.OUR_SERVICE
 
 /**
  * @swagger
@@ -251,7 +254,7 @@ router.get('/:id', ourServiceController.getById);
  *                       type: string
  *                       example: "Error message"
  */
-router.delete('/:id', ourServiceController.remove);
+router.delete('/:id', checkPermission(model), ourServiceController.remove);
 
 /**
  * @swagger
@@ -325,12 +328,7 @@ router.delete('/:id', ourServiceController.remove);
  *                       type: string
  *                       example: "Error message"
  */
-router.post(
-  '/',
-  upload.array('images'),
-  validateDTO(CreateOurServiceDTO),
-  ourServiceController.create,
-);
+router.post('/', checkPermission(model), upload.array('images'), validateDTO(CreateOurServiceDTO), ourServiceController.create);
 
 /**
  * @swagger
@@ -431,11 +429,6 @@ router.post(
  *                     message:
  *                       type: string
  */
-router.patch(
-  '/:id',
-  upload.array('addImages'),
-  validateDTO(UpdateOurServiceDTO),
-  ourServiceController.update,
-);
+router.patch('/:id', checkPermission(model), upload.array('addImages'), validateDTO(UpdateOurServiceDTO), ourServiceController.update);
 
 export default router;

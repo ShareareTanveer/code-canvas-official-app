@@ -2,8 +2,12 @@ import express from 'express';
 import officeInfoController from '../../controllers/core/contact-us.controller';
 import { validateDTO } from '../../middlewares/dto-validator.middleware';
 import { CreateContactUsDTO, UpdateContactUsDTO } from '../../services/dto/core/contact-us.dto';
+import { checkPermission } from '../../middlewares/authenticate.middleware';
+import constants from '../../constants';
 
 const router = express.Router();
+const model = constants.PERMISSION.MODEL.CONTACT_US
+
 
 /**
  * @swagger
@@ -84,7 +88,7 @@ const router = express.Router();
  *                       type: string
  *                       example: "Error message"
  */
-router.get('/', officeInfoController.list);
+router.get('/', checkPermission(model), officeInfoController.list);
 
 /**
  * @swagger
@@ -131,7 +135,7 @@ router.get('/', officeInfoController.list);
  *                       type: string
  *                       example: "Error message"
  */
-router.get('/:id', officeInfoController.getById);
+router.get('/:id', checkPermission(model), officeInfoController.getById);
 
 /**
  * @swagger
@@ -176,7 +180,7 @@ router.get('/:id', officeInfoController.getById);
  *                       type: string
  *                       example: "Error message"
  */
-router.delete('/:id', officeInfoController.remove);
+router.delete('/:id', checkPermission(model), officeInfoController.remove);
 
 /**
  * @swagger
@@ -290,10 +294,6 @@ router.post('/', validateDTO(CreateContactUsDTO), officeInfoController.create);
  *                       type: string
  *                       example: "Error message"
  */
-router.patch(
-  '/:id',
-  validateDTO(UpdateContactUsDTO),
-  officeInfoController.update,
-);
+router.patch('/:id', checkPermission(model), validateDTO(UpdateContactUsDTO), officeInfoController.update);
 
 export default router;

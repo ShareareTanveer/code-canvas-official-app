@@ -1,8 +1,10 @@
 import express from 'express';
 import roleController from '../../controllers/user/role.controller';
 import { checkPermission } from '../../middlewares/authenticate.middleware';
+import constants from '../../constants';
 
 const router = express.Router();
+const model = constants.PERMISSION.MODEL.ROLE;
 
 /**
  * @swagger
@@ -23,7 +25,7 @@ const router = express.Router();
  *       500:
  *         description: Internal server error
  */
-router.get('/', checkPermission("read","role"), roleController.list);
+router.get('/', checkPermission(model), roleController.list);
 /**
  * @swagger
  * /role:
@@ -51,11 +53,11 @@ router.get('/', checkPermission("read","role"), roleController.list);
  *       500:
  *         description: Internal server error
  */
-router.post('/', checkPermission("create","role"), roleController.create);
+router.post('/', checkPermission(model), roleController.create);
 /**
  * @swagger
  * /role/{id}:
-*   get:
+ *   get:
  *     summary: Get Role details by ID
  *     tags: [Role]
  *     security:
@@ -138,8 +140,8 @@ router.post('/', checkPermission("create","role"), roleController.create);
  *       500:
  *         description: Internal server error
  */
-router.get('/:id', checkPermission("read","role"), roleController.detail);
-router.put('/:id', checkPermission("update","role"), roleController.update);
-router.delete('/:id',checkPermission("delete","user"), roleController.remove);
+router.get('/:id', checkPermission(model), roleController.detail);
+router.put('/:id', checkPermission(model), roleController.update);
+router.delete('/:id', checkPermission(model), roleController.remove);
 
 export default router;

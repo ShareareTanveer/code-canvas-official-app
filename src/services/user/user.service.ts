@@ -6,9 +6,7 @@ import { UserDetail } from '../../entities/user/userDetails.entity';
 import ApiUtility from '../../utilities/api.utility';
 import Encryption from '../../utilities/encryption.utility';
 import { listEntities } from '../../utilities/pagination-filtering.utility';
-import {
-  loginDTO,
-} from '../dto/auth/auth.dto';
+import { loginDTO } from '../dto/auth/auth.dto';
 import { toUserResponseDTO } from './mapper/user.mapper';
 import {
   IBaseQueryParams,
@@ -151,7 +149,9 @@ export const verifyEmail = async (params: { email: string }) => {
   return toUserResponseDTO(savedUser);
 };
 
-export const sendResetPasswordEmail = async (params: { email: string }) => {
+export const sendResetPasswordEmail = async (params: {
+  email: string;
+}) => {
   const userRepository = dataSource.getRepository(User);
   const user = await userRepository.findOne({
     where: { email: params.email },
@@ -180,7 +180,10 @@ const getById = async (params: IDetailById) => {
   try {
     const data = await dataSource
       .getRepository(User)
-      .findOne({ where: { id: params.id }, relations: ['role', 'customer'] });
+      .findOne({
+        where: { id: params.id },
+        relations: ['role', 'customer'],
+      });
     return ApiUtility.sanitizeUser(data);
   } catch (e) {
     return null;
@@ -190,6 +193,7 @@ const getById = async (params: IDetailById) => {
 const detail = async (params: IDetailById) => {
   const query = {
     where: { id: params.id },
+    relations: ['role', 'details', 'customer'],
   };
 
   const user = await dataSource.getRepository(User).findOne(query);

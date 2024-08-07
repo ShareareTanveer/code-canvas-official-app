@@ -2,8 +2,11 @@ import express from 'express';
 import tagController from '../../controllers/tag/tag.controller';
 import { validateDTO } from '../../middlewares/dto-validator.middleware';
 import { CreateTagDTO, UpdateTagDTO } from '../../services/dto/tag/tag.dto';
+import { checkPermission } from '../../middlewares/authenticate.middleware';
+import constants from '../../constants';
 
 const router = express.Router();
+const model = constants.PERMISSION.MODEL.TAG
 
 /**
  * @swagger
@@ -92,7 +95,7 @@ router.get('/:id', tagController.getById);
  *               error:
  *                 message: "Error message"
  */
-router.delete('/:id', tagController.remove);
+router.delete('/:id', checkPermission(model), tagController.remove);
 
 /**
  * @swagger
@@ -130,7 +133,7 @@ router.delete('/:id', tagController.remove);
  *               error:
  *                 message: "Error message"
  */
-router.post('/', validateDTO(CreateTagDTO), tagController.create);
+router.post('/', checkPermission(model), validateDTO(CreateTagDTO), tagController.create);
 
 /**
  * @swagger
@@ -168,10 +171,6 @@ router.post('/', validateDTO(CreateTagDTO), tagController.create);
  *       500:
  *         description: Internal server error
  */
-router.patch(
-  '/:id',
-  validateDTO(UpdateTagDTO),
-  tagController.update,
-);
+router.patch('/:id', checkPermission(model), validateDTO(UpdateTagDTO), tagController.update);
 
 export default router;
