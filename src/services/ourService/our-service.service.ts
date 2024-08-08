@@ -14,7 +14,11 @@ import { OurServiceImage } from '../../entities/ourService/our-service-image.ent
 import { OurServiceFAQ } from '../../entities/ourService/our-service-faq.entity';
 import { In } from 'typeorm';
 import { IBaseQueryParams } from 'common.interface';
-import { listEntities } from '../../utilities/pagination-filtering.utility';
+import {
+  applyPagination,
+  listEntities,
+  listEntitiesUtill,
+} from '../../utilities/pagination-filtering.utility';
 import {
   deleteFromCloud,
   uploadOnCloud,
@@ -38,13 +42,27 @@ const getById = async (
 };
 
 const list = async (params: IBaseQueryParams) => {
-  return await listEntities(repository, params, 'ourservice', {
-    relations: ['images'],
+  let repo = await listEntitiesUtill(repository, params, 'ourservice', {
     searchFields: ['title', 'subtitle', 'slug'],
     validSortBy: ['title', 'id'],
     validSortOrder: ['ASC', 'DESC'],
-    toResponseDTO: toOurServiceResponseDTO,
   });
+
+  repo.leftJoinAndSelect('ourservice.images', 'images');
+
+  if (params.pagination == 'true' || params.pagination == 'True') {
+    const { repo: paginatedRepo, pagination } = await applyPagination(
+      repo,
+      params.limit,
+      params.page,
+    );
+    const entities = await paginatedRepo.getMany();
+    const response = entities.map(toOurServiceResponseDTO);
+    return { response, pagination };
+  }
+  const entities = await repo.getMany();
+  const response = entities.map(toOurServiceResponseDTO);
+  return { response };
 };
 
 const create = async (
@@ -168,11 +186,14 @@ const update = async (
 };
 
 const remove = async (id: number): Promise<void> => {
-  const entity = await repository.findOne({ where: { id }, relations: ["images"] });
+  const entity = await repository.findOne({
+    where: { id },
+    relations: ['images'],
+  });
   if (!entity) {
     throw new Error('OurService not found');
   }
-  
+
   for (const item of entity.images) {
     if (item.cloudinary_image_public_id) {
       await deleteFromCloud(item.cloudinary_image_public_id);

@@ -13,7 +13,7 @@ import {
 } from './mapper/product.mapper';
 import { In } from 'typeorm';
 import { Tag } from '../../entities/tag/tag.entity';
-import { listEntities } from '../../utilities/pagination-filtering.utility';
+import { applyPagination, listEntities, listEntitiesUtill } from '../../utilities/pagination-filtering.utility';
 import { IBaseQueryParams } from 'common.interface';
 import {
   deleteFromCloud,
@@ -38,19 +38,37 @@ const getById = async (
   return toProductDetailResponseDTO(entity);
 };
 
+
 const list = async (params: IBaseQueryParams) => {
-  return await listEntities(repository, params, 'product', {
-    relations: ['category', 'tags', 'images'],
-    searchFields: [
-      'product.title',
-      'product.slug',
-      'category.name',
-      'tags.name',
-    ],
-    validSortBy: ['title', 'price', 'id'],
-    validSortOrder: ['ASC', 'DESC'],
-    toResponseDTO: toProductResponseDTO,
+  let repo = await listEntitiesUtill(repository, params, 'product', {
+  searchFields: [
+    'product.title',
+    'product.slug',
+    'category.name',
+    'tags.name',
+  ],
+  validSortBy: ['title', 'price', 'id'],
+  validSortOrder: ['ASC', 'DESC'],
   });
+
+  repo
+    .leftJoinAndSelect('product.category', 'category')
+    .leftJoinAndSelect('product.tags', 'tags')
+    .leftJoinAndSelect('product.images', 'images');
+
+  if (params.pagination == 'true' || params.pagination == 'True') {
+    const { repo: paginatedRepo, pagination } = await applyPagination(
+      repo,
+      params.limit,
+      params.page,
+    );
+    const entities = await paginatedRepo.getMany();
+    const response = entities.map(toProductResponseDTO);
+    return { response, pagination };
+  }
+  const entities = await repo.getMany();
+  const response = entities.map(toProductResponseDTO);
+  return { response };
 };
 
 const create = async (
