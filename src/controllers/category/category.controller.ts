@@ -2,9 +2,9 @@ import httpStatusCodes from 'http-status-codes';
 import IController from '../../interfaces/IController';
 import ApiResponse from '../../utilities/api-response.utility';
 import service from '../../services/category/category.service';
-import { CreateCategoryDTO, UpdateCategoryDTO } from '../../services/dto/category/category.dto';
 import ApiUtility from '../../utilities/api.utility';
 import { IBaseQueryParams } from 'common.interface';
+import { ICreateCategory, IUpdateCategory } from 'category/category.interface';
 
 const getById: IController = async (req, res) => {
   try {
@@ -55,7 +55,7 @@ const list: IController = async (req, res) => {
 
 const create: IController = async (req, res) => {
   try {
-    const params: CreateCategoryDTO = {
+    const params: ICreateCategory = {
       name: req.body.name,
     };
     const data = await service.create(params);
@@ -72,7 +72,7 @@ const create: IController = async (req, res) => {
 const update: IController = async (req, res) => {
   try {
     const id: number = parseInt(req.params.id, 10);
-    const params: UpdateCategoryDTO = {
+    const params: IUpdateCategory = {
       name: req.body.name,
     };
     const data = await service.update(id, params);

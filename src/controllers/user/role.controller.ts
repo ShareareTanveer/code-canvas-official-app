@@ -2,11 +2,11 @@ import httpStatusCodes from 'http-status-codes';
 import IController from '../../interfaces/IController';
 import ApiResponse from '../../utilities/api-response.utility';
 import service from '../../services/auth/role.service';
-import { CreateRoleDTO,UpdateRoleDTO } from '../../services/dto/auth/role.dto';
+import { ICreateRole, IUpdateRole } from 'auth/role.interface';
 
 const create: IController = async (req, res) => {
   try {
-    const params: CreateRoleDTO = {
+    const params: ICreateRole = {
       name: req.body.name,
       permissions: req.body.permissions,
       users: req.body.users,
@@ -25,7 +25,7 @@ const create: IController = async (req, res) => {
 const update: IController = async (req, res) => {
   try {
     const id: number = parseInt(req.params.id, 10);
-    const params: UpdateRoleDTO = {
+    const params: IUpdateRole = {
       name: req.body.name,
       permissions: req.body.permissions,
       users: req.body.users,

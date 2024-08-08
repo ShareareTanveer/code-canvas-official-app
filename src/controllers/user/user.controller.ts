@@ -12,25 +12,29 @@ import {
   IDeleteById,
   IDetailById,
 } from '../../interfaces/common.interface';
-import {
-  loginDTO,
-  resetPasswordDTO,
-  sendEmailDTO,
-} from '../../services/dto/auth/auth.dto';
-import {
-  CreateUserDTO,
-  RegisterUserDTO,
-  UpdateUserByAdminDTO,
-  UpdateUserDTO,
-} from '../../services/dto/user/user.dto';
 import constants from '../../constants';
 import { MailData } from 'mail-data.interface';
-import { forgotPassword, twoFactorAuth, userSignUp } from '../../services/mail/mail.service';
+import {
+  forgotPassword,
+  twoFactorAuth,
+  userSignUp,
+} from '../../services/mail/mail.service';
+import {
+  ILogin,
+  IResetPassword,
+  ISendEmail,
+} from 'auth/auth.interface';
+import {
+  ICreateUser,
+  IRegisterUser,
+  IUpdateUser,
+  IUpdateUserByAdmin,
+} from 'user/user.interface';
 
 const register: IController = async (req, res) => {
   try {
     const imageLocalFile = req.file?.path;
-    const params: RegisterUserDTO = {
+    const params: IRegisterUser = {
       email: req.body.email,
       password: req.body.password,
       firstName: req.body.firstName,
@@ -132,7 +136,7 @@ const login: IController = async (req, res) => {
     if (req.query.web && parseInt(req.query.web as string, 10) === 0) {
       web = 0;
     }
-    const params: loginDTO = {
+    const params: ILogin = {
       email: req.body.email,
       password: req.body.password,
     };
@@ -160,7 +164,7 @@ const login: IController = async (req, res) => {
 const create: IController = async (req, res) => {
   try {
     const imageLocalFile = req.file?.path;
-    const params: CreateUserDTO = {
+    const params: ICreateUser = {
       email: req.body.email,
       password: req.body.password,
       firstName: req.body.firstName,
@@ -191,7 +195,7 @@ const create: IController = async (req, res) => {
 
 export const sendResetPasswordEmail: IController = async (req, res) => {
   try {
-    const params: sendEmailDTO = {
+    const params: ISendEmail = {
       email: req.body.email,
     };
     const user = await service.sendResetPasswordEmail(params);
@@ -203,7 +207,7 @@ export const sendResetPasswordEmail: IController = async (req, res) => {
       },
       to: 'ominuzhat@gmail.com',
     };
-    console.log(access_token)
+    console.log(access_token);
     forgotPassword(mailDataSignUp);
     return ApiResponse.result(
       res,
@@ -218,7 +222,7 @@ export const sendResetPasswordEmail: IController = async (req, res) => {
 
 export const resetPassword: IController = async (req, res) => {
   try {
-    const { confirmNewPassword, newPassword }: resetPasswordDTO =
+    const { confirmNewPassword, newPassword }: IResetPassword =
       req.body;
     if (confirmNewPassword !== newPassword) {
       return ApiResponse.error(
@@ -315,8 +319,8 @@ const detail: IController = async (req, res) => {
 const update: IController = async (req, res) => {
   try {
     const imageLocalFile = req.file?.path;
-    const params: UpdateUserByAdminDTO = {
-      id: parseInt(req.params.id, 10),
+    const id: number = parseInt(req.params.id, 10);
+    const params: IUpdateUserByAdmin = {
       firstName: req.body.firstName,
       lastName: req.body.lastName,
       phone: req.body.phone,
@@ -325,7 +329,7 @@ const update: IController = async (req, res) => {
       role: req.body.role,
       image: imageLocalFile,
     };
-    const user = await service.update(params);
+    const user = await service.update(params, id);
     return ApiResponse.result(res, user, httpStatusCodes.OK);
   } catch (e) {
     ApiResponse.exception(res, e);
@@ -334,9 +338,9 @@ const update: IController = async (req, res) => {
 
 const updateMe: IController = async (req, res) => {
   try {
+    const id: number = parseInt(req.params.id, 10);
     const imageLocalFile = req.file?.path;
-    const params: UpdateUserDTO = {
-      id: req.user.id,
+    const params: IUpdateUser = {
       firstName: req.body.firstName,
       lastName: req.body.lastName,
       phone: req.body.phone,
@@ -344,7 +348,7 @@ const updateMe: IController = async (req, res) => {
       gender: req.body.gender,
       image: imageLocalFile,
     };
-    const user = await service.updateMe(params);
+    const user = await service.updateMe(params, id);
     return ApiResponse.result(res, user, httpStatusCodes.OK);
   } catch (e) {
     ApiResponse.exception(res, e);
@@ -441,5 +445,5 @@ export default {
   verifyEmail,
   resetPassword,
   generateResetPasswordCookie,
-  sendResetPasswordEmail
+  sendResetPasswordEmail,
 };

@@ -1,7 +1,7 @@
+import { IRoleResponse } from 'auth/role.interface';
 import { Role } from '../../../entities/user/role.entity';
-import { RoleResponseDTO } from '../../../services/dto/auth/role.dto';
 
-export const toRoleResponseDTO = (entity: Role): RoleResponseDTO => {
+export const toIRoleResponse = (entity: Role): IRoleResponse => {
   return {
     id: entity.id,
     name: entity.name,

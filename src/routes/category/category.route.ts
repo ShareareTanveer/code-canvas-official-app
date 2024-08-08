@@ -1,9 +1,11 @@
 import express from 'express';
 import categoryController from '../../controllers/category/category.controller';
 import { validateDTO } from '../../middlewares/dto-validator.middleware';
-import { CreateCategoryDTO, UpdateCategoryDTO } from '../../services/dto/category/category.dto';
+import { UpdateCategoryDTO } from '../../services/dto/category/category.dto';
 import { checkPermission } from '../../middlewares/authenticate.middleware';
 import constants from '../../constants';
+import categorySchema from '../../validations/schemas/category/category.schema';
+const schemaValidator = require('express-joi-validator');
 
 const router = express.Router();
 const model = constants.PERMISSION.MODEL.CATEGORY
@@ -187,7 +189,7 @@ router.delete('/:id', checkPermission(model), categoryController.remove);
  *               error:
  *                 message: "Error message"
  */
-router.post('/', checkPermission(model), validateDTO(CreateCategoryDTO), categoryController.create);
+router.post('/', checkPermission(model), schemaValidator(categorySchema.create), categoryController.create);
 
 /**
  * @swagger

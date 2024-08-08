@@ -1,9 +1,9 @@
+import { ICategoryResponse } from 'category/category.interface';
 import { Category } from '../../../entities/category/category.entity';
-import { CategoryResponseDTO } from '../../dto/category/category.dto';
 
-export const toCategoryResponseDTO = (
+export const toICategoryResponse = (
   entity: Category,
-): CategoryResponseDTO => {
+): ICategoryResponse => {
   return {
     id: entity.id,
     name: entity.name,

@@ -7,13 +7,10 @@ import {
   UpdateReviewDTO,
 } from '../dto/review/review.dto';
 import { toReviewResponseDTO } from './mapper/review.mapper';
-import ApiUtility from '../../utilities/api.utility';
 import { User } from '../../entities/user/user.entity';
 import { Product } from '../../entities/product/product.entity';
-import { IReviewQueryParams } from 'review.interface';
 import {
   applyPagination,
-  listEntities,
   listEntitiesUtill,
 } from '../../utilities/pagination-filtering.utility';
 

@@ -1,9 +1,9 @@
+import { ISimpleUserResponse } from 'user/user.interface';
 import { User } from '../../../entities/user/user.entity';
-import { SimpleUserResponseDTO } from '../../../services/dto/user/user.dto';
 
-export const toUserResponseDTO = (
+export const toIUserResponse = (
   entity: User,
-): SimpleUserResponseDTO => {
+): ISimpleUserResponse => {
   return {
     id: entity.id,
     firstName: entity.firstName,

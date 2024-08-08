@@ -2,18 +2,18 @@ import dataSource from '../../configs/orm.config';
 import { User } from '../../entities/user/user.entity';
 import { Permission } from '../../entities/user/permission.entity';
 import { Role } from '../../entities/user/role.entity';
-import { CreateRoleDTO, RoleResponseDTO, UpdateRoleDTO } from '../dto/auth/role.dto';
-import { toRoleResponseDTO } from './mapper/role.mapper';
+import { toIRoleResponse } from './mapper/role.mapper';
 import { In } from 'typeorm';
 import { StringError } from '../../errors/string.error';
+import { ICreateRole,IRoleResponse,IUpdateRole } from 'auth/role.interface';
 
 const roleRepository = dataSource.getRepository(Role);
 const permissionRepository = dataSource.getRepository(Permission);
 const userRepository = dataSource.getRepository(User);
 
 const create = async (
-  params: CreateRoleDTO,
-): Promise<RoleResponseDTO> => {
+  params: ICreateRole,
+): Promise<IRoleResponse> => {
   const { name, permissions, users } = params;
   const role = new Role();
   role.name = name;
@@ -30,13 +30,13 @@ const create = async (
   }
 
   const savedEntity = await roleRepository.save(role);
-  return toRoleResponseDTO(savedEntity);
+  return toIRoleResponse(savedEntity);
 };
 
 const update = async (
   id: number,
-  params: UpdateRoleDTO,
-): Promise<RoleResponseDTO> => {
+  params: IUpdateRole,
+): Promise<IRoleResponse> => {
   const { name, permissions, users } = params;
   const role = await roleRepository.findOne({
     where: { id: id },
@@ -62,14 +62,14 @@ const update = async (
   }
 
   const savedEntity = await roleRepository.save(role);
-  return toRoleResponseDTO(savedEntity);
+  return toIRoleResponse(savedEntity);
 };
 
 const list = async () => {
   const entities = await roleRepository.find({
     relations: ['permissions', 'users'],
   });
-  return entities.map(toRoleResponseDTO);
+  return entities.map(toIRoleResponse);
 };
 
 const detail = async (params: {id: number}) => {
@@ -83,7 +83,7 @@ const detail = async (params: {id: number}) => {
     throw new StringError('User is not existed');
   }
 
-  return toRoleResponseDTO(role);
+  return toIRoleResponse(role);
 };
 
 const remove = async (params: {id: number}) => {

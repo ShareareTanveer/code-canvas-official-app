@@ -8,7 +8,6 @@ import {
 } from '../../services/dto/review/review.dto';
 import ApiUtility from '../../utilities/api.utility';
 import { User } from '../../entities/user/user.entity';
-import { IReviewQueryParams } from 'review.interface';
 import { IBaseQueryParams } from 'common.interface';
 
 const getById: IController = async (req, res) => {

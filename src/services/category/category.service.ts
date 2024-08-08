@@ -1,26 +1,25 @@
 import {
   applyPagination,
-  listEntities,
   listEntitiesUtill,
 } from '../../utilities/pagination-filtering.utility';
 import dataSource from '../../configs/orm.config';
 import { Category } from '../../entities/category/category.entity';
-import {
-  CreateCategoryDTO,
-  CategoryResponseDTO,
-  UpdateCategoryDTO,
-} from '../dto/category/category.dto';
-import { toCategoryResponseDTO } from './mapper/category.mapper';
+import { toICategoryResponse } from './mapper/category.mapper';
 import { IBaseQueryParams } from 'common.interface';
+import {
+  ICategoryResponse,
+  ICreateCategory,
+  IUpdateCategory,
+} from 'category/category.interface';
 
 const repository = dataSource.getRepository(Category);
 
-const getById = async (id: number): Promise<CategoryResponseDTO> => {
+const getById = async (id: number): Promise<ICategoryResponse> => {
   const entity = await repository.findOne({ where: { id } });
   if (!entity) {
     throw new Error('Category not found');
   }
-  return toCategoryResponseDTO(entity);
+  return toICategoryResponse(entity);
 };
 
 const list = async (params: IBaseQueryParams) => {
@@ -37,33 +36,33 @@ const list = async (params: IBaseQueryParams) => {
       params.page,
     );
     const entities = await paginatedRepo.getMany();
-    const response = entities.map(toCategoryResponseDTO);
+    const response = entities.map(toICategoryResponse);
     return { response, pagination };
   }
   const entities = await repo.getMany();
-  const response = entities.map(toCategoryResponseDTO);
+  const response = entities.map(toICategoryResponse);
   return { response };
 };
 
 const create = async (
-  params: CreateCategoryDTO,
-): Promise<CategoryResponseDTO> => {
+  params: ICreateCategory,
+): Promise<ICategoryResponse> => {
   const entity = repository.create(params);
   const savedEntity = await repository.save(entity);
-  return toCategoryResponseDTO(savedEntity);
+  return toICategoryResponse(savedEntity);
 };
 
 const update = async (
   id: number,
-  params: UpdateCategoryDTO,
-): Promise<CategoryResponseDTO> => {
+  params: IUpdateCategory,
+): Promise<ICategoryResponse> => {
   const entity = await repository.findOne({ where: { id } });
   if (!entity) {
     throw new Error('Category not found');
   }
   entity.name = params.name;
   const updatedEntity = await repository.save(entity);
-  return toCategoryResponseDTO(updatedEntity);
+  return toICategoryResponse(updatedEntity);
 };
 
 const remove = async (id: number): Promise<void> => {

@@ -1,9 +1,9 @@
 import express from 'express';
 import userController from '../../controllers/user/user.controller';
-import { loginDTO, resetPasswordDTO, sendEmailDTO } from '../../services/dto/auth/auth.dto';
-import { validateDTO } from '../../middlewares/dto-validator.middleware';
-import { RegisterUserDTO } from '../../services/dto/user/user.dto';
 import { upload } from '../../middlewares/multer.middleware';
+import authSchema from '../../validations/schemas/auth/auth.schema';
+import userSchema from '../../validations/schemas/user/user.schema';
+const schemaValidator = require('express-joi-validator');
 
 const router = express.Router();
 
@@ -76,8 +76,8 @@ const router = express.Router();
 
 router.post(
   '/register',
-  upload.single("image"),
-  validateDTO(RegisterUserDTO),
+  upload.single('image'),
+  schemaValidator(userSchema.registerUser),
   userController.register,
 );
 
@@ -109,10 +109,7 @@ router.post(
  *               error:
  *                 message: "Invalid email or password"
  */
-router.post(
-  '/verify-email',
-  userController.verifyEmail,
-);
+router.post('/verify-email', userController.verifyEmail);
 
 /**
  * @swagger
@@ -157,8 +154,11 @@ router.post(
  *               error:
  *                 message: "Invalid email or password"
  */
-router.post('/login', validateDTO(loginDTO), userController.login);
-
+router.post(
+  '/login',
+  schemaValidator(authSchema.login),
+  userController.login,
+);
 
 /**
  * @swagger
@@ -198,7 +198,7 @@ router.post('/login', validateDTO(loginDTO), userController.login);
  */
 router.post(
   '/send-reset-password-email',
-  validateDTO(sendEmailDTO),
+  schemaValidator(authSchema.sendEmail),
   userController.sendResetPasswordEmail,
 );
 
@@ -260,7 +260,7 @@ router.post(
  */
 router.post(
   '/change-password',
-  validateDTO(resetPasswordDTO),
+  schemaValidator(authSchema.resetPassword),
   userController.resetPassword,
 );
 

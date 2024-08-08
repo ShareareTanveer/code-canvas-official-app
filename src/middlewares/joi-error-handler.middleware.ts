@@ -14,24 +14,28 @@ interface IJoiError extends IError {
 }
 
 export default (
-  err: IJoiError,
+  err: any,
   req: express.Request,
   res: express.Response,
   next: express.NextFunction,
 ) => {
-  if (err.isJoi) {
-    const error = {
+  if (err.data && err.output) {
+    const errorResponse = {
       code: HttpStatus.BAD_REQUEST,
-      message: HttpStatus.getStatusText(HttpStatus.BAD_REQUEST),
+      message:
+        err.data && err?.data[0]
+          ? err?.data[0]?.message
+          : 'Invalid Input',
       details:
-        err.details &&
-        err.details.map((err) => ({
+        err.data &&
+        err.data.map((err: any) => ({
           message: err.message,
-          param: err.path,
+          context: err.context,
         })),
     };
-    return res.status(HttpStatus.BAD_REQUEST).json(error);
+    return res
+      .status(HttpStatus.BAD_REQUEST)
+      .json({ success: false, error: errorResponse });
   }
-
   return next(err);
 };

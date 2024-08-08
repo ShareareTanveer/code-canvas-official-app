@@ -2,11 +2,11 @@ import httpStatusCodes from 'http-status-codes';
 import IController from '../../interfaces/IController';
 import ApiResponse from '../../utilities/api-response.utility';
 import service from '../../services/auth/permission.service';
-import { CreatePermissionDTO, UpdatePermissionDTO } from '../../services/dto/permission/create-update-permission.dto';
+import { ICreatePermission, IUpdatePermission } from 'auth/permission.interface';
 
 const create: IController = async (req, res) => {
   try {
-    const params: CreatePermissionDTO = {
+    const params: ICreatePermission = {
       name: req.body.name,
       codename: req.body.codename,
       entity_name: req.body.entity_name,
@@ -22,7 +22,7 @@ const create: IController = async (req, res) => {
 const update: IController = async (req, res) => {
   try {
     const id: number = parseInt(req.params.id, 10);
-    const params: UpdatePermissionDTO = {
+    const params: IUpdatePermission = {
       name: req.body.name,
       codename: req.body.codename,
       entity_name: req.body.entity_name,

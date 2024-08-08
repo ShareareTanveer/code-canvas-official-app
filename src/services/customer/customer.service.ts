@@ -58,9 +58,13 @@ const list = async (params: IBaseQueryParams) => {
 const create = async (params: CreateCustomerDTO) => {
   const user = await userRepository.findOne({
     where: { id: params.user },
+    relations: ['customer'],
   });
   if (!user) {
     throw new Error('User not found');
+  }
+  if (user.customer) {
+    throw new Error('customer already exists');
   }
 
   const uploadFile = async (filePath: string | undefined) => {

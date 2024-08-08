@@ -1,11 +1,11 @@
+import { ICreatePermission, IUpdatePermission } from 'auth/permission.interface';
 import dataSource from '../../configs/orm.config';
 import { Permission } from '../../entities/user/permission.entity';
-import { CreatePermissionDTO, UpdatePermissionDTO } from '../dto/permission/create-update-permission.dto';
 
 const create = async (
-  params: CreatePermissionDTO,
+  params: ICreatePermission,
 ): Promise<Permission> => {
-  const data: CreatePermissionDTO = {
+  const data: ICreatePermission = {
     name: params.name,
     codename: params.codename,
     entity_name: params.entity_name,
@@ -16,7 +16,7 @@ const create = async (
 
 const update = async (
   id: number,
-  params: Partial<UpdatePermissionDTO>,
+  params: Partial<IUpdatePermission>,
 ): Promise<Permission> => {
   const permissionRepository = dataSource.getRepository(Permission);
   const existingPermission = await permissionRepository.findOneBy({

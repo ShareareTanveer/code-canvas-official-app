@@ -1,18 +1,14 @@
 import express from 'express';
 import userController from '../../controllers/user/user.controller';
 import { checkPermission } from '../../middlewares/authenticate.middleware';
-import { validateDTO } from '../../middlewares/dto-validator.middleware';
-import {
-  CreateUserDTO,
-  UpdateUserByAdminDTO,
-  UpdateUserDTO,
-} from '../../services/dto/user/user.dto';
 import { upload } from '../../middlewares/multer.middleware';
 import constants from '../../constants';
+import userSchema from '../../validations/schemas/user/user.schema';
+const schemaValidator = require('express-joi-validator');
 
 const router = express.Router();
 
-const model = constants.PERMISSION.MODEL.USER
+const model = constants.PERMISSION.MODEL.USER;
 
 /**
  * @swagger
@@ -287,12 +283,29 @@ const model = constants.PERMISSION.MODEL.USER
  *         description: Internal server error
  */
 router.get('/me', userController.me);
-router.patch('/me', upload.single("image"), validateDTO(UpdateUserDTO), userController.updateMe);
+router.patch(
+  '/me',
+  upload.single('image'),
+  schemaValidator(userSchema.updateUser),
+  userController.updateMe,
+);
 
 router.get('/', checkPermission(model), userController.list);
 router.get('/:id', checkPermission(model), userController.detail);
-router.post('/', checkPermission(model), upload.single("image"), validateDTO(CreateUserDTO), userController.create);
-router.patch('/:id', checkPermission(model), upload.single("image"), validateDTO(UpdateUserByAdminDTO), userController.update);
+router.post(
+  '/',
+  checkPermission(model),
+  upload.single('image'),
+  schemaValidator(userSchema.createUser),
+  userController.create,
+);
+router.patch(
+  '/:id',
+  checkPermission(model),
+  upload.single('image'),
+  schemaValidator(userSchema.updateUserByAdmin),
+  userController.update,
+);
 router.delete('/:id', checkPermission(model), userController.remove);
 
 export default router;

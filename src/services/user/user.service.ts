@@ -7,31 +7,30 @@ import ApiUtility from '../../utilities/api.utility';
 import Encryption from '../../utilities/encryption.utility';
 import {
   applyPagination,
-  listEntities,
   listEntitiesUtill,
 } from '../../utilities/pagination-filtering.utility';
 import { loginDTO } from '../dto/auth/auth.dto';
-import { toUserResponseDTO } from './mapper/user.mapper';
+import { toIUserResponse } from './mapper/user.mapper';
 import {
   IBaseQueryParams,
   IDeleteById,
   IDetailById,
 } from '../../interfaces/common.interface';
 import {
-  CreateUserDTO,
-  RegisterUserDTO,
-  SimpleUserResponseDTO,
-  UpdateUserByAdminDTO,
-  UpdateUserDTO,
-} from '../dto/user/user.dto';
-import {
   deleteFromCloud,
   uploadOnCloud,
 } from '../../utilities/cloudiary.utility';
+import {
+  ICreateUser,
+  IRegisterUser,
+  ISimpleUserResponse,
+  IUpdateUser,
+  IUpdateUserByAdmin,
+} from 'user/user.interface';
 
 const register = async (
-  params: RegisterUserDTO,
-): Promise<SimpleUserResponseDTO> => {
+  params: IRegisterUser,
+): Promise<ISimpleUserResponse> => {
   const role = await dataSource.getRepository(Role).findOne({
     where: { name: 'User' },
   });
@@ -70,12 +69,12 @@ const register = async (
   user.details = userDetail;
 
   const savedUser = await dataSource.getRepository(User).save(user);
-  return toUserResponseDTO(savedUser);
+  return toIUserResponse(savedUser);
 };
 
 const create = async (
-  params: CreateUserDTO,
-): Promise<SimpleUserResponseDTO> => {
+  params: ICreateUser,
+): Promise<ISimpleUserResponse> => {
   const role = await dataSource.getRepository(Role).findOne({
     where: { id: params.role },
   });
@@ -114,7 +113,7 @@ const create = async (
   user.details = userDetail;
 
   const savedUser = await dataSource.getRepository(User).save(user);
-  return toUserResponseDTO(savedUser);
+  return toIUserResponse(savedUser);
 };
 
 const login = async (params: loginDTO) => {
@@ -132,7 +131,7 @@ const login = async (params: loginDTO) => {
   }
 
   if (await Encryption.verifyHash(params.password, user.password)) {
-    return toUserResponseDTO(user);
+    return toIUserResponse(user);
   }
 
   throw new StringError('Your password is not correct');
@@ -150,7 +149,7 @@ export const verifyEmail = async (params: { email: string }) => {
   user.status = true;
 
   const savedUser = await dataSource.getRepository(User).save(user);
-  return toUserResponseDTO(savedUser);
+  return toIUserResponse(savedUser);
 };
 
 export const sendResetPasswordEmail = async (params: {
@@ -163,7 +162,7 @@ export const sendResetPasswordEmail = async (params: {
   if (!user) {
     throw new StringError('Your email has not been registered');
   }
-  return toUserResponseDTO(user);
+  return toIUserResponse(user);
 };
 
 export const resetPassword = async (
@@ -206,14 +205,14 @@ const detail = async (params: IDetailById) => {
   return ApiUtility.sanitizeUser(user);
 };
 
-const update = async (params: UpdateUserByAdminDTO) => {
+const update = async (params: IUpdateUserByAdmin, id: number) => {
   const userRepository = dataSource.getRepository(User);
   const role = await dataSource.getRepository(Role).findOne({
     where: { id: params.role },
   });
 
   const user = await userRepository.findOne({
-    where: { id: params.id },
+    where: { id },
     relations: ['details'],
   });
 
@@ -254,11 +253,11 @@ const update = async (params: UpdateUserByAdminDTO) => {
   return await userRepository.save(user);
 };
 
-const updateMe = async (params: UpdateUserDTO) => {
+const updateMe = async (params: IUpdateUser, id: number) => {
   const userRepository = dataSource.getRepository(User);
 
   const user = await userRepository.findOne({
-    where: { id: params.id },
+    where: { id },
     relations: ['details'],
   });
   if (!user) {
@@ -312,11 +311,11 @@ const list = async (params: IBaseQueryParams) => {
       params.page,
     );
     const entities = await paginatedRepo.getMany();
-    const response = entities.map(toUserResponseDTO);
+    const response = entities.map(toIUserResponse);
     return { response, pagination };
   }
   const entities = await repo.getMany();
-  const response = entities.map(toUserResponseDTO);
+  const response = entities.map(toIUserResponse);
   return { response };
 };
 
