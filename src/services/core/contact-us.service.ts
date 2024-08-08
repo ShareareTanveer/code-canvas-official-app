@@ -7,7 +7,12 @@ import {
   UpdateContactUsDTO,
 } from '../dto/core/contact-us.dto';
 import { toContactUsResponseDTO } from './mapper/contact-us.mapper';
-import { listEntities } from '../../utilities/pagination-filtering.utility';
+import {
+  applyPagination,
+  listEntities,
+  listEntitiesUtill,
+} from '../../utilities/pagination-filtering.utility';
+import { toOrderResponseDTO } from '../order/mapper/order.mapper';
 
 const repository = dataSource.getRepository(ContactUs);
 
@@ -20,12 +25,25 @@ const getById = async (id: number): Promise<ContactUsResponseDTO> => {
 };
 
 const list = async (params: IBaseQueryParams) => {
-  return await listEntities(repository, params, 'contactus', {
+  let repo = await listEntitiesUtill(repository, params, 'contactus', {
     searchFields: ['email', 'phone'],
     validSortBy: ['email', 'phone', 'id'],
     validSortOrder: ['ASC', 'DESC'],
-    toResponseDTO: toContactUsResponseDTO,
   });
+
+  if (params.pagination == 'true' || params.pagination == 'True') {
+    const { repo: paginatedRepo, pagination } = await applyPagination(
+      repo,
+      params.limit,
+      params.page,
+    );
+    const entities = await paginatedRepo.getMany();
+    const response = entities.map(toContactUsResponseDTO);
+    return { response, pagination };
+  }
+  const entities = await repo.getMany();
+  const response = entities.map(toContactUsResponseDTO);
+  return { response };
 };
 
 const create = async (

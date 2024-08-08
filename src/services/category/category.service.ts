@@ -1,32 +1,48 @@
-import { listEntities } from '../../utilities/pagination-filtering.utility';
+import {
+  applyPagination,
+  listEntities,
+  listEntitiesUtill,
+} from '../../utilities/pagination-filtering.utility';
 import dataSource from '../../configs/orm.config';
 import { Category } from '../../entities/category/category.entity';
-import { CreateCategoryDTO, CategoryResponseDTO, UpdateCategoryDTO } from '../dto/category/category.dto';
+import {
+  CreateCategoryDTO,
+  CategoryResponseDTO,
+  UpdateCategoryDTO,
+} from '../dto/category/category.dto';
 import { toCategoryResponseDTO } from './mapper/category.mapper';
 import { IBaseQueryParams } from 'common.interface';
 
 const repository = dataSource.getRepository(Category);
 
 const getById = async (id: number): Promise<CategoryResponseDTO> => {
-  const entity = await repository.findOne({where: {id}});
+  const entity = await repository.findOne({ where: { id } });
   if (!entity) {
-    throw new Error('Category not found',);
+    throw new Error('Category not found');
   }
   return toCategoryResponseDTO(entity);
 };
 
 const list = async (params: IBaseQueryParams) => {
-  return await listEntities(
-    repository,
-    params,
-    'category',
-    {
-      searchFields: ['name'],
-      validSortBy: ['name', 'id'],
-      validSortOrder: ['ASC', 'DESC'],
-      toResponseDTO: toCategoryResponseDTO
-    }
-  );
+  let repo = await listEntitiesUtill(repository, params, 'category', {
+    searchFields: ['name'],
+    validSortBy: ['name', 'id'],
+    validSortOrder: ['ASC', 'DESC'],
+  });
+
+  if (params.pagination == 'true' || params.pagination == 'True') {
+    const { repo: paginatedRepo, pagination } = await applyPagination(
+      repo,
+      params.limit,
+      params.page,
+    );
+    const entities = await paginatedRepo.getMany();
+    const response = entities.map(toCategoryResponseDTO);
+    return { response, pagination };
+  }
+  const entities = await repo.getMany();
+  const response = entities.map(toCategoryResponseDTO);
+  return { response };
 };
 
 const create = async (
@@ -51,7 +67,7 @@ const update = async (
 };
 
 const remove = async (id: number): Promise<void> => {
-  const entity = await repository.findOne({where: {id}});
+  const entity = await repository.findOne({ where: { id } });
   if (!entity) {
     throw new Error('Category not found');
   }
@@ -64,5 +80,5 @@ export default {
   list,
   create,
   update,
-  remove
+  remove,
 };

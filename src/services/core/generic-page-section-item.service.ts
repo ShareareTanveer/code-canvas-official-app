@@ -8,7 +8,7 @@ import {
   UpdateGenericPageSectionItemDTO,
 } from '../dto/core/generic-page-section-item.dto';
 import { toGenericPageSectionItemResponseDTO } from './mapper/generic-page-section-item.mapper';
-import { listEntities } from '../../utilities/pagination-filtering.utility';
+import { applyPagination, listEntities, listEntitiesUtill } from '../../utilities/pagination-filtering.utility';
 import { deleteFromCloud, uploadOnCloud } from '../../utilities/cloudiary.utility';
 
 const repository = dataSource.getRepository(GenericPageSectionItem);
@@ -28,18 +28,28 @@ const getById = async (
 };
 
 const list = async (params: IBaseQueryParams) => {
-  return await listEntities(
-    repository,
-    params,
-    'genericpagesectionitem',
-    {
-      relations: ['genericPageSection'],
-      searchFields: ['title', 'subtitle'],
-      validSortBy: ['title', 'id'],
-      validSortOrder: ['ASC', 'DESC'],
-      toResponseDTO: toGenericPageSectionItemResponseDTO,
-    },
-  );
+  let repo = await listEntitiesUtill(repository, params, 'genericpagesectionitem', {
+    searchFields: ['title', 'subtitle'],
+    validSortBy: ['title', 'id'],
+    validSortOrder: ['ASC', 'DESC'],
+  });
+
+  repo
+    .leftJoinAndSelect('genericpagesectionitem.genericPageSection', 'genericPageSection')
+
+  if (params.pagination == 'true' || params.pagination == 'True') {
+    const { repo: paginatedRepo, pagination } = await applyPagination(
+      repo,
+      params.limit,
+      params.page,
+    );
+    const entities = await paginatedRepo.getMany();
+    const response = entities.map(toGenericPageSectionItemResponseDTO);
+    return { response, pagination };
+  }
+  const entities = await repo.getMany();
+  const response = entities.map(toGenericPageSectionItemResponseDTO);
+  return { response };
 };
 
 const create = async (

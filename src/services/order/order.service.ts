@@ -14,7 +14,6 @@ import { EOrderStaus } from '../../enum/order-status.enum';
 import { IBaseQueryParams } from 'common.interface';
 import {
   applyPagination,
-  listEntities,
   listEntitiesUtill,
 } from '../../utilities/pagination-filtering.utility';
 

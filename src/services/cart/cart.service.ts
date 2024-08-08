@@ -5,7 +5,7 @@ import { AddToCartDTO, CartResponseDTO } from '../dto/cart/cart.dto';
 import { toCartResponseDTO } from './mapper/cart.mapper';
 import { Product } from '../../entities/product/product.entity';
 import { IBaseQueryParams } from 'common.interface';
-import { listEntities } from '../../utilities/pagination-filtering.utility';
+import { applyPagination, listEntities, listEntitiesUtill } from '../../utilities/pagination-filtering.utility';
 
 const repository = dataSource.getRepository(Cart);
 const productRepository = dataSource.getRepository(Product);
@@ -22,13 +22,28 @@ const getById = async (id: string): Promise<CartResponseDTO> => {
 };
 
 const list = async (params: IBaseQueryParams) => {
-  return await listEntities(repository, params, 'cart', {
-    relations: ['products'],
+  let repo = await listEntitiesUtill(repository, params, 'cart', {
     searchFields: ['products.title'],
     validSortBy: ['cart.id'],
     validSortOrder: ['ASC', 'DESC'],
-    toResponseDTO: toCartResponseDTO,
   });
+
+  repo
+    .leftJoinAndSelect('cart.products', 'products')
+
+  if (params.pagination == 'true' || params.pagination == 'True') {
+    const { repo: paginatedRepo, pagination } = await applyPagination(
+      repo,
+      params.limit,
+      params.page,
+    );
+    const entities = await paginatedRepo.getMany();
+    const response = entities.map(toCartResponseDTO);
+    return { response, pagination };
+  }
+  const entities = await repo.getMany();
+  const response = entities.map(toCartResponseDTO);
+  return { response };
 };
 
 const toggleCartProduct = async (

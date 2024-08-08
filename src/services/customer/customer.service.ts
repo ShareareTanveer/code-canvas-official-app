@@ -1,4 +1,4 @@
-import { listEntities } from '../../utilities/pagination-filtering.utility';
+import { applyPagination, listEntities, listEntitiesUtill } from '../../utilities/pagination-filtering.utility';
 import dataSource from '../../configs/orm.config';
 import { Customer } from '../../entities/customer/customer.entity';
 import {
@@ -32,11 +32,29 @@ const getById = async (id: number): Promise<CustomerResponseDTO> => {
 };
 
 const list = async (params: IBaseQueryParams) => {
-  return await listEntities(customerRepository, params, 'customer', {
-    relations: ['company', 'contactPerson', 'user'],
-    toResponseDTO: toCustomerResponseDTO,
+  let repo = await listEntitiesUtill(customerRepository, params, 'customer', {
   });
+
+  repo
+    .leftJoinAndSelect('customer.company', 'company')
+    .leftJoinAndSelect('customer.contactPerson', 'contactPerson')
+    .leftJoinAndSelect('customer.user', 'user')
+
+  if (params.pagination == 'true' || params.pagination == 'True') {
+    const { repo: paginatedRepo, pagination } = await applyPagination(
+      repo,
+      params.limit,
+      params.page,
+    );
+    const entities = await paginatedRepo.getMany();
+    const response = entities.map(toCustomerResponseDTO);
+    return { response, pagination };
+  }
+  const entities = await repo.getMany();
+  const response = entities.map(toCustomerResponseDTO);
+  return { response };
 };
+
 const create = async (params: CreateCustomerDTO) => {
   const user = await userRepository.findOne({
     where: { id: params.user },

@@ -1,4 +1,8 @@
-import { listEntities } from '../../utilities/pagination-filtering.utility';
+import {
+  applyPagination,
+  listEntities,
+  listEntitiesUtill,
+} from '../../utilities/pagination-filtering.utility';
 import dataSource from '../../configs/orm.config';
 import { Tag } from '../../entities/tag/tag.entity';
 import {
@@ -8,6 +12,7 @@ import {
 } from '../dto/tag/tag.dto';
 import { toTagResponseDTO } from './mapper/tag.mapper';
 import { IBaseQueryParams } from 'common.interface';
+import { toOrderResponseDTO } from '../order/mapper/order.mapper';
 
 const repository = dataSource.getRepository(Tag);
 
@@ -20,8 +25,7 @@ const getById = async (id: number): Promise<TagResponseDTO> => {
 };
 
 const list = async (params: IBaseQueryParams) => {
-  return await listEntities(repository, params, 'tag', {
-    relations: ['products'],
+  let repo = await listEntitiesUtill(repository, params, 'tag', {
     searchFields: [
       'name',
       'products.title',
@@ -30,8 +34,23 @@ const list = async (params: IBaseQueryParams) => {
     ],
     validSortBy: ['name', 'id'],
     validSortOrder: ['ASC', 'DESC'],
-    toResponseDTO: toTagResponseDTO,
   });
+
+  repo.leftJoinAndSelect('tag.products', 'products');
+
+  if (params.pagination == 'true' || params.pagination == 'True') {
+    const { repo: paginatedRepo, pagination } = await applyPagination(
+      repo,
+      params.limit,
+      params.page,
+    );
+    const entities = await paginatedRepo.getMany();
+    const response = entities.map(toTagResponseDTO);
+    return { response, pagination };
+  }
+  const entities = await repo.getMany();
+  const response = entities.map(toTagResponseDTO);
+  return { response };
 };
 
 const create = async (

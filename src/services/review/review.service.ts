@@ -11,7 +11,11 @@ import ApiUtility from '../../utilities/api.utility';
 import { User } from '../../entities/user/user.entity';
 import { Product } from '../../entities/product/product.entity';
 import { IReviewQueryParams } from 'review.interface';
-import { listEntities } from '../../utilities/pagination-filtering.utility';
+import {
+  applyPagination,
+  listEntities,
+  listEntitiesUtill,
+} from '../../utilities/pagination-filtering.utility';
 
 const repository = dataSource.getRepository(Review);
 const productRepository = dataSource.getRepository(Product);
@@ -28,8 +32,7 @@ const getById = async (id: number): Promise<ReviewResponseDTO> => {
 };
 
 const list = async (params: IBaseQueryParams) => {
-  return await listEntities(repository, params, 'review', {
-    relations: ['product', 'user'],
+  let repo = await listEntitiesUtill(repository, params, 'review', {
     searchFields: [
       'product.title',
       'product.slug',
@@ -39,8 +42,25 @@ const list = async (params: IBaseQueryParams) => {
     ],
     validSortBy: ['id'],
     validSortOrder: ['ASC', 'DESC'],
-    toResponseDTO: toReviewResponseDTO,
   });
+
+  repo
+    .leftJoinAndSelect('review.user', 'user')
+    .leftJoinAndSelect('review.product', 'product');
+
+  if (params.pagination == 'true' || params.pagination == 'True') {
+    const { repo: paginatedRepo, pagination } = await applyPagination(
+      repo,
+      params.limit,
+      params.page,
+    );
+    const entities = await paginatedRepo.getMany();
+    const response = entities.map(toReviewResponseDTO);
+    return { response, pagination };
+  }
+  const entities = await repo.getMany();
+  const response = entities.map(toReviewResponseDTO);
+  return { response };
 };
 
 const create = async (
