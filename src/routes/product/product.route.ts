@@ -57,7 +57,7 @@ const model = constants.PERMISSION.MODEL.PRODUCT
  *           type: array
  *           items:
  *             type: string
- *           example: ["image1.jpg", "image2.jpg"]
+ *           example: ["image1.jpg", "image2.jpg"] 
  *         tags:
  *           type: array
  *           items:
@@ -103,7 +103,7 @@ const model = constants.PERMISSION.MODEL.PRODUCT
  *           type: array
  *           items:
  *             type: string
- *           example: ["image1.jpg", "image2.jpg"]
+ *             format: binary
  *
  *     UpdateProductDTO:
  *       type: object
@@ -140,7 +140,7 @@ const model = constants.PERMISSION.MODEL.PRODUCT
  *           type: array
  *           items:
  *             type: string
- *           example: ["updated_image1.jpg", "updated_image2.jpg"]
+ *             format: binary
  *         tags:
  *           type: array
  *           items:
@@ -295,7 +295,7 @@ router.get('/:id', productController.getById);
  *     requestBody:
  *       required: true
  *       content:
- *         application/json:
+ *         multipart/form-data:
  *           schema:
  *             $ref: '#/components/schemas/CreateProductDTO'
  *     responses:

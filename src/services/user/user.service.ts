@@ -5,7 +5,11 @@ import { User } from '../../entities/user/user.entity';
 import { UserDetail } from '../../entities/user/userDetails.entity';
 import ApiUtility from '../../utilities/api.utility';
 import Encryption from '../../utilities/encryption.utility';
-import { listEntities } from '../../utilities/pagination-filtering.utility';
+import {
+  applyPagination,
+  listEntities,
+  listEntitiesUtill,
+} from '../../utilities/pagination-filtering.utility';
 import { loginDTO } from '../dto/auth/auth.dto';
 import { toUserResponseDTO } from './mapper/user.mapper';
 import {
@@ -178,12 +182,10 @@ export const resetPassword = async (
 
 const getById = async (params: IDetailById) => {
   try {
-    const data = await dataSource
-      .getRepository(User)
-      .findOne({
-        where: { id: params.id },
-        relations: ['role', 'customer'],
-      });
+    const data = await dataSource.getRepository(User).findOne({
+      where: { id: params.id },
+      relations: ['role', 'customer'],
+    });
     return ApiUtility.sanitizeUser(data);
   } catch (e) {
     return null;
@@ -292,13 +294,30 @@ const updateMe = async (params: UpdateUserDTO) => {
 
 const list = async (params: IBaseQueryParams) => {
   const userRepository = dataSource.getRepository(User);
-  return await listEntities(userRepository, params, 'user', {
-    relations: ['details', 'role'],
+
+  let repo = await listEntitiesUtill(userRepository, params, 'user', {
     searchFields: ['firstName', 'lastName', 'email', 'details.phone'],
     validSortBy: ['email', 'firstName', 'id'],
     validSortOrder: ['ASC', 'DESC'],
-    toResponseDTO: toUserResponseDTO,
   });
+
+  repo
+    .leftJoinAndSelect('user.role', 'role')
+    .leftJoinAndSelect('user.details', 'details');
+
+  if (params.pagination == 'true' || params.pagination == 'True') {
+    const { repo: paginatedRepo, pagination } = await applyPagination(
+      repo,
+      params.limit,
+      params.page,
+    );
+    const entities = await paginatedRepo.getMany();
+    const response = entities.map(toUserResponseDTO);
+    return { response, pagination };
+  }
+  const entities = await repo.getMany();
+  const response = entities.map(toUserResponseDTO);
+  return { response };
 };
 
 const remove = async (params: IDeleteById) => {
