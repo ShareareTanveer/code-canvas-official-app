@@ -2,7 +2,7 @@ import { GenericPageSection } from '../../entities/core/generic-page-section.ent
 import dataSource from '../../configs/orm.config';
 import { OfficeInfo } from '../../entities/core/office-info.entity';
 import { GenericPageSectionResponseDTO } from '../dto/core/generic-page-section.dto';
-import { toGenericPageSectionResponseDTO } from './mapper/generic-page-section.mapper';
+import { toIGenericPageSectionResponse } from './mapper/generic-page-section.mapper';
 
 const repository = dataSource.getRepository(GenericPageSection);
 const officeRepository = dataSource.getRepository(OfficeInfo);
@@ -14,7 +14,7 @@ const getSectionByName = async (
   if (!entity) {
     throw new Error('sectionName not found');
   }
-  return toGenericPageSectionResponseDTO(entity);
+  return toIGenericPageSectionResponse(entity);
 };
 
 const landingPageData = async () => {

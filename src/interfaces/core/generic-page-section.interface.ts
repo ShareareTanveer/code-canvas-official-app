@@ -1,13 +1,6 @@
-import {
-  IsNotEmpty,
-  IsOptional,
-  IsString,
-  MaxLength,
-  IsArray,
-} from 'class-validator';
-import { GenericPageSectionItemResponseDTO } from './generic-page-section-item.interface';
+import { IGenericPageSectionItemResponse } from './generic-page-section-item.interface';
 
-export class GenericPageSectionResponseDTO {
+export interface IGenericPageSectionResponse {
   id: number;
   title: string;
   subtitle: string;
@@ -16,73 +9,25 @@ export class GenericPageSectionResponseDTO {
   image?: string;
   sectionName: string;
   keyPoints?: string[];
-  items?: GenericPageSectionItemResponseDTO[];
+  items?: IGenericPageSectionItemResponse[];
 }
 
-export class CreateGenericPageSectionDTO {
-  @IsString()
-  @MaxLength(255)
-  @IsNotEmpty()
+export interface ICreateGenericPageSection {
   title: string;
-
-  @IsString()
-  @MaxLength(255)
-  @IsNotEmpty()
   sectionName: string;
-
-  @IsString()
-  @MaxLength(255)
-  @IsNotEmpty()
   subtitle: string;
-
-  @IsString()
-  @MaxLength(255)
-  @IsNotEmpty()
   description: string;
-
-  @IsString()
-  @IsOptional()
   icon?: string;
-
-  @IsString()
-  @IsOptional()
   image?: string;
-
-  @IsArray()
-  @IsOptional()
   keyPoints?: string[];
 }
 
-export class UpdateGenericPageSectionDTO {
-  @IsString()
-  @MaxLength(255)
-  @IsOptional()
+export interface IUpdateGenericPageSection {
   title?: string;
-  
-  @IsString()
-  @MaxLength(255)
-  @IsOptional()
   sectionName?: string;
-
-  @IsString()
-  @MaxLength(255)
-  @IsOptional()
   subtitle?: string;
-
-  @IsString()
-  @MaxLength(255)
-  @IsOptional()
   description?: string;
-
-  @IsString()
-  @IsOptional()
   icon?: string;
-
-  @IsString()
-  @IsOptional()
   image?: string;
-
-  @IsArray()
-  @IsOptional()
   keyPoints?: string[];
 }

@@ -16,6 +16,7 @@ export default {
         newPassword: joi.string()
           .min(8)
           .max(50)
+          .regex(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/)
           .required()
           .error(handleValidationErrors),
         confirmNewPassword: joi.string()

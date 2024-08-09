@@ -2,13 +2,10 @@ import httpStatusCodes from 'http-status-codes';
 import IController from '../../interfaces/IController';
 import ApiResponse from '../../utilities/api-response.utility';
 import service from '../../services/order/order.service';
-import {
-  CreateOrderDTO,
-  UpdateOrderDTO,
-} from '../../services/dto/order/order.dto';
 import { IBaseQueryParams } from 'common.interface';
 import ApiUtility from '../../utilities/api.utility';
 import constants from '../../constants';
+import { ICreateOrder, IUpdateOrder } from 'order/order.interface';
 
 const getById: IController = async (req, res) => {
   try {
@@ -69,7 +66,7 @@ const create: IController = async (req, res) => {
       }
       user = req.body.user;
     }
-    const params: CreateOrderDTO = {
+    const params: ICreateOrder = {
       cartId: req.body.cartId,
       user,
     };
@@ -87,7 +84,7 @@ const create: IController = async (req, res) => {
 const update: IController = async (req, res) => {
   try {
     const id: string = req.params.id;
-    const params: UpdateOrderDTO = {
+    const params: IUpdateOrder = {
       cartId: req.body.cartId,
     };
     const data = await service.update(id, params);

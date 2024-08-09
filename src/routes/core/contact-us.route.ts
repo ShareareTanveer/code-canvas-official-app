@@ -4,6 +4,8 @@ import { validateDTO } from '../../middlewares/dto-validator.middleware';
 import { CreateContactUsDTO, UpdateContactUsDTO } from '../../services/dto/core/contact-us.dto';
 import { checkPermission } from '../../middlewares/authenticate.middleware';
 import constants from '../../constants';
+import contactUsSchema from '../../validations/schemas/core/contact-us.schema';
+const schemaValidator = require('express-joi-validator');
 
 const router = express.Router();
 const model = constants.PERMISSION.MODEL.CONTACT_US
@@ -225,7 +227,7 @@ router.delete('/:id', checkPermission(model), officeInfoController.remove);
  *                       type: string
  *                       example: "Error message"
  */
-router.post('/', validateDTO(CreateContactUsDTO), officeInfoController.create);
+router.post('/', schemaValidator(contactUsSchema.create), officeInfoController.create);
 
 /**
  * @swagger
@@ -294,6 +296,6 @@ router.post('/', validateDTO(CreateContactUsDTO), officeInfoController.create);
  *                       type: string
  *                       example: "Error message"
  */
-router.patch('/:id', checkPermission(model), validateDTO(UpdateContactUsDTO), officeInfoController.update);
+router.patch('/:id', checkPermission(model), schemaValidator(contactUsSchema.update), officeInfoController.update);
 
 export default router;

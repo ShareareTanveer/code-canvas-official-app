@@ -2,12 +2,9 @@ import httpStatusCodes from 'http-status-codes';
 import IController from '../../interfaces/IController';
 import ApiResponse from '../../utilities/api-response.utility';
 import service from '../../services/core/contact-us.service';
-import {
-  CreateContactUsDTO,
-  UpdateContactUsDTO,
-} from '../../services/dto/core/contact-us.dto';
 import ApiUtility from '../../utilities/api.utility';
 import { IBaseQueryParams } from 'common.interface';
+import { ICreateContactUs, IUpdateContactUs } from 'core/contact-us.interface';
 
 const getById: IController = async (req, res) => {
   try {
@@ -54,7 +51,7 @@ const list: IController = async (req, res) => {
 
 const create: IController = async (req, res) => {
   try {
-    const params: CreateContactUsDTO = {
+    const params: ICreateContactUs = {
       phone: req.body.phone,
       email: req.body.email,
       address: req.body.address,
@@ -77,7 +74,7 @@ const create: IController = async (req, res) => {
 const update: IController = async (req, res) => {
   try {
     const id: number = parseInt(req.params.id, 10);
-    const params: UpdateContactUsDTO = {
+    const params: IUpdateContactUs = {
       phone: req.body.phone,
       email: req.body.email,
       address: req.body.address,

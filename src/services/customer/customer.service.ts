@@ -1,17 +1,13 @@
 import { applyPagination, listEntities, listEntitiesUtill } from '../../utilities/pagination-filtering.utility';
 import dataSource from '../../configs/orm.config';
 import { Customer } from '../../entities/customer/customer.entity';
-import {
-  CreateCustomerDTO,
-  CustomerResponseDTO,
-  UpdateCustomerDTO,
-} from '../dto/customer/customer.dto';
-import { toCustomerResponseDTO } from './mapper/customer.mapper';
+import { toICustomerResponse } from './mapper/customer.mapper';
 import { IBaseQueryParams } from 'common.interface';
 import { CustomerCompany } from '../../entities/customer/customer-company-details.entity';
 import { CustomerContactPerson } from '../../entities/customer/customer-contact-person.entity';
 import { User } from '../../entities/user/user.entity';
 import { uploadOnCloud } from '../../utilities/cloudiary.utility';
+import { ICustomerResponse, ICreateCustomer, IUpdateCustomer } from 'customer/customer.interface';
 
 const customerRepository = dataSource.getRepository(Customer);
 const userRepository = dataSource.getRepository(User);
@@ -20,7 +16,7 @@ const contactPersonRepository = dataSource.getRepository(
   CustomerContactPerson,
 );
 
-const getById = async (id: number): Promise<CustomerResponseDTO> => {
+const getById = async (id: number): Promise<ICustomerResponse> => {
   const entity = await customerRepository.findOne({
     where: { id },
     relations: ['company', 'contactPerson', 'user'],
@@ -28,7 +24,7 @@ const getById = async (id: number): Promise<CustomerResponseDTO> => {
   if (!entity) {
     throw new Error('Customer not found');
   }
-  return toCustomerResponseDTO(entity);
+  return toICustomerResponse(entity);
 };
 
 const list = async (params: IBaseQueryParams) => {
@@ -47,15 +43,15 @@ const list = async (params: IBaseQueryParams) => {
       params.page,
     );
     const entities = await paginatedRepo.getMany();
-    const response = entities.map(toCustomerResponseDTO);
+    const response = entities.map(toICustomerResponse);
     return { response, pagination };
   }
   const entities = await repo.getMany();
-  const response = entities.map(toCustomerResponseDTO);
+  const response = entities.map(toICustomerResponse);
   return { response };
 };
 
-const create = async (params: CreateCustomerDTO) => {
+const create = async (params: ICreateCustomer) => {
   const user = await userRepository.findOne({
     where: { id: params.user },
     relations: ['customer'],
@@ -117,13 +113,13 @@ const create = async (params: CreateCustomerDTO) => {
   };
 
   const savedCustomer = await customerRepository.save(customerEntity);
-  return toCustomerResponseDTO(savedCustomer);
+  return toICustomerResponse(savedCustomer);
 };
 
 const update = async (
   id: number,
-  params: UpdateCustomerDTO,
-): Promise<CustomerResponseDTO> => {
+  params: IUpdateCustomer,
+): Promise<ICustomerResponse> => {
   const entity = await customerRepository.findOne({
     where: { id },
     relations: ['company', 'contactPersons'],
@@ -143,7 +139,7 @@ const update = async (
   }
 
   const updatedEntity = await customerRepository.save(entity);
-  return toCustomerResponseDTO(updatedEntity);
+  return toICustomerResponse(updatedEntity);
 };
 
 const remove = async (id: number): Promise<void> => {

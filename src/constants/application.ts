@@ -16,10 +16,9 @@ export default {
   },
   authorizationIgnorePath: [
     '/',
-    '/auth/send-email-otp',
-    '/auth/verify-email-otp',
     '/auth/verify-email',
     '/auth/change-password',
+    '/auth/send-reset-password-email',
     '/auth/register',
     '/auth/login',
     '/core/main-website-page',

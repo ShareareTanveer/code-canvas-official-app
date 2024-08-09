@@ -1,23 +1,19 @@
 import { IBaseQueryParams } from 'common.interface';
 import dataSource from '../../configs/orm.config';
 import { Review } from '../../entities/review/review.entity';
-import {
-  CreateReviewDTO,
-  ReviewResponseDTO,
-  UpdateReviewDTO,
-} from '../dto/review/review.dto';
-import { toReviewResponseDTO } from './mapper/review.mapper';
+import { toIReviewResponse } from './mapper/review.mapper';
 import { User } from '../../entities/user/user.entity';
 import { Product } from '../../entities/product/product.entity';
 import {
   applyPagination,
   listEntitiesUtill,
 } from '../../utilities/pagination-filtering.utility';
+import { ICreateReview, IReviewResponse, IUpdateReview } from 'review/review.interface';
 
 const repository = dataSource.getRepository(Review);
 const productRepository = dataSource.getRepository(Product);
 
-const getById = async (id: number): Promise<ReviewResponseDTO> => {
+const getById = async (id: number): Promise<IReviewResponse> => {
   const entity = await repository.findOne({
     where: { id },
     relations: ['product', 'user'],
@@ -25,7 +21,7 @@ const getById = async (id: number): Promise<ReviewResponseDTO> => {
   if (!entity) {
     throw new Error('Review not found');
   }
-  return toReviewResponseDTO(entity);
+  return toIReviewResponse(entity);
 };
 
 const list = async (params: IBaseQueryParams) => {
@@ -52,18 +48,18 @@ const list = async (params: IBaseQueryParams) => {
       params.page,
     );
     const entities = await paginatedRepo.getMany();
-    const response = entities.map(toReviewResponseDTO);
+    const response = entities.map(toIReviewResponse);
     return { response, pagination };
   }
   const entities = await repo.getMany();
-  const response = entities.map(toReviewResponseDTO);
+  const response = entities.map(toIReviewResponse);
   return { response };
 };
 
 const create = async (
-  params: CreateReviewDTO,
+  params: ICreateReview,
   user: User,
-): Promise<ReviewResponseDTO> => {
+): Promise<IReviewResponse> => {
   const productEntity = await productRepository.findOne({
     where: { id: params.product },
   });
@@ -79,14 +75,14 @@ const create = async (
   entity.user = user;
 
   const savedEntity = await repository.save(entity);
-  return toReviewResponseDTO(savedEntity);
+  return toIReviewResponse(savedEntity);
 };
 
 const update = async (
   id: number,
-  params: UpdateReviewDTO,
+  params: IUpdateReview,
   user: User,
-): Promise<ReviewResponseDTO> => {
+): Promise<IReviewResponse> => {
   const entity = await repository.findOne({
     where: { id },
     relations: ['user'],
@@ -103,7 +99,7 @@ const update = async (
   if (params.text !== undefined) entity.text = params.text;
 
   const updatedEntity = await repository.save(entity);
-  return toReviewResponseDTO(updatedEntity);
+  return toIReviewResponse(updatedEntity);
 };
 
 const remove = async (id: number): Promise<void> => {

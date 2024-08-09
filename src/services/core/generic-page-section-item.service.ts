@@ -2,21 +2,17 @@ import { IBaseQueryParams } from 'common.interface';
 import dataSource from '../../configs/orm.config';
 import { GenericPageSectionItem } from '../../entities/core/generic-page-section-item.entity';
 import { GenericPageSection } from '../../entities/core/generic-page-section.entity';
-import {
-  CreateGenericPageSectionItemDTO,
-  GenericPageSectionItemResponseDTO,
-  UpdateGenericPageSectionItemDTO,
-} from '../dto/core/generic-page-section-item.dto';
-import { toGenericPageSectionItemResponseDTO } from './mapper/generic-page-section-item.mapper';
-import { applyPagination, listEntities, listEntitiesUtill } from '../../utilities/pagination-filtering.utility';
+import { toIGenericPageSectionItemResponse } from './mapper/generic-page-section-item.mapper';
+import { applyPagination, listEntitiesUtill } from '../../utilities/pagination-filtering.utility';
 import { deleteFromCloud, uploadOnCloud } from '../../utilities/cloudiary.utility';
+import { ICreateGenericPageSectionItem, IGenericPageSectionItemResponse, IUpdateGenericPageSectionItem } from 'core/generic-page-section-item.interface';
 
 const repository = dataSource.getRepository(GenericPageSectionItem);
 const sectionRepository = dataSource.getRepository(GenericPageSection);
 
 const getById = async (
   id: number,
-): Promise<GenericPageSectionItemResponseDTO> => {
+): Promise<IGenericPageSectionItemResponse> => {
   const entity = await repository.findOne({
     where: { id },
     relations: ['genericPageSection'],
@@ -24,7 +20,7 @@ const getById = async (
   if (!entity) {
     throw new Error('GenericPageSectionItem not found');
   }
-  return toGenericPageSectionItemResponseDTO(entity);
+  return toIGenericPageSectionItemResponse(entity);
 };
 
 const list = async (params: IBaseQueryParams) => {
@@ -44,17 +40,17 @@ const list = async (params: IBaseQueryParams) => {
       params.page,
     );
     const entities = await paginatedRepo.getMany();
-    const response = entities.map(toGenericPageSectionItemResponseDTO);
+    const response = entities.map(toIGenericPageSectionItemResponse);
     return { response, pagination };
   }
   const entities = await repo.getMany();
-  const response = entities.map(toGenericPageSectionItemResponseDTO);
+  const response = entities.map(toIGenericPageSectionItemResponse);
   return { response };
 };
 
 const create = async (
-  params: CreateGenericPageSectionItemDTO,
-): Promise<GenericPageSectionItemResponseDTO> => {
+  params: ICreateGenericPageSectionItem,
+): Promise<IGenericPageSectionItemResponse> => {
   const section = await sectionRepository.findOne({
     where: { id: params.genericPageSection },
   });
@@ -85,13 +81,13 @@ const create = async (
   if (imageUrl) entity.cloudinary_image_public_id = cloudiaryPublicId;
 
   const savedEntity = await repository.save(entity);
-  return toGenericPageSectionItemResponseDTO(savedEntity);
+  return toIGenericPageSectionItemResponse(savedEntity);
 };
 
 const update = async (
   id: number,
-  params: UpdateGenericPageSectionItemDTO,
-): Promise<GenericPageSectionItemResponseDTO> => {
+  params: IUpdateGenericPageSectionItem,
+): Promise<IGenericPageSectionItemResponse> => {
   const entity = await repository.findOne({
     where: { id },
     relations: ['genericPageSection'],
@@ -134,7 +130,7 @@ const update = async (
   if (imageUrl) entity.cloudinary_image_public_id = cloudiaryPublicId;
 
   const updatedEntity = await repository.save(entity);
-  return toGenericPageSectionItemResponseDTO(updatedEntity);
+  return toIGenericPageSectionItemResponse(updatedEntity);
 };
 
 const remove = async (id: number): Promise<void> => {

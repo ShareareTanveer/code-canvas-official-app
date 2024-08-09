@@ -2,9 +2,9 @@ import httpStatusCodes from 'http-status-codes';
 import IController from '../../interfaces/IController';
 import ApiResponse from '../../utilities/api-response.utility';
 import service from '../../services/cart/cart.service';
-import { AddToCartDTO } from '../../services/dto/cart/cart.dto';
 import ApiUtility from '../../utilities/api.utility';
 import { IBaseQueryParams } from 'common.interface';
+import { IAddToCart } from 'cart/cart.interface';
 
 const getById: IController = async (req, res) => {
   try {
@@ -51,13 +51,11 @@ const list: IController = async (req, res) => {
 
 const create: IController = async (req, res) => {
   try {
-    const params: AddToCartDTO = {
+    const params: IAddToCart = {
       product: req.body.product,
       cartId: req.body.cartId,
     };
-    const { data, added } = await service.toggleCartProduct(
-      params,
-    );
+    const { data, added } = await service.toggleCartProduct(params);
     const status = added
       ? httpStatusCodes.CREATED
       : httpStatusCodes.ACCEPTED;

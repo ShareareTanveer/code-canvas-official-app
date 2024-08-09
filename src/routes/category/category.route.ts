@@ -1,7 +1,5 @@
 import express from 'express';
 import categoryController from '../../controllers/category/category.controller';
-import { validateDTO } from '../../middlewares/dto-validator.middleware';
-import { UpdateCategoryDTO } from '../../services/dto/category/category.dto';
 import { checkPermission } from '../../middlewares/authenticate.middleware';
 import constants from '../../constants';
 import categorySchema from '../../validations/schemas/category/category.schema';
@@ -227,6 +225,6 @@ router.post('/', checkPermission(model), schemaValidator(categorySchema.create),
  *       500:
  *         description: Internal server error
  */
-router.patch('/:id', checkPermission(model), validateDTO(UpdateCategoryDTO), categoryController.update);
+router.patch('/:id', checkPermission(model), schemaValidator(categorySchema.update), categoryController.update);
 
 export default router;

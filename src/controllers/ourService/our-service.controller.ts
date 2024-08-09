@@ -2,12 +2,12 @@ import httpStatusCodes from 'http-status-codes';
 import IController from '../../interfaces/IController';
 import ApiResponse from '../../utilities/api-response.utility';
 import service from '../../services/ourService/our-service.service';
-import {
-  CreateOurServiceDTO,
-  UpdateOurServiceDTO,
-} from '../../services/dto/ourService/our-service.dto';
 import ApiUtility from '../../utilities/api.utility';
 import { IBaseQueryParams } from 'common.interface';
+import {
+  ICreateOurService,
+  IUpdateOurService,
+} from 'ourService/our-service.interface';
 
 const getById: IController = async (req, res) => {
   try {
@@ -54,8 +54,14 @@ const list: IController = async (req, res) => {
 
 const create: IController = async (req, res) => {
   try {
-    const imageLocalFiles = (req.files as Express.Multer.File[]).map(file => file);
-    const params: CreateOurServiceDTO = {
+    const imageLocalFiles = (req.files as Express.Multer.File[]).map(
+      (file) => file,
+    );
+
+    if (imageLocalFiles.length<1) {
+      throw new Error("No files were uploaded.");
+    }
+    const params: ICreateOurService = {
       title: req.body.title,
       subtitle: req.body.subtitle,
       slug: req.body.slug,
@@ -78,19 +84,22 @@ const create: IController = async (req, res) => {
 
 const update: IController = async (req, res) => {
   try {
-    const imageLocalFiles = (req.files as Express.Multer.File[]).map(file => file);
+    const imageLocalFiles = (req.files as Express.Multer.File[]).map(
+      (file) => file,
+    );
     const id: number = parseInt(req.params.id, 10);
-    const params: UpdateOurServiceDTO = {
+    const params: IUpdateOurService = {
       title: req.body.title,
       subtitle: req.body.subtitle,
       slug: req.body.slug,
       description: req.body.description,
       icon: req.body.icon,
-      faqs: req.body.faqs,
+      addFaqs: req.body.addFaqs,
+      deleteFaqs: req.body.deleteFaqs,
       keyPoints: req.body.keyPoints,
       addImages: imageLocalFiles,
       deleteImages: req.body.deleteImages,
-    };;
+    };
     const data = await service.update(id, params);
     return ApiResponse.result(res, data, httpStatusCodes.OK);
   } catch (e) {

@@ -1,12 +1,12 @@
-export class OurServiceFAQResponseDTO {
+export interface IOurServiceFAQResponse {
   id: number;
   question: string;
   answer: string;
   service?: string;
 }
 
-export class CreateOurServiceFAQResponseDTO {
-  id: number;
+export interface ICreateOurServiceFAQ {
+  id?: number;
   question: string;
   answer: string;
 }

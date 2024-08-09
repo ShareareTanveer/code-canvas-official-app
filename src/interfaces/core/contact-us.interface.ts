@@ -1,13 +1,4 @@
-import {
-  IsNotEmpty,
-  IsOptional,
-  IsString,
-  MaxLength,
-  IsNumber,
-  IsEmail,
-} from 'class-validator';
-
-export class ContactUsResponseDTO {
+export interface IContactUsResponse {
   id: number;
   phone: string;
   email: string;
@@ -17,75 +8,22 @@ export class ContactUsResponseDTO {
   fullName?: string;
   company?: string;
 }
-
-export class CreateContactUsDTO {
-  @IsString()
-  @MaxLength(15)
-  @IsNotEmpty()
+export interface ICreateContactUs {
   phone: string;
-
-  @IsEmail()
-  @MaxLength(100)
-  @IsNotEmpty()
   email: string;
-
-  @IsString()
-  @MaxLength(255)
-  @IsOptional()
   subject?: string;
-
-  @IsString()
-  @IsNotEmpty()
   message: string;
-
-  @IsString()
-  @MaxLength(255)
-  @IsOptional()
   address?: string;
-
-  @IsString()
-  @MaxLength(255)
-  @IsOptional()
   fullName?: string;
-
-  @IsString()
-  @MaxLength(255)
-  @IsOptional()
   company?: string;
 }
 
-export class UpdateContactUsDTO {
-  @IsString()
-  @MaxLength(15)
-  @IsOptional()
-  phone: string;
-
-  @IsEmail()
-  @MaxLength(100)
-  @IsOptional()
-  email: string;
-
-  @IsString()
-  @MaxLength(255)
-  @IsOptional()
+export interface IUpdateContactUs {
+  phone?: string;
+  email?: string;
   subject?: string;
-
-  @IsString()
-  @IsOptional()
-  message: string;
-
-  @IsString()
-  @MaxLength(255)
-  @IsOptional()
+  message?: string;
   address?: string;
-
-  @IsString()
-  @MaxLength(255)
-  @IsOptional()
   fullName?: string;
-
-  @IsString()
-  @MaxLength(255)
-  @IsOptional()
   company?: string;
 }

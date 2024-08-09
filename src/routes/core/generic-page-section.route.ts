@@ -1,16 +1,14 @@
 import express from 'express';
 import genericPageSectionController from '../../controllers/core/generic-page-section.controller';
-import { validateDTO } from '../../middlewares/dto-validator.middleware';
-import {
-  CreateGenericPageSectionDTO,
-  UpdateGenericPageSectionDTO,
-} from '../../services/dto/core/generic-page-section.dto';
 import { upload } from '../../middlewares/multer.middleware';
 import { checkPermission } from '../../middlewares/authenticate.middleware';
 import constants from '../../constants';
+import genericPageSectionSchema from '../../validations/schemas/core/generic-page-section.schema';
+import { stringParser } from '../../middlewares/parser-form-data.middleware';
+const schemaValidator = require('express-joi-validator');
 
 const router = express.Router();
-const model = constants.PERMISSION.MODEL.GENERIC_PAGE_SECTION
+const model = constants.PERMISSION.MODEL.GENERIC_PAGE_SECTION;
 
 /**
  * @swagger
@@ -188,7 +186,11 @@ router.get('/:id', genericPageSectionController.getById);
  *                       type: string
  *                       example: "Error message"
  */
-router.delete('/:id', checkPermission(model), genericPageSectionController.remove);
+router.delete(
+  '/:id',
+  checkPermission(model),
+  genericPageSectionController.remove,
+);
 
 /**
  * @swagger
@@ -217,10 +219,8 @@ router.delete('/:id', checkPermission(model), genericPageSectionController.remov
  *                 type: array
  *                 items:
  *                   type: string
- *                   properties:
- *                     point:
- *                       type: string
- *                 example: [string]
+ *                 collectionFormat: multi
+ *                 example: ["Point 1", "Point 2", "Point 3"]
  *               description:
  *                 type: string
  *                 example: "Detailed description"
@@ -260,8 +260,14 @@ router.delete('/:id', checkPermission(model), genericPageSectionController.remov
  *                       type: string
  *                       example: "Error message"
  */
-router.post('/', checkPermission(model), upload.single('image'), validateDTO(CreateGenericPageSectionDTO), genericPageSectionController.create);
-
+router.post(
+  '/',
+  checkPermission(model),
+  upload.single('image'),
+  stringParser(),
+  schemaValidator(genericPageSectionSchema.create),
+  genericPageSectionController.create,
+);
 
 /**
  * @swagger
@@ -311,9 +317,6 @@ router.post('/', checkPermission(model), upload.single('image'), validateDTO(Cre
  *               image:
  *                 type: string
  *                 format: binary
- *               genericPageSection:
- *                 type: integer
- *                 example: 1
  *     responses:
  *       200:
  *         description: GenericPageSection updated successfully
@@ -360,6 +363,13 @@ router.post('/', checkPermission(model), upload.single('image'), validateDTO(Cre
  *                       type: string
  *                       example: "Error message"
  */
-router.patch('/:id', checkPermission(model), upload.single('image'), validateDTO(UpdateGenericPageSectionDTO), genericPageSectionController.update);
- 
+router.patch(
+  '/:id',
+  checkPermission(model),
+  upload.single('image'),
+  stringParser(),
+  schemaValidator(genericPageSectionSchema.update),
+  genericPageSectionController.update,
+);
+
 export default router;

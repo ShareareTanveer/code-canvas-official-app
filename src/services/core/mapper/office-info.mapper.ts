@@ -1,9 +1,9 @@
+import { IOfficeInfoResponse } from 'core/office-info.interface';
 import { OfficeInfo } from '../../../entities/core/office-info.entity';
-import { OfficeInfoResponseDTO } from '../../dto/core/office-info.dto';
 
-export const toOfficeInfoResponseDTO = (
+export const toIOfficeInfoResponse = (
   entity: OfficeInfo,
-): OfficeInfoResponseDTO => {
+): IOfficeInfoResponse => {
   return {
     id: entity.id,
     phone: entity.phone,

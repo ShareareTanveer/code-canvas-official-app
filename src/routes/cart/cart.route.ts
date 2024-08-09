@@ -1,9 +1,9 @@
 import express from 'express';
 import cartController from '../../controllers/cart/cart.controller';
-import { validateDTO } from '../../middlewares/dto-validator.middleware';
-import { AddToCartDTO } from '../../services/dto/cart/cart.dto';
 import { checkPermission } from '../../middlewares/authenticate.middleware';
 import constants from '../../constants';
+import cartSchema from '../../validations/schemas/cart/cart.schema';
+const schemaValidator = require('express-joi-validator');
 
 const router = express.Router();
 
@@ -46,7 +46,7 @@ const model = constants.PERMISSION.MODEL.CART;
  *           enum:
  *             - id
  *             - price
- *         description: Field to sort products by. 
+ *         description: Field to sort products by.
  *         examples:
  *           id:
  *             summary: Sort by product id
@@ -61,7 +61,7 @@ const model = constants.PERMISSION.MODEL.CART;
  *           enum:
  *             - ASC
  *             - DESC
- *         description: Sort order. 
+ *         description: Sort order.
  *         examples:
  *           ASC:
  *             summary: Sort in ascending order
@@ -263,6 +263,10 @@ router.delete('/:id', cartController.remove);
  *                       type: string
  *                       example: "Error message"
  */
-router.post('/', validateDTO(AddToCartDTO), cartController.create);
+router.post(
+  '/',
+  schemaValidator(cartSchema.addToCart),
+  cartController.create,
+);
 
 export default router;

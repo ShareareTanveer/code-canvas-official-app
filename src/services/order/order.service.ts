@@ -3,12 +3,7 @@ import { Customer } from '../../entities/customer/customer.entity';
 import { OrderItem } from '../../entities/order/order-item.entity';
 import dataSource from '../../configs/orm.config';
 import { Order } from '../../entities/order/order.entity';
-import {
-  CreateOrderDTO,
-  OrderResponseDTO,
-  UpdateOrderDTO,
-} from '../dto/order/order.dto';
-import { toOrderResponseDTO } from './mapper/order.mapper';
+import { toIOrderResponse } from './mapper/order.mapper';
 import { Cart } from '../../entities/cart/cart.entity';
 import { EOrderStaus } from '../../enum/order-status.enum';
 import { IBaseQueryParams } from 'common.interface';
@@ -16,6 +11,11 @@ import {
   applyPagination,
   listEntitiesUtill,
 } from '../../utilities/pagination-filtering.utility';
+import {
+  IOrderResponse,
+  ICreateOrder,
+  IUpdateOrder,
+} from 'order/order.interface';
 
 const repository = dataSource.getRepository(Order);
 const orderItemRepository = dataSource.getRepository(OrderItem);
@@ -23,7 +23,7 @@ const cartRepository = dataSource.getRepository(Cart);
 const userRepository = dataSource.getRepository(User);
 const customerRepository = dataSource.getRepository(Customer);
 
-const getById = async (id: string): Promise<OrderResponseDTO> => {
+const getById = async (id: string): Promise<IOrderResponse> => {
   const entity = await repository.findOne({
     where: { id },
     relations: [
@@ -37,7 +37,7 @@ const getById = async (id: string): Promise<OrderResponseDTO> => {
   if (!entity) {
     throw new Error('Order not found');
   }
-  return toOrderResponseDTO(entity);
+  return toIOrderResponse(entity);
 };
 
 const list = async (params: IBaseQueryParams) => {
@@ -65,17 +65,17 @@ const list = async (params: IBaseQueryParams) => {
       params.page,
     );
     const entities = await paginatedRepo.getMany();
-    const response = entities.map(toOrderResponseDTO);
+    const response = entities.map(toIOrderResponse);
     return { response, pagination };
   }
   const entities = await repo.getMany();
-  const response = entities.map(toOrderResponseDTO);
+  const response = entities.map(toIOrderResponse);
   return { response };
 };
 
 const create = async (
-  params: CreateOrderDTO,
-): Promise<OrderResponseDTO> => {
+  params: ICreateOrder,
+): Promise<IOrderResponse> => {
   const cart = await cartRepository.findOne({
     where: { id: params.cartId },
     relations: ['products'],
@@ -120,19 +120,19 @@ const create = async (
   orderItemRepository.save(orderItems);
   // await cartRepository.remove(cart);
 
-  return toOrderResponseDTO(savedOrder);
+  return toIOrderResponse(savedOrder);
 };
 
 const update = async (
   id: string,
-  params: UpdateOrderDTO,
-): Promise<OrderResponseDTO> => {
+  params: IUpdateOrder,
+): Promise<IOrderResponse> => {
   const entity = await repository.findOne({ where: { id } });
   if (!entity) {
     throw new Error('Order not found');
   }
   const updatedEntity = await repository.save(entity);
-  return toOrderResponseDTO(updatedEntity);
+  return toIOrderResponse(updatedEntity);
 };
 
 const remove = async (id: string): Promise<void> => {

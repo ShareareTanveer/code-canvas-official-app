@@ -1,66 +1,31 @@
-import { IsNotEmpty, IsOptional, IsString } from 'class-validator';
-import { SimpleUserResponseDTO } from '../user/user.interface';
-import {
-  CreateCustomerCompanyDTO,
-  CustomerCompanyResponseDTO,
-} from './customer-company-details.interface';
-import {
-  CreateCustomerContactPersonDTO,
-  CustomerContactPersonResponseDTO,
-} from './customer-contact-person.interface';
+import { ISimpleUserResponse } from "user/user.interface";
+import { ICreateCustomerContactPerson, ICustomerContactPersonResponse } from "./customer-contact-person.interface";
+import { ICreateCustomerCompany, ICustomerCompanyResponse } from "./customer-company-details.interface";
 
-export class CustomerResponseDTO {
+export interface ICustomerResponse {
   id?: number;
-  user: SimpleUserResponseDTO;
-  company: CustomerCompanyResponseDTO;
-  contactPerson: CustomerContactPersonResponseDTO;
+  user: ISimpleUserResponse;
+  company: ICustomerCompanyResponse;
+  contactPerson: ICustomerContactPersonResponse;
   nidNumber: string;
   passportAttachment: string;
   otherAttachment?: string;
 }
 
-export class CreateCustomerDTO {
-  @IsOptional()
+export interface ICreateCustomer {
   user?: number;
-
-  @IsNotEmpty()
-  company: CreateCustomerCompanyDTO;
-
-  @IsNotEmpty()
-  contactPerson: CreateCustomerContactPersonDTO;
-
-  @IsNotEmpty()
-  @IsString()
+  company: ICreateCustomerCompany;
+  contactPerson: ICreateCustomerContactPerson;
   nidNumber: string;
-
-  @IsOptional()
-  @IsString()
   passportAttachment?: string;
-
-  @IsOptional()
-  @IsString()
   otherAttachment?: string;
 }
 
-export class UpdateCustomerDTO {
-  @IsOptional()
+export interface IUpdateCustomer {
   user?: number;
-
-  @IsOptional()
-  company: CreateCustomerCompanyDTO;
-
-  @IsOptional()
-  contactPerson: CreateCustomerContactPersonDTO;
-
-  @IsOptional()
-  @IsString()
-  nidNumber: string;
-
-  @IsOptional()
-  @IsString()
+  company?: ICreateCustomerCompany;
+  contactPerson?: ICreateCustomerContactPerson;
+  nidNumber?: string;
   passportAttachment?: string;
-
-  @IsOptional()
-  @IsString()
   otherAttachment?: string;
 }

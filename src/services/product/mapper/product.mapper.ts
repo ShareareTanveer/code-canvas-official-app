@@ -1,9 +1,9 @@
+import { IProductDetailResponse, IProductResponse } from 'product/product.interface';
 import { Product } from '../../../entities/product/product.entity';
-import { ProductDetailResponseDTO, ProductResponseDTO } from '../../dto/product/product.dto';
 
-export const toProductResponseDTO = (
+export const toIProductResponse = (
   entity: Product,
-): ProductResponseDTO => {
+): IProductResponse => {
   return {
     id: entity.id,
     category: entity.category,
@@ -16,9 +16,9 @@ export const toProductResponseDTO = (
   };
 };
 
-export const toProductDetailResponseDTO = (
+export const toIProductDetailResponse = (
   entity: Product,
-): ProductDetailResponseDTO => {
+): IProductDetailResponse => {
   return {
     id: entity.id,
     category: entity.category,

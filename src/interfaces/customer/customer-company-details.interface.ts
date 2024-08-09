@@ -1,11 +1,4 @@
-import {
-  IsEmail,
-  IsNotEmpty,
-  IsOptional,
-  IsString,
-} from 'class-validator';
-
-export class CustomerCompanyResponseDTO {
+export interface ICustomerCompanyResponse {
   id?: number;
   name: string;
   email: string;
@@ -13,52 +6,23 @@ export class CustomerCompanyResponseDTO {
   city: string;
   address: string;
   tradeLicenseNo: string;
-  tradeLicenseAttachment: string;
-  tinAttachment: string;
-  logo: string;
+  tradeLicenseAttachment?: string;
+  tinAttachment?: string;
+  logo?: string;
   postCode: string;
   tinNo: string;
 }
 
-export class CreateCustomerCompanyDTO {
-  @IsNotEmpty()
-  @IsString()
+export interface ICreateCustomerCompany {
   name: string;
-
-  @IsNotEmpty()
-  @IsEmail()
   email: string;
-
-  @IsNotEmpty()
-  @IsString()
   phone: string;
-
-  @IsNotEmpty()
-  @IsString()
   city: string;
-
-  @IsNotEmpty()
-  @IsString()
   address: string;
-
-  @IsNotEmpty()
-  @IsString()
   tradeLicenseNo: string;
-
-  @IsOptional()
   tradeLicenseAttachment?: string;
-
-  @IsOptional()
   tinAttachment?: string;
-
-  @IsOptional()
   logo?: string;
-
-  @IsNotEmpty()
-  @IsString()
   postCode: string;
-
-  @IsNotEmpty()
-  @IsString()
   tinNo: string;
 }

@@ -2,13 +2,10 @@ import httpStatusCodes from 'http-status-codes';
 import IController from '../../interfaces/IController';
 import ApiResponse from '../../utilities/api-response.utility';
 import service from '../../services/review/review.service';
-import {
-  CreateReviewDTO,
-  UpdateReviewDTO,
-} from '../../services/dto/review/review.dto';
 import ApiUtility from '../../utilities/api.utility';
 import { User } from '../../entities/user/user.entity';
 import { IBaseQueryParams } from 'common.interface';
+import { ICreateReview, IUpdateReview } from 'review/review.interface';
 
 const getById: IController = async (req, res) => {
   try {
@@ -55,7 +52,7 @@ const list: IController = async (req, res) => {
 
 const create: IController = async (req, res) => {
   try {
-    const params: CreateReviewDTO = {
+    const params: ICreateReview = {
       rating: req.body.rating,
       text: req.body.text,
       product: req.body.product,
@@ -75,7 +72,7 @@ const create: IController = async (req, res) => {
 const update: IController = async (req, res) => {
   try {
     const id: number = parseInt(req.params.id, 10);
-    const params: UpdateReviewDTO = {
+    const params: IUpdateReview = {
       rating: req.body.rating,
       text: req.body.text,
     };

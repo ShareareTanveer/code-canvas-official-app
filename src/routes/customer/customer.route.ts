@@ -1,11 +1,9 @@
 import express from 'express';
-import { validateDTO } from '../../middlewares/dto-validator.middleware';
-import {
-  CreateCustomerDTO,
-  UpdateCustomerDTO,
-} from '../../services/dto/customer/customer.dto';
 import customerController from '../../controllers/customer/customer.controller';
 import { upload } from '../../middlewares/multer.middleware';
+import { stringParser } from '../../middlewares/parser-form-data.middleware';
+import customerSchema from '../../validations/schemas/customer/customer.schema';
+const schemaValidator = require('express-joi-validator');
 
 const router = express.Router();
 
@@ -306,7 +304,8 @@ router.post(
     { name: 'tinAttachment', maxCount: 1 },
     { name: 'logo', maxCount: 1 },
   ]),
-  validateDTO(CreateCustomerDTO),
+  stringParser(),
+  schemaValidator(customerSchema.create),
   customerController.create,
 );
 
@@ -373,7 +372,8 @@ router.post(
  */
 router.patch(
   '/:id',
-  validateDTO(UpdateCustomerDTO),
+  stringParser(),
+  schemaValidator(customerSchema.update),
   customerController.update,
 );
 

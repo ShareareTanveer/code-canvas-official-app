@@ -19,6 +19,7 @@ export default (
   res: express.Response,
   next: express.NextFunction,
 ) => {
+  // console.log(err);
   if (err.data && err.output) {
     const errorResponse = {
       code: HttpStatus.BAD_REQUEST,

@@ -2,12 +2,9 @@ import httpStatusCodes from 'http-status-codes';
 import IController from '../../interfaces/IController';
 import ApiResponse from '../../utilities/api-response.utility';
 import service from '../../services/product/product.service';
-import {
-  UpdateProductDTO,
-  CreateProductDTO,
-} from '../../services/dto/product/product.dto';
 import ApiUtility from '../../utilities/api.utility';
 import { IBaseQueryParams } from 'common.interface';
+import { ICreateProduct, IUpdateProduct } from 'product/product.interface';
 
 const getById: IController = async (req, res) => {
   try {
@@ -59,7 +56,7 @@ const list: IController = async (req, res) => {
 const create: IController = async (req, res) => {
   try {
     const imageLocalFiles = (req.files as Express.Multer.File[]).map(file => file);
-    const params: CreateProductDTO = {
+    const params: ICreateProduct = {
       category: req.body.category,
       title: req.body.title,
       subtitle: req.body.subtitle,
@@ -87,7 +84,7 @@ const update: IController = async (req, res) => {
   try {
     const id: number = parseInt(req.params.id, 10);
     const imageLocalFiles = (req.files as Express.Multer.File[]).map(file => file);
-    const params: UpdateProductDTO = {
+    const params: IUpdateProduct = {
       category: req.body.category,
       title: req.body.title,
       subtitle: req.body.subtitle,

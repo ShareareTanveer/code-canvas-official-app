@@ -2,10 +2,7 @@ import httpStatusCodes from 'http-status-codes';
 import IController from '../../interfaces/IController';
 import ApiResponse from '../../utilities/api-response.utility';
 import service from '../../services/core/office-info.service';
-import {
-  CreateOfficeInfoDTO,
-  UpdateOfficeInfoDTO,
-} from '../../services/dto/core/office-info.dto';
+import { ICreateOfficeInfo, IUpdateOfficeInfo } from 'core/office-info.interface';
 
 const getById: IController = async (req, res) => {
   try {
@@ -28,7 +25,7 @@ const list: IController = async (req, res) => {
 
 const create: IController = async (req, res) => {
   try {
-    const params: CreateOfficeInfoDTO = req.body;
+    const params: ICreateOfficeInfo = req.body;
     const data = await service.create(params);
     return ApiResponse.result(res, data, httpStatusCodes.CREATED);
   } catch (e) {
@@ -39,7 +36,7 @@ const create: IController = async (req, res) => {
 const update: IController = async (req, res) => {
   try {
     const id: number = parseInt(req.params.id, 10);
-    const params: UpdateOfficeInfoDTO = req.body;
+    const params: IUpdateOfficeInfo = req.body;
     const data = await service.update(id, params);
     return ApiResponse.result(res, data, httpStatusCodes.OK);
   } catch (e) {

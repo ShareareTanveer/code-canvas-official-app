@@ -4,10 +4,7 @@ import {
   Column,
   OneToMany,
 } from 'typeorm';
-import {
-  IsArray,
-  IsString,
-} from 'class-validator';
+import { IsArray, IsString } from 'class-validator';
 import { BaseEntity } from '../base/base.entity';
 import { OurServiceImage } from './our-service-image.entity';
 import { OurServiceFAQ } from './our-service-faq.entity';
@@ -31,13 +28,12 @@ export class OurService extends BaseEntity {
 
   @OneToMany(() => OurServiceImage, (image) => image.service, {
     cascade: true,
-    
   })
   images: OurServiceImage[];
 
   @OneToMany(() => OurServiceFAQ, (faq) => faq.service, {
     cascade: true,
-    nullable: true
+    nullable: true,
   })
   faqs: OurServiceFAQ[];
 

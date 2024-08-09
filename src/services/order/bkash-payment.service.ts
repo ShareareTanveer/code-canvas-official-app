@@ -3,7 +3,7 @@ import { Order } from '../../entities/order/order.entity';
 import {
   OrderResponseDTO,
 } from '../dto/order/order.dto';
-import { toOrderResponseDTO } from './mapper/order.mapper';
+import { toIOrderResponse } from './mapper/order.mapper';
 import { EOrderStaus } from '../../enum/order-status.enum';
 import { BkashPaymentExecuteResponseDTO } from '../dto/order/bkash-payment.dto';
 
@@ -27,7 +27,7 @@ const syncData = async (
   order.trxID = params.trxID;
 
   const savedOrder = await repository.save(order);
-  return toOrderResponseDTO(savedOrder);
+  return toIOrderResponse(savedOrder);
 };
 
 export default {

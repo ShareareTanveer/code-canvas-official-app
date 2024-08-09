@@ -1,10 +1,9 @@
-import { EOrderStaus } from '../../../enum/order-status.enum';
+import { IOrderResponse } from 'order/order.interface';
 import { Order } from '../../../entities/order/order.entity';
-import { OrderResponseDTO } from '../../dto/order/order.dto';
 
-export const toOrderResponseDTO = (
+export const toIOrderResponse = (
   entity: Order,
-): OrderResponseDTO => {
+): IOrderResponse => {
   return {
     id: entity.id,
     user: entity.user,

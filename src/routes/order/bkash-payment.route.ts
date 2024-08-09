@@ -1,7 +1,7 @@
 import express from 'express';
 import paymentController from '../../controllers/order/bkash-payment.controller';
-import { validateDTO } from '../../middlewares/dto-validator.middleware';
-import { CreateOrderDTO } from '../../services/dto/order/order.dto';
+import orderSchema from '../../validations/schemas/order/order.schema';
+const schemaValidator = require('express-joi-validator');
 
 const router = express.Router();
 
@@ -50,7 +50,7 @@ const router = express.Router();
  *                       type: string
  *                       example: "Error message"
  */
-router.post('/bkash/create',validateDTO(CreateOrderDTO), paymentController.createPayment)
+router.post('/bkash/create',  schemaValidator(orderSchema.create), paymentController.createPayment)
 router.get('/bkash/callback', paymentController.handleCallback)
 router.get('/bkash/refund/:trxID', paymentController.processRefund)
 

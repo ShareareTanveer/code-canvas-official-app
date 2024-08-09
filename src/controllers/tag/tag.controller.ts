@@ -2,9 +2,9 @@ import httpStatusCodes from 'http-status-codes';
 import IController from '../../interfaces/IController';
 import ApiResponse from '../../utilities/api-response.utility';
 import service from '../../services/tag/tag.service';
-import { CreateTagDTO, UpdateTagDTO } from '../../services/dto/tag/tag.dto';
 import ApiUtility from '../../utilities/api.utility';
 import { IBaseQueryParams } from 'common.interface';
+import { ICreateTag, IUpdateTag } from 'tag/tag.interface';
 
 const getById: IController = async (req, res) => {
   try {
@@ -55,7 +55,7 @@ const list: IController = async (req, res) => {
 
 const create: IController = async (req, res) => {
   try {
-    const params: CreateTagDTO = {
+    const params: ICreateTag = {
       name: req.body.name,
     };
     const data = await service.create(params);
@@ -72,7 +72,7 @@ const create: IController = async (req, res) => {
 const update: IController = async (req, res) => {
   try {
     const id: number = parseInt(req.params.id, 10);
-    const params: UpdateTagDTO = {
+    const params: IUpdateTag = {
       name: req.body.name,
     };
     const data = await service.update(id, params);

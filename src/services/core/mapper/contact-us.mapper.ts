@@ -1,9 +1,9 @@
+import { IContactUsResponse } from 'core/contact-us.interface';
 import { ContactUs } from '../../../entities/core/contact-us.entity';
-import { ContactUsResponseDTO } from '../../dto/core/contact-us.dto';
 
-export const toContactUsResponseDTO = (
+export const toIContactUsResponse = (
   entity: ContactUs,
-): ContactUsResponseDTO => {
+): IContactUsResponse => {
   return {
     id: entity.id,
     phone: entity.phone,

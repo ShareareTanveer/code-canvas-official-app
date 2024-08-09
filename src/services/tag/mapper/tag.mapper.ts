@@ -1,9 +1,9 @@
+import { ITagResponse } from 'tag/tag.interface';
 import { Tag } from '../../../entities/tag/tag.entity';
-import { TagResponseDTO } from '../../dto/tag/tag.dto';
 
-export const toTagResponseDTO = (
+export const toITagResponse = (
   entity: Tag,
-): TagResponseDTO => {
+): ITagResponse => {
   return {
     id: entity.id,
     name: entity.name,

@@ -1,12 +1,12 @@
 import express from 'express';
 import orderController from '../../controllers/order/order.controller';
-import { validateDTO } from '../../middlewares/dto-validator.middleware';
-import { CreateOrderDTO, UpdateOrderDTO } from '../../services/dto/order/order.dto';
 import { checkPermission } from '../../middlewares/authenticate.middleware';
 import constants from '../../constants';
+import orderSchema from '../../validations/schemas/order/order.schema';
+const schemaValidator = require('express-joi-validator');
 
 const router = express.Router();
-const model = constants.PERMISSION.MODEL.ORDER
+const model = constants.PERMISSION.MODEL.ORDER;
 
 /**
  * @swagger
@@ -186,7 +186,11 @@ router.delete('/:id', checkPermission(model), orderController.remove);
  *                       type: string
  *                       example: "Error message"
  */
-router.post('/', validateDTO(CreateOrderDTO), orderController.create);
+router.post(
+  '/',
+  schemaValidator(orderSchema.create),
+  orderController.create,
+);
 
 /**
  * @swagger
@@ -228,6 +232,11 @@ router.post('/', validateDTO(CreateOrderDTO), orderController.create);
  *       500:
  *         description: Internal server error
  */
-router.patch('/:id', checkPermission(model), validateDTO(UpdateOrderDTO), orderController.update);
+router.patch(
+  '/:id',
+  checkPermission(model),
+  schemaValidator(orderSchema.update),
+  orderController.update,
+);
 
 export default router;

@@ -1,9 +1,9 @@
+import { IReviewResponse } from 'review/review.interface';
 import { Review } from '../../../entities/review/review.entity';
-import { ReviewResponseDTO } from '../../dto/review/review.dto';
 
-export const toReviewResponseDTO = (
+export const toIReviewResponse = (
   entity: Review,
-): ReviewResponseDTO => {
+): IReviewResponse => {
   return {
     id: entity.id,
     product: entity.product,

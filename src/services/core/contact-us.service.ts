@@ -1,27 +1,25 @@
 import { IBaseQueryParams } from 'common.interface';
 import dataSource from '../../configs/orm.config';
 import { ContactUs } from '../../entities/core/contact-us.entity';
-import {
-  CreateContactUsDTO,
-  ContactUsResponseDTO,
-  UpdateContactUsDTO,
-} from '../dto/core/contact-us.dto';
-import { toContactUsResponseDTO } from './mapper/contact-us.mapper';
+import { toIContactUsResponse } from './mapper/contact-us.mapper';
 import {
   applyPagination,
-  listEntities,
   listEntitiesUtill,
 } from '../../utilities/pagination-filtering.utility';
-import { toOrderResponseDTO } from '../order/mapper/order.mapper';
+import {
+  IContactUsResponse,
+  ICreateContactUs,
+  IUpdateContactUs,
+} from 'core/contact-us.interface';
 
 const repository = dataSource.getRepository(ContactUs);
 
-const getById = async (id: number): Promise<ContactUsResponseDTO> => {
+const getById = async (id: number): Promise<IContactUsResponse> => {
   const entity = await repository.findOne({ where: { id } });
   if (!entity) {
     throw new Error('ContactUs not found');
   }
-  return toContactUsResponseDTO(entity);
+  return toIContactUsResponse(entity);
 };
 
 const list = async (params: IBaseQueryParams) => {
@@ -38,26 +36,26 @@ const list = async (params: IBaseQueryParams) => {
       params.page,
     );
     const entities = await paginatedRepo.getMany();
-    const response = entities.map(toContactUsResponseDTO);
+    const response = entities.map(toIContactUsResponse);
     return { response, pagination };
   }
   const entities = await repo.getMany();
-  const response = entities.map(toContactUsResponseDTO);
+  const response = entities.map(toIContactUsResponse);
   return { response };
 };
 
 const create = async (
-  params: CreateContactUsDTO,
-): Promise<ContactUsResponseDTO> => {
+  params: ICreateContactUs,
+): Promise<IContactUsResponse> => {
   const entity = repository.create(params);
   const savedEntity = await repository.save(entity);
-  return toContactUsResponseDTO(savedEntity);
+  return toIContactUsResponse(savedEntity);
 };
 
 const update = async (
   id: number,
-  params: UpdateContactUsDTO,
-): Promise<ContactUsResponseDTO> => {
+  params: IUpdateContactUs,
+): Promise<IContactUsResponse> => {
   const entity = await repository.findOne({ where: { id } });
   if (!entity) {
     throw new Error('ContactUs not found');
@@ -74,7 +72,7 @@ const update = async (
   });
 
   const updatedEntity = await repository.save(entity);
-  return toContactUsResponseDTO(updatedEntity);
+  return toIContactUsResponse(updatedEntity);
 };
 
 const remove = async (id: number): Promise<void> => {

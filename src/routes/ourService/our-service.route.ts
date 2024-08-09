@@ -1,16 +1,14 @@
 import express from 'express';
-import { validateDTO } from '../../middlewares/dto-validator.middleware';
-import {
-  CreateOurServiceDTO,
-  UpdateOurServiceDTO,
-} from '../../services/dto/ourService/our-service.dto';
 import ourServiceController from '../../controllers/ourService/our-service.controller';
 import { upload } from '../../middlewares/multer.middleware';
 import { checkPermission } from '../../middlewares/authenticate.middleware';
 import constants from '../../constants';
+import ourServiceSchema from '../../validations/schemas/ourService/our-service.schema';
+import { stringParser } from '../../middlewares/parser-form-data.middleware';
+const schemaValidator = require('express-joi-validator');
 
 const router = express.Router();
-const model = constants.PERMISSION.MODEL.OUR_SERVICE
+const model = constants.PERMISSION.MODEL.OUR_SERVICE;
 
 /**
  * @swagger
@@ -254,7 +252,11 @@ router.get('/:id', ourServiceController.getById);
  *                       type: string
  *                       example: "Error message"
  */
-router.delete('/:id', checkPermission(model), ourServiceController.remove);
+router.delete(
+  '/:id',
+  checkPermission(model),
+  ourServiceController.remove,
+);
 
 /**
  * @swagger
@@ -328,7 +330,14 @@ router.delete('/:id', checkPermission(model), ourServiceController.remove);
  *                       type: string
  *                       example: "Error message"
  */
-router.post('/', checkPermission(model), upload.array('images'), validateDTO(CreateOurServiceDTO), ourServiceController.create);
+router.post(
+  '/',
+  checkPermission(model),
+  upload.array('images'),
+  stringParser(),
+  schemaValidator(ourServiceSchema.create),
+  ourServiceController.create,
+);
 
 /**
  * @swagger
@@ -429,6 +438,13 @@ router.post('/', checkPermission(model), upload.array('images'), validateDTO(Cre
  *                     message:
  *                       type: string
  */
-router.patch('/:id', checkPermission(model), upload.array('addImages'), validateDTO(UpdateOurServiceDTO), ourServiceController.update);
+router.patch(
+  '/:id',
+  checkPermission(model),
+  upload.array('addImages'),
+  stringParser(),
+  schemaValidator(ourServiceSchema.update),
+  ourServiceController.update,
+);
 
 export default router;

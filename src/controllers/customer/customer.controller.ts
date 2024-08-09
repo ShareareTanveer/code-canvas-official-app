@@ -2,12 +2,9 @@ import httpStatusCodes from 'http-status-codes';
 import IController from '../../interfaces/IController';
 import ApiResponse from '../../utilities/api-response.utility';
 import service from '../../services/customer/customer.service';
-import {
-  CreateCustomerDTO,
-  UpdateCustomerDTO,
-} from '../../services/dto/customer/customer.dto';
 import ApiUtility from '../../utilities/api.utility';
 import { IBaseQueryParams } from 'common.interface';
+import { ICreateCustomer, IUpdateCustomer } from 'customer/customer.interface';
 
 const getById: IController = async (req, res) => {
   try {
@@ -57,8 +54,21 @@ const create: IController = async (req, res) => {
     const files = req.files as
       | { [fieldname: string]: Express.Multer.File[] }
       | undefined;
+      
+      if (!files?.tradeLicenseAttachment?.[0]?.path) {
+        throw new Error("Trade License Attachment is required.");
+      }
+      if (!files?.tinAttachment?.[0]?.path) {
+        throw new Error("TIN Attachment is required.");
+      }
+      if (!files?.logo?.[0]?.path) {
+        throw new Error("Logo is required.");
+      }
+      if (!files?.passportAttachment?.[0]?.path) {
+        throw new Error("Passport Attachment is required.");
+      }
 
-    const params: CreateCustomerDTO = {
+    const params: ICreateCustomer = {
       user: req.user.id,
       nidNumber: req.body.nidNumber,
       company: {
@@ -99,7 +109,7 @@ const create: IController = async (req, res) => {
 const update: IController = async (req, res) => {
   try {
     const id: number = parseInt(req.params.id, 10);
-    const params: UpdateCustomerDTO = {
+    const params: IUpdateCustomer = {
       user: req.body.user,
       company: req.body.company,
       contactPerson: req.body.contactPersons,

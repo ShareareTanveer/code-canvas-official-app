@@ -1,16 +1,15 @@
-import { User } from '../../entities/user/user.entity';
 import dataSource from '../../configs/orm.config';
 import { Cart } from '../../entities/cart/cart.entity';
-import { AddToCartDTO, CartResponseDTO } from '../dto/cart/cart.dto';
-import { toCartResponseDTO } from './mapper/cart.mapper';
+import { toICartResponse } from './mapper/cart.mapper';
 import { Product } from '../../entities/product/product.entity';
 import { IBaseQueryParams } from 'common.interface';
-import { applyPagination, listEntities, listEntitiesUtill } from '../../utilities/pagination-filtering.utility';
+import { applyPagination, listEntitiesUtill } from '../../utilities/pagination-filtering.utility';
+import { IAddToCart, ICartResponse } from 'cart/cart.interface';
 
 const repository = dataSource.getRepository(Cart);
 const productRepository = dataSource.getRepository(Product);
 
-const getById = async (id: string): Promise<CartResponseDTO> => {
+const getById = async (id: string): Promise<ICartResponse> => {
   const entity = await repository.findOne({
     where: { id },
     relations: ['products'],
@@ -18,7 +17,7 @@ const getById = async (id: string): Promise<CartResponseDTO> => {
   if (!entity) {
     throw new Error('Cart not found');
   }
-  return toCartResponseDTO(entity);
+  return toICartResponse(entity);
 };
 
 const list = async (params: IBaseQueryParams) => {
@@ -38,17 +37,17 @@ const list = async (params: IBaseQueryParams) => {
       params.page,
     );
     const entities = await paginatedRepo.getMany();
-    const response = entities.map(toCartResponseDTO);
+    const response = entities.map(toICartResponse);
     return { response, pagination };
   }
   const entities = await repo.getMany();
-  const response = entities.map(toCartResponseDTO);
+  const response = entities.map(toICartResponse);
   return { response };
 };
 
 const toggleCartProduct = async (
-  params: AddToCartDTO,
-): Promise<{ data: CartResponseDTO; added: boolean }> => {
+  params: IAddToCart,
+): Promise<{ data: ICartResponse; added: boolean }> => {
   const product = await productRepository.findOne({
     where: { id: params.product },
   });
@@ -84,7 +83,7 @@ const toggleCartProduct = async (
 
   const updatedCart = await repository.save(cart);
 
-  return { data: toCartResponseDTO(updatedCart), added };
+  return { data: toICartResponse(updatedCart), added };
 };
 
 const remove = async (id: string): Promise<void> => {

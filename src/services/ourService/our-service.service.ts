@@ -1,28 +1,26 @@
 import dataSource from '../../configs/orm.config';
-import {
-  CreateOurServiceDTO,
-  OurServiceDetailResponseDTO,
-  OurServiceResponseDTO,
-  UpdateOurServiceDTO,
-} from '../dto/ourService/our-service.dto';
 import { OurService } from '../../entities/ourService/our-service.entity';
-import {
-  toOurServiceDetailResponseDTO,
-  toOurServiceResponseDTO,
-} from './mapper/our-service.mapper';
 import { OurServiceImage } from '../../entities/ourService/our-service-image.entity';
 import { OurServiceFAQ } from '../../entities/ourService/our-service-faq.entity';
 import { In } from 'typeorm';
 import { IBaseQueryParams } from 'common.interface';
 import {
   applyPagination,
-  listEntities,
   listEntitiesUtill,
 } from '../../utilities/pagination-filtering.utility';
 import {
   deleteFromCloud,
   uploadOnCloud,
 } from '../../utilities/cloudiary.utility';
+import {
+  IOurServiceDetailResponse,
+  ICreateOurService,
+  IUpdateOurService,
+} from 'ourService/our-service.interface';
+import {
+  toIOurServiceDetailResponse,
+  toIOurServiceResponse,
+} from './mapper/our-service.mapper';
 
 const repository = dataSource.getRepository(OurService);
 const faqRepository = dataSource.getRepository(OurServiceFAQ);
@@ -30,7 +28,7 @@ const imageRepository = dataSource.getRepository(OurServiceImage);
 
 const getById = async (
   id: number,
-): Promise<OurServiceDetailResponseDTO> => {
+): Promise<IOurServiceDetailResponse> => {
   const entity = await repository.findOne({
     where: { id },
     relations: ['images', 'faqs'],
@@ -38,7 +36,7 @@ const getById = async (
   if (!entity) {
     throw new Error('OurService not found');
   }
-  return toOurServiceDetailResponseDTO(entity);
+  return toIOurServiceDetailResponse(entity);
 };
 
 const list = async (params: IBaseQueryParams) => {
@@ -57,17 +55,17 @@ const list = async (params: IBaseQueryParams) => {
       params.page,
     );
     const entities = await paginatedRepo.getMany();
-    const response = entities.map(toOurServiceResponseDTO);
+    const response = entities.map(toIOurServiceResponse);
     return { response, pagination };
   }
   const entities = await repo.getMany();
-  const response = entities.map(toOurServiceResponseDTO);
+  const response = entities.map(toIOurServiceResponse);
   return { response };
 };
 
 const create = async (
-  params: CreateOurServiceDTO,
-): Promise<OurServiceDetailResponseDTO> => {
+  params: ICreateOurService,
+): Promise<IOurServiceDetailResponse> => {
   const service = new OurService();
   service.title = params.title;
   service.subtitle = params.subtitle;
@@ -107,13 +105,13 @@ const create = async (
   }
 
   const savedEntity = await repository.save(service);
-  return toOurServiceDetailResponseDTO(savedEntity);
+  return toIOurServiceDetailResponse(savedEntity);
 };
 
 const update = async (
   id: number,
-  params: UpdateOurServiceDTO,
-): Promise<OurServiceDetailResponseDTO> => {
+  params: IUpdateOurService,
+): Promise<IOurServiceDetailResponse> => {
   const service = await repository.findOne({
     where: { id },
     relations: ['images', 'faqs'],
@@ -132,23 +130,6 @@ const update = async (
   if (params.keyPoints !== undefined)
     service.keyPoints = params.keyPoints;
 
-  if (params.faqs && params.faqs.length > 0) {
-    const faqsEntities = await faqRepository.findBy({
-      id: In(params.faqs.map((faq) => faq.id)),
-    });
-
-    service.faqs = faqsEntities.map((faqEntity) => {
-      const matchingFaq = params.faqs.find(
-        (faq) => faq.id === faqEntity.id,
-      );
-      if (matchingFaq) {
-        faqEntity.question = matchingFaq.question;
-        faqEntity.answer = matchingFaq.answer;
-      }
-      return faqEntity;
-    });
-  }
-
   if (params.addImages && params.addImages.length > 0) {
     const uploadPromises = params.addImages.map((file) =>
       uploadOnCloud(file.path),
@@ -157,32 +138,59 @@ const update = async (
     const validResults = uploadResults.filter(
       (result) => result !== null,
     );
+
     if (validResults.length > 0) {
-      service.images = validResults.map((result) => {
+      const newImages = validResults.map((result) => {
         const image = new OurServiceImage();
         image.image = result.secure_url;
         image.cloudinary_image_public_id = result.public_id;
         return image;
       });
+      service.images.push(...newImages);
     }
   }
 
   if (params.deleteImages && params.deleteImages.length > 0) {
-    const imageEntities = await imageRepository.findBy({
-      id: In(params.deleteImages),
+    const imageEntities = await imageRepository.find({
+      where: { id: In(params.deleteImages), service: { id } },
+      relations: ['service'],
     });
-
+    service.images = service.images.filter(
+      (image) => !params.deleteImages.includes(image.id),
+    );
     const deletePromises = imageEntities.map((image) => {
       if (image.cloudinary_image_public_id) {
         return deleteFromCloud(image.cloudinary_image_public_id);
       }
+      return Promise.resolve();
     });
     await Promise.all(deletePromises);
     await imageRepository.remove(imageEntities);
   }
 
+  if (params.addFaqs && params.addFaqs.length > 0) {
+    const newFaqs = params.addFaqs.map((result) => {
+      const faq = new OurServiceFAQ();
+      faq.answer = result.answer;
+      faq.question = result.question;
+      return faq;
+    });
+    service.faqs = [...service.faqs, ...newFaqs];
+  }
+
+  if (params.deleteFaqs && params.deleteFaqs.length > 0) {
+    service.faqs = service.faqs.filter(
+      (faq) => !params.deleteFaqs.includes(faq.id),
+    );
+
+    const faqEntities = await faqRepository.findBy({
+      id: In(params.deleteFaqs),
+    });
+    await faqRepository.remove(faqEntities);
+  }
+
   const savedEntity = await repository.save(service);
-  return toOurServiceDetailResponseDTO(savedEntity);
+  return toIOurServiceDetailResponse(savedEntity);
 };
 
 const remove = async (id: number): Promise<void> => {

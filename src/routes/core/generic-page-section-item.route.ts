@@ -8,9 +8,12 @@ import {
 import { upload } from '../../middlewares/multer.middleware';
 import { checkPermission } from '../../middlewares/authenticate.middleware';
 import constants from '../../constants';
+import { stringParser } from '../../middlewares/parser-form-data.middleware';
+import genericPageSectionItemSchema from '../../validations/schemas/core/generic-page-section-item.schema';
+const schemaValidator = require('express-joi-validator');
 
 const router = express.Router();
-const model = constants.PERMISSION.MODEL.GENERIC_PAGE_SECTION_ITEM
+const model = constants.PERMISSION.MODEL.GENERIC_PAGE_SECTION_ITEM;
 
 /**
  * @swagger
@@ -204,7 +207,11 @@ router.get('/:id', genericPageSectionItemController.getById);
  *                       type: string
  *                       example: "Error message"
  */
-router.delete('/:id', checkPermission(model), genericPageSectionItemController.remove);
+router.delete(
+  '/:id',
+  checkPermission(model),
+  genericPageSectionItemController.remove,
+);
 
 /**
  * @swagger
@@ -303,7 +310,14 @@ router.delete('/:id', checkPermission(model), genericPageSectionItemController.r
  *                       type: string
  *                       example: "Error message"
  */
-router.post('/', checkPermission(model), upload.single('image'), validateDTO(CreateGenericPageSectionItemDTO), genericPageSectionItemController.create);
+router.post(
+  '/',
+  checkPermission(model),
+  upload.single('image'),
+  stringParser(),
+  schemaValidator(genericPageSectionItemSchema.create),
+  genericPageSectionItemController.create,
+);
 
 /**
  * @swagger
@@ -426,6 +440,13 @@ router.post('/', checkPermission(model), upload.single('image'), validateDTO(Cre
  *                       type: string
  *                       example: "Error message"
  */
-router.patch('/:id', checkPermission(model), upload.single("image"), validateDTO(UpdateGenericPageSectionItemDTO), genericPageSectionItemController.update );
+router.patch(
+  '/:id',
+  checkPermission(model),
+  upload.single('image'),
+  stringParser(),
+  schemaValidator(genericPageSectionItemSchema.update),
+  genericPageSectionItemController.update,
+);
 
 export default router;

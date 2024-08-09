@@ -1,39 +1,35 @@
+import { IOfficeInfoResponse, ICreateOfficeInfo, IUpdateOfficeInfo } from 'core/office-info.interface';
 import dataSource from '../../configs/orm.config';
 import { OfficeInfo } from '../../entities/core/office-info.entity';
-import {
-  CreateOfficeInfoDTO,
-  OfficeInfoResponseDTO,
-  UpdateOfficeInfoDTO,
-} from '../dto/core/office-info.dto';
-import { toOfficeInfoResponseDTO } from './mapper/office-info.mapper';
+import { toIOfficeInfoResponse } from './mapper/office-info.mapper';
 
 const repository = dataSource.getRepository(OfficeInfo);
 
-const getById = async (id: number): Promise<OfficeInfoResponseDTO> => {
+const getById = async (id: number): Promise<IOfficeInfoResponse> => {
   const entity = await repository.findOne({ where: { id }});
   if (!entity) {
     throw new Error('Office Info not found');
   }
-  return toOfficeInfoResponseDTO(entity);
+  return toIOfficeInfoResponse(entity);
 };
 
-const list = async (): Promise<OfficeInfoResponseDTO[]> => {
+const list = async (): Promise<IOfficeInfoResponse[]> => {
   const entities = await repository.find();
-  return entities.map(toOfficeInfoResponseDTO);
+  return entities.map(toIOfficeInfoResponse);
 };
 
 const create = async (
-  params: CreateOfficeInfoDTO,
-): Promise<OfficeInfoResponseDTO> => {
+  params: ICreateOfficeInfo,
+): Promise<IOfficeInfoResponse> => {
   const entity = repository.create(params);
   const savedEntity = await repository.save(entity);
-  return toOfficeInfoResponseDTO(savedEntity);
+  return toIOfficeInfoResponse(savedEntity);
 };
 
 const update = async (
   id: number,
-  params: UpdateOfficeInfoDTO,
-): Promise<OfficeInfoResponseDTO> => {
+  params: IUpdateOfficeInfo,
+): Promise<IOfficeInfoResponse> => {
   const entity = await repository.findOne({ where: { id } });
   if (!entity) {
     throw new Error('Office Info not found');
@@ -57,7 +53,7 @@ const update = async (
   });
 
   const updatedEntity = await repository.save(entity);
-  return toOfficeInfoResponseDTO(updatedEntity);
+  return toIOfficeInfoResponse(updatedEntity);
 };
 
 const remove = async (id: number): Promise<void> => {

@@ -1,16 +1,14 @@
 import express from 'express';
 import productController from '../../controllers/product/product.controller';
-import { validateDTO } from '../../middlewares/dto-validator.middleware';
-import {
-  CreateProductDTO,
-  UpdateProductDTO,
-} from '../../services/dto/product/product.dto';
 import { upload } from '../../middlewares/multer.middleware';
 import { checkPermission } from '../../middlewares/authenticate.middleware';
 import constants from '../../constants';
+import { stringParser } from '../../middlewares/parser-form-data.middleware';
+import productSchema from '../../validations/schemas/product/product.schema';
+const schemaValidator = require('express-joi-validator');
 
 const router = express.Router();
-const model = constants.PERMISSION.MODEL.PRODUCT
+const model = constants.PERMISSION.MODEL.PRODUCT;
 
 /**
  * @swagger
@@ -57,7 +55,7 @@ const model = constants.PERMISSION.MODEL.PRODUCT
  *           type: array
  *           items:
  *             type: string
- *           example: ["image1.jpg", "image2.jpg"] 
+ *           example: ["image1.jpg", "image2.jpg"]
  *         tags:
  *           type: array
  *           items:
@@ -314,7 +312,14 @@ router.get('/:id', productController.getById);
  *               error:
  *                 message: "Conflict error message"
  */
-router.post('/', checkPermission(model), upload.array('images'), validateDTO(CreateProductDTO), productController.create );
+router.post(
+  '/',
+  checkPermission(model),
+  upload.array('images'),
+  stringParser(),
+  schemaValidator(productSchema.create),
+    productController.create,
+);
 
 /**
  * @swagger
@@ -347,7 +352,14 @@ router.post('/', checkPermission(model), upload.array('images'), validateDTO(Cre
  *       404:
  *         description: Product not found
  */
-router.patch( '/:id', checkPermission(model), upload.array('addImages'), validateDTO(UpdateProductDTO), productController.update);
+router.patch(
+  '/:id',
+  checkPermission(model),
+  upload.array('addImages'),
+  stringParser(),
+  schemaValidator(productSchema.update),
+    productController.update,
+);
 
 /**
  * @swagger

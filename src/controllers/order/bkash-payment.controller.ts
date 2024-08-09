@@ -4,10 +4,10 @@ import axios from 'axios';
 import IController from 'IController';
 import ApiResponse from '../../utilities/api-response.utility';
 import { v4 as uuidv4 } from 'uuid';
-import { CreateOrderDTO } from '../../services/dto/order/order.dto';
 import bkashPaymentService from '../../services/order/bkash-payment.service';
 import { BkashPaymentExecuteResponseDTO } from '../../services/dto/order/bkash-payment.dto';
 import orderService from '../../services/order/order.service';
+import { ICreateOrder } from 'order/order.interface';
 
 const createPayment: IController = async (req, res) => {
   try {
@@ -19,7 +19,7 @@ const createPayment: IController = async (req, res) => {
       user = req.body.user;
     }
     user = req.user.id;
-    const params: CreateOrderDTO = {
+    const params: ICreateOrder = {
       cartId: req.body.cartId,
       user,
     };

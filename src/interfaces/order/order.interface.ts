@@ -1,29 +1,21 @@
-import { IsNotEmpty, IsOptional, IsUUID } from 'class-validator';
+import { ISimpleUserResponse } from "user/user.interface";
+import { IOrderItemResponse } from "./order-item.interface";
 import { EOrderStaus } from '../../enum/order-status.enum';
-import { SimpleUserResponseDTO } from '../user/user.interface';
-import { OrderItemResponseDTO } from './order-item.interface';
 
-export class OrderResponseDTO {
+export interface IOrderResponse {
   id: string;
-  user: SimpleUserResponseDTO;
-  items: OrderItemResponseDTO[];
+  user: ISimpleUserResponse;
+  items: IOrderItemResponse[];
   totalPrice?: number;
   orderStatus: EOrderStaus;
 }
 
-export class CreateOrderDTO {
-  @IsUUID()
-  @IsNotEmpty()
+export interface ICreateOrder {
   cartId: string;
-
-  @IsOptional()
   user?: number;
 }
 
-export class UpdateOrderDTO {
-  @IsUUID()
+export interface IUpdateOrder {
   cartId: string;
-
-  @IsOptional()
   user?: number;
 }

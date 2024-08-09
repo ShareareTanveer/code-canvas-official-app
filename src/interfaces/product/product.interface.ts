@@ -1,30 +1,22 @@
-import {
-  IsArray,
-  IsBoolean,
-  IsNotEmpty,
-  IsNumber,
-  IsOptional,
-  IsString,
-} from 'class-validator';
-import { CategoryResponseDTO } from '../category/category.interface';
-import { TagResponseDTO } from '../tag/tag.interface';
-import { ReviewResponseDTO } from '../review/review.interface';
-import { ProductImageResponseDTO } from '../../services/dto/product/product-image.dto';
+import { ITagResponse } from 'tag/tag.interface';
+import { ICategoryResponse } from '../category/category.interface';
+import { IProductImageResponse } from './product-image.interface';
+import { IReviewResponse } from 'review/review.interface';
 
-export class ProductResponseDTO {
+export interface IProductResponse {
   id?: number;
-  category: CategoryResponseDTO;
+  category: ICategoryResponse;
   title: string;
   slug: string;
   live_link: string;
   price: number;
-  images?: ProductImageResponseDTO[];
+  images?: IProductImageResponse[];
   total_sale?: number;
 }
 
-export class ProductDetailResponseDTO {
+export interface IProductDetailResponse {
   id?: number;
-  category: CategoryResponseDTO;
+  category: ICategoryResponse;
   title: string;
   subtitle: string;
   slug: string;
@@ -33,101 +25,37 @@ export class ProductDetailResponseDTO {
   support_for: string;
   price: number;
   is_documented: boolean;
-  images?: ProductImageResponseDTO[];
+  images?: IProductImageResponse[];
   total_sale?: number;
-  tags?: TagResponseDTO[];
-  reviews?: ReviewResponseDTO[];
+  tags?: ITagResponse[];
+  reviews?: IReviewResponse[];
 }
 
-export class CreateProductDTO {
-  @IsNotEmpty()
-  @IsNumber()
+export interface ICreateProduct {
   category: number;
-
-  @IsNotEmpty()
-  @IsString()
   title: string;
-
-  @IsNotEmpty()
-  @IsString()
   subtitle: string;
-
-  @IsNotEmpty()
-  @IsString()
   slug: string;
-
-  @IsNotEmpty()
-  @IsString()
   description: string;
-
-  @IsOptional()
-  @IsString()
-  live_link: string;
-
-  @IsOptional()
-  @IsString() 
-  support_for: string;
-
-  @IsNotEmpty()
-  @IsNumber()
+  live_link?: string;
+  support_for?: string;
   price: number;
-
-  @IsBoolean()
-  @IsOptional()
-  is_documented: boolean;
-
-  @IsOptional()
+  is_documented?: boolean;
   images?: Express.Multer.File[];
-
-  @IsOptional()
   tags?: number[];
 }
 
-export class UpdateProductDTO {
-  @IsOptional()
-  @IsNumber()
-  category: number;
-
-  @IsOptional()
-  @IsString()
-  title: string;
-
-  @IsOptional()
-  @IsString()
-  subtitle: string;
-
-  @IsOptional()
-  @IsString()
-  slug: string;
-
-  @IsOptional()
-  @IsString()
-  description: string;
-
-  @IsOptional()
-  @IsString()
-  live_link: string;
-
-  @IsOptional()
-  @IsString() 
-  support_for: string;
-
-  @IsOptional()
-  @IsNumber()
-  price: number;
-
-  @IsBoolean()
-  @IsOptional()
-  is_documented: boolean;
-
-  @IsOptional()
+export interface IUpdateProduct {
+  category?: number;
+  title?: string;
+  subtitle?: string;
+  slug?: string;
+  description?: string;
+  live_link?: string;
+  support_for?: string;
+  price?: number;
+  is_documented?: boolean;
   addImages?: Express.Multer.File[];
-
-  @IsOptional()
-  @IsArray()
   deleteImages?: number[];
-
-  @IsOptional()
-  @IsArray()
   tags?: number[];
 }

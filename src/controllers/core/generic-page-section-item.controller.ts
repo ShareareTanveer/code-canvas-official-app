@@ -2,13 +2,12 @@ import httpStatusCodes from 'http-status-codes';
 import IController from '../../interfaces/IController';
 import ApiResponse from '../../utilities/api-response.utility';
 import service from '../../services/core/generic-page-section-item.service';
-import {
-  CreateGenericPageSectionItemDTO,
-  UpdateGenericPageSectionItemDTO,
-} from '../../services/dto/core/generic-page-section-item.dto';
 import ApiUtility from '../../utilities/api.utility';
 import { IBaseQueryParams } from 'common.interface';
-import { uploadOnCloud } from '../../utilities/cloudiary.utility';
+import {
+  ICreateGenericPageSectionItem,
+  IUpdateGenericPageSectionItem,
+} from 'core/generic-page-section-item.interface';
 
 const getById: IController = async (req, res) => {
   try {
@@ -56,7 +55,7 @@ const list: IController = async (req, res) => {
 const create: IController = async (req, res) => {
   try {
     const imageLocalFile = req.file?.path;
-    const params: CreateGenericPageSectionItemDTO = {
+    const params: ICreateGenericPageSectionItem = {
       title: req.body.title,
       subtitle: req.body.subtitle,
       description: req.body.description,
@@ -80,7 +79,7 @@ const update: IController = async (req, res) => {
   try {
     const id: number = parseInt(req.params.id, 10);
     const imageLocalFile = req.file?.path;
-    const params: UpdateGenericPageSectionItemDTO = {
+    const params: IUpdateGenericPageSectionItem = {
       title: req.body.title,
       subtitle: req.body.subtitle,
       description: req.body.description,

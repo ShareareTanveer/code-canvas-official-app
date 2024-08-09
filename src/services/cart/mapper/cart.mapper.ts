@@ -1,9 +1,9 @@
-import { CartResponseDTO } from '../../../services/dto/cart/cart.dto';
 import { Cart } from '../../../entities/cart/cart.entity';
+import { ICartResponse } from 'cart/cart.interface';
 
-export const toCartResponseDTO = (
+export const toICartResponse = (
   entity: Cart,
-): CartResponseDTO => {
+): ICartResponse => {
   return {
     id: entity.id,
     products: entity.products,

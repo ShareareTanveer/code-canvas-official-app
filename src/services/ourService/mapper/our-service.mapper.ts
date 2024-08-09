@@ -1,9 +1,9 @@
-import { OurServiceDetailResponseDTO, OurServiceResponseDTO } from '../../../services/dto/ourService/our-service.dto';
 import { OurService } from '../../../entities/ourService/our-service.entity';
+import { IOurServiceResponse, IOurServiceDetailResponse } from 'ourService/our-service.interface';
 
-export const toOurServiceResponseDTO = (
+export const toIOurServiceResponse = (
   entity: OurService,
-): OurServiceResponseDTO => {
+): IOurServiceResponse => {
   return {
     id: entity.id,
     subtitle: entity.subtitle,
@@ -14,9 +14,9 @@ export const toOurServiceResponseDTO = (
   };
 };
 
-export const toOurServiceDetailResponseDTO = (
+export const toIOurServiceDetailResponse = (
   entity: OurService,
-): OurServiceDetailResponseDTO => {
+): IOurServiceDetailResponse => {
   return {
     id: entity.id,
     subtitle: entity.subtitle,

@@ -1,16 +1,12 @@
-import { IsNotEmpty, IsOptional } from 'class-validator';
-import { ProductResponseDTO } from '../product/product.interface';
+import { IProductResponse } from "product/product.interface";
 
-export class CartResponseDTO {
+export interface ICartResponse {
   id: string;
-  products: ProductResponseDTO[];
+  products: IProductResponse[];
   totalPrice?: number;
 }
 
-export class AddToCartDTO {
-  @IsNotEmpty()
+export interface IAddToCart {
   product: number;
-
-  @IsOptional()
   cartId?: string;
 }

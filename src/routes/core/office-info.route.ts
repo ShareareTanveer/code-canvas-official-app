@@ -1,13 +1,12 @@
 import express from 'express';
 import officeInfoController from '../../controllers/core/office-info.controller';
 import { validateDTO } from '../../middlewares/dto-validator.middleware';
-import { CreateOfficeInfoDTO, UpdateOfficeInfoDTO } from '../../services/dto/core/office-info.dto';
 import { checkPermission } from '../../middlewares/authenticate.middleware';
 import constants from '../../constants';
-
+import officeInfoSchema from '../../validations/schemas/core/office-info.schema';
+const schemaValidator = require('express-joi-validator');
 const router = express.Router();
-const model = constants.PERMISSION.MODEL.OFFICE_INFO
-
+const model = constants.PERMISSION.MODEL.OFFICE_INFO;
 
 /**
  * @swagger
@@ -31,7 +30,7 @@ const model = constants.PERMISSION.MODEL.OFFICE_INFO
  *           example: "123-456-7890"
  *         supportEmail:
  *           type: string
- *           example: "support@example.com" 
+ *           example: "support@example.com"
  *         officialEmail:
  *           type: string
  *           example: "official@example.com"
@@ -201,7 +200,11 @@ router.get('/:id', officeInfoController.getById);
  *                       type: string
  *                       example: "Error message"
  */
-router.delete('/:id', checkPermission(model), officeInfoController.remove);
+router.delete(
+  '/:id',
+  checkPermission(model),
+  officeInfoController.remove,
+);
 
 /**
  * @swagger
@@ -246,7 +249,12 @@ router.delete('/:id', checkPermission(model), officeInfoController.remove);
  *                       type: string
  *                       example: "Error message"
  */
-router.post('/', checkPermission(model), validateDTO(CreateOfficeInfoDTO), officeInfoController.create);
+router.post(
+  '/',
+  checkPermission(model),
+  schemaValidator(officeInfoSchema.create),
+  officeInfoController.create,
+);
 
 /**
  * @swagger
@@ -315,6 +323,11 @@ router.post('/', checkPermission(model), validateDTO(CreateOfficeInfoDTO), offic
  *                       type: string
  *                       example: "Error message"
  */
-router.patch('/:id', checkPermission(model), validateDTO(UpdateOfficeInfoDTO), officeInfoController.update);
+router.patch(
+  '/:id',
+  checkPermission(model),
+  schemaValidator(officeInfoSchema.update),
+  officeInfoController.update,
+);
 
 export default router;

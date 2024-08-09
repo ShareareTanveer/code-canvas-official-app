@@ -1,7 +1,7 @@
 import { GenericPageSectionItem } from '../../../entities/core/generic-page-section-item.entity';
 import { GenericPageSectionItemResponseDTO } from '../../dto/core/generic-page-section-item.dto';
 
-export const toGenericPageSectionItemResponseDTO = (
+export const toIGenericPageSectionItemResponse = (
   entity: GenericPageSectionItem,
 ): GenericPageSectionItemResponseDTO => {
   return {

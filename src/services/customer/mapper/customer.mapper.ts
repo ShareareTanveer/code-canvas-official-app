@@ -1,9 +1,9 @@
+import { ICustomerResponse } from "customer/customer.interface";
 import { Customer } from "../../../entities/customer/customer.entity";
-import { CustomerResponseDTO } from "../../../services/dto/customer/customer.dto";
 
-export const toCustomerResponseDTO = (
+export const toICustomerResponse = (
   entity: Customer,
-): CustomerResponseDTO => {
+): ICustomerResponse => {
   return {
     id: entity.id,
     user: entity.user,

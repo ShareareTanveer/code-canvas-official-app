@@ -1,7 +1,7 @@
-import { ProductResponseDTO } from '../product/product.interface';
+import { IProductResponse } from 'product/product.interface';
 
-export class OrderItemResponseDTO {
+export interface IOrderItemResponse {
   id: string;
   price: number;
-  product?: ProductResponseDTO;
+  product?: IProductResponse;
 }

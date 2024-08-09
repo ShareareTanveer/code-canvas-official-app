@@ -3,31 +3,32 @@ import { Product } from '../../entities/product/product.entity';
 import { ProductImage } from '../../entities/product/product-image.entity';
 import { Category } from '../../entities/category/category.entity';
 import {
-  CreateProductDTO,
-  ProductDetailResponseDTO,
-  UpdateProductDTO,
-} from '../dto/product/product.dto';
-import {
-  toProductDetailResponseDTO,
-  toProductResponseDTO,
+  toIProductDetailResponse,
+  toIProductResponse,
 } from './mapper/product.mapper';
 import { In } from 'typeorm';
 import { Tag } from '../../entities/tag/tag.entity';
-import { applyPagination, listEntities, listEntitiesUtill } from '../../utilities/pagination-filtering.utility';
+import {
+  applyPagination,
+  listEntitiesUtill,
+} from '../../utilities/pagination-filtering.utility';
 import { IBaseQueryParams } from 'common.interface';
 import {
   deleteFromCloud,
   uploadOnCloud,
 } from '../..//utilities/cloudiary.utility';
+import {
+  ICreateProduct,
+  IProductDetailResponse,
+  IUpdateProduct,
+} from 'product/product.interface';
 
 const repository = dataSource.getRepository(Product);
 const categoryRepository = dataSource.getRepository(Category);
 const tagRepository = dataSource.getRepository(Tag);
 const imageRepository = dataSource.getRepository(ProductImage);
 
-const getById = async (
-  id: number,
-): Promise<ProductDetailResponseDTO> => {
+const getById = async (id: number): Promise<IProductDetailResponse> => {
   const entity = await repository.findOne({
     where: { id },
     relations: ['images', 'category', 'tags', 'reviews'],
@@ -35,20 +36,19 @@ const getById = async (
   if (!entity) {
     throw new Error('Product not found');
   }
-  return toProductDetailResponseDTO(entity);
+  return toIProductDetailResponse(entity);
 };
-
 
 const list = async (params: IBaseQueryParams) => {
   let repo = await listEntitiesUtill(repository, params, 'product', {
-  searchFields: [
-    'product.title',
-    'product.slug',
-    'category.name',
-    'tags.name',
-  ],
-  validSortBy: ['title', 'price', 'id'],
-  validSortOrder: ['ASC', 'DESC'],
+    searchFields: [
+      'product.title',
+      'product.slug',
+      'category.name',
+      'tags.name',
+    ],
+    validSortBy: ['title', 'price', 'id'],
+    validSortOrder: ['ASC', 'DESC'],
   });
 
   repo
@@ -63,17 +63,17 @@ const list = async (params: IBaseQueryParams) => {
       params.page,
     );
     const entities = await paginatedRepo.getMany();
-    const response = entities.map(toProductResponseDTO);
+    const response = entities.map(toIProductResponse);
     return { response, pagination };
   }
   const entities = await repo.getMany();
-  const response = entities.map(toProductResponseDTO);
+  const response = entities.map(toIProductResponse);
   return { response };
 };
 
 const create = async (
-  params: CreateProductDTO,
-): Promise<ProductDetailResponseDTO> => {
+  params: ICreateProduct,
+): Promise<IProductDetailResponse> => {
   const category = await categoryRepository.findOne({
     where: { id: params.category },
   });
@@ -122,13 +122,13 @@ const create = async (
     }
   }
   const savedEntity = await repository.save(product);
-  return toProductDetailResponseDTO(savedEntity);
+  return toIProductDetailResponse(savedEntity);
 };
 
 const update = async (
   id: number,
-  params: UpdateProductDTO,
-): Promise<ProductDetailResponseDTO> => {
+  params: IUpdateProduct,
+): Promise<IProductDetailResponse> => {
   const product = await repository.findOne({
     where: { id },
     relations: ['images', 'category', 'tags'],
@@ -198,7 +198,7 @@ const update = async (
   }
   const savedEntity = await repository.save(product);
 
-  return toProductDetailResponseDTO(savedEntity);
+  return toIProductDetailResponse(savedEntity);
 };
 
 const remove = async (id: number): Promise<void> => {

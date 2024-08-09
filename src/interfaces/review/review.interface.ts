@@ -1,42 +1,22 @@
-import {
-  IsEnum,
-  IsNotEmpty,
-  IsNumber,
-  IsOptional,
-  IsString,
-} from 'class-validator';
-import { ERating } from '../../enum/rating.enum';
-import { ProductResponseDTO } from '../product/product.interface';
-import { SimpleUserResponseDTO } from '../user/user.interface';
+import { IProductResponse } from "product/product.interface";
+import { ERating } from "../../enum/rating.enum";
+import { ISimpleUserResponse } from "user/user.interface";
 
-export class ReviewResponseDTO {
+export interface IReviewResponse {
   id: number;
-  product: ProductResponseDTO;
-  user: SimpleUserResponseDTO;
+  product: IProductResponse;
+  user: ISimpleUserResponse;
   text?: string;
   rating: ERating;
 }
 
-export class CreateReviewDTO {
-  @IsString()
-  @IsOptional()
-  text: string;
-
-  @IsNotEmpty()
-  @IsEnum(ERating)
+export interface ICreateReview {
+  text?: string;
   rating: ERating;
-
-  @IsNumber()
-  @IsNotEmpty()
   product: number;
 }
 
-export class UpdateReviewDTO {
-  @IsString()
-  @IsOptional()
-  text: string;
-
-  @IsOptional()
-  @IsEnum(ERating)
-  rating: ERating;
+export interface IUpdateReview {
+  text?: string;
+  rating?: ERating;
 }
