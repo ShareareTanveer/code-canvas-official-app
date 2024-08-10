@@ -3,8 +3,8 @@ import productController from '../../controllers/product/product.controller';
 import { upload } from '../../middlewares/multer.middleware';
 import { checkPermission } from '../../middlewares/authenticate.middleware';
 import constants from '../../constants';
-import { stringParser } from '../../middlewares/parser-form-data.middleware';
 import productSchema from '../../validations/schemas/product/product.schema';
+import { stringParser } from '../../middlewares/parser-form-data.middleware';
 const schemaValidator = require('express-joi-validator');
 
 const router = express.Router();

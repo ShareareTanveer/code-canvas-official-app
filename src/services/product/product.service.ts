@@ -173,29 +173,36 @@ const update = async (
     const validResults = uploadResults.filter(
       (result) => result !== null,
     );
+
     if (validResults.length > 0) {
-      product.images = validResults.map((result) => {
+      const newImages = validResults.map((result) => {
         const image = new ProductImage();
         image.image = result.secure_url;
         image.cloudinary_image_public_id = result.public_id;
         return image;
       });
+      product.images.push(...newImages);
     }
   }
 
   if (params.deleteImages && params.deleteImages.length > 0) {
-    const imageEntities = await imageRepository.findBy({
-      id: In(params.deleteImages),
+    const imageEntities = await imageRepository.find({
+      where: { id: In(params.deleteImages), product: { id } },
+      relations: ['product'],
     });
-
+    product.images = product.images.filter(
+      (image) => !params.deleteImages.includes(image.id),
+    );
     const deletePromises = imageEntities.map((image) => {
       if (image.cloudinary_image_public_id) {
         return deleteFromCloud(image.cloudinary_image_public_id);
       }
+      return Promise.resolve();
     });
     await Promise.all(deletePromises);
     await imageRepository.remove(imageEntities);
   }
+
   const savedEntity = await repository.save(product);
 
   return toIProductDetailResponse(savedEntity);

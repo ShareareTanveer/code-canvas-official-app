@@ -2,7 +2,7 @@ import Joi from 'joi';
 import { handleValidationErrors } from '../../../utilities/joi-validator-message.utility';
 
 export default {
-  createTag: {
+  create: {
     body: Joi.object({
       name: Joi.string()
         .max(100)
@@ -11,7 +11,7 @@ export default {
     }),
   },
 
-  updateTag: {
+  update: {
     body: Joi.object({
       name: Joi.string()
         .max(100)

@@ -1,12 +1,18 @@
 import express from 'express';
 import reviewController from '../../controllers/review/review.controller';
 import { validateDTO } from '../../middlewares/dto-validator.middleware';
-import { CreateReviewDTO, UpdateReviewDTO } from '../../services/dto/review/review.dto';
+import {
+  CreateReviewDTO,
+  UpdateReviewDTO,
+} from '../../services/dto/review/review.dto';
 import { checkPermission } from '../../middlewares/authenticate.middleware';
 import constants from '../../constants';
+import { stringParser } from '../../middlewares/parser-form-data.middleware';
+import reviewSchema from '../../validations/schemas/review/review.schema';
+const schemaValidator = require('express-joi-validator');
 
 const router = express.Router();
-const model = constants.PERMISSION.MODEL.REVIEW
+const model = constants.PERMISSION.MODEL.REVIEW;
 
 /**
  * @swagger
@@ -158,7 +164,11 @@ router.get('/:id', reviewController.getById);
  *       400:
  *         description: Bad request
  */
-router.post('/', validateDTO(CreateReviewDTO), reviewController.create);
+router.post(
+  '/',
+  schemaValidator(reviewSchema.create),
+  reviewController.create,
+);
 
 /**
  * @swagger
@@ -192,7 +202,12 @@ router.post('/', validateDTO(CreateReviewDTO), reviewController.create);
  *       404:
  *         description: Review not found
  */
-router.patch('/:id', checkPermission(model), validateDTO(UpdateReviewDTO), reviewController.update);
+router.patch(
+  '/:id',
+  checkPermission(model),
+  schemaValidator(reviewSchema.update),
+  reviewController.update,
+);
 
 /**
  * @swagger

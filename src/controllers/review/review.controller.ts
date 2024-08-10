@@ -6,6 +6,7 @@ import ApiUtility from '../../utilities/api.utility';
 import { User } from '../../entities/user/user.entity';
 import { IBaseQueryParams } from 'common.interface';
 import { ICreateReview, IUpdateReview } from 'review/review.interface';
+import constants from '../../constants';
 
 const getById: IController = async (req, res) => {
   try {
@@ -61,11 +62,16 @@ const create: IController = async (req, res) => {
     const data = await service.create(params, user);
     return ApiResponse.result(res, data, httpStatusCodes.CREATED);
   } catch (e) {
-    return ApiResponse.error(
-      res,
-      httpStatusCodes.BAD_REQUEST,
-      e.message,
-    );
+    const statusCode =
+      e.code === constants.ERROR_CODE.DUPLICATED
+        ? httpStatusCodes.CONFLICT
+        : httpStatusCodes.BAD_REQUEST;
+    const message =
+      e.code === constants.ERROR_CODE.DUPLICATED
+        ? 'Review already exists.'
+        : e?.message;
+
+    return ApiResponse.error(res, statusCode, message);
   }
 };
 

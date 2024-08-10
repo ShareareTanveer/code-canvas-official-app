@@ -3,7 +3,10 @@ import { Cart } from '../../entities/cart/cart.entity';
 import { toICartResponse } from './mapper/cart.mapper';
 import { Product } from '../../entities/product/product.entity';
 import { IBaseQueryParams } from 'common.interface';
-import { applyPagination, listEntitiesUtill } from '../../utilities/pagination-filtering.utility';
+import {
+  applyPagination,
+  listEntitiesUtill,
+} from '../../utilities/pagination-filtering.utility';
 import { IAddToCart, ICartResponse } from 'cart/cart.interface';
 
 const repository = dataSource.getRepository(Cart);
@@ -12,7 +15,7 @@ const productRepository = dataSource.getRepository(Product);
 const getById = async (id: string): Promise<ICartResponse> => {
   const entity = await repository.findOne({
     where: { id },
-    relations: ['products'],
+    relations: ['products', 'products.images'],
   });
   if (!entity) {
     throw new Error('Cart not found');
@@ -27,8 +30,7 @@ const list = async (params: IBaseQueryParams) => {
     validSortOrder: ['ASC', 'DESC'],
   });
 
-  repo
-    .leftJoinAndSelect('cart.products', 'products')
+  repo.leftJoinAndSelect('cart.products', 'products');
 
   if (params.pagination == 'true' || params.pagination == 'True') {
     const { repo: paginatedRepo, pagination } = await applyPagination(

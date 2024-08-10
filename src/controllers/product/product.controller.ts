@@ -4,7 +4,10 @@ import ApiResponse from '../../utilities/api-response.utility';
 import service from '../../services/product/product.service';
 import ApiUtility from '../../utilities/api.utility';
 import { IBaseQueryParams } from 'common.interface';
-import { ICreateProduct, IUpdateProduct } from 'product/product.interface';
+import {
+  ICreateProduct,
+  IUpdateProduct,
+} from 'product/product.interface';
 
 const getById: IController = async (req, res) => {
   try {
@@ -55,7 +58,13 @@ const list: IController = async (req, res) => {
 
 const create: IController = async (req, res) => {
   try {
-    const imageLocalFiles = (req.files as Express.Multer.File[]).map(file => file);
+    const imageLocalFiles = (req.files as Express.Multer.File[]).map(
+      (file) => file,
+    );
+    
+    if (imageLocalFiles.length < 1) {
+      throw new Error('No files were uploaded.');
+    }
     const params: ICreateProduct = {
       category: req.body.category,
       title: req.body.title,
@@ -83,7 +92,9 @@ const create: IController = async (req, res) => {
 const update: IController = async (req, res) => {
   try {
     const id: number = parseInt(req.params.id, 10);
-    const imageLocalFiles = (req.files as Express.Multer.File[]).map(file => file);
+    const imageLocalFiles = (req.files as Express.Multer.File[]).map(
+      (file) => file,
+    );
     const params: IUpdateProduct = {
       category: req.body.category,
       title: req.body.title,

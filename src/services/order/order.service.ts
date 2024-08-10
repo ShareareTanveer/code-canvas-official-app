@@ -83,12 +83,11 @@ const create = async (
 
   const user = await userRepository.findOne({
     where: { id: params.user },
-  });
-  const customer = await customerRepository.findOne({
-    where: { user },
+    relations: ['customer'],
+
   });
 
-  if (!customer) {
+  if (!user.customer) {
     throw new Error('user must fill the customer form');
   }
 

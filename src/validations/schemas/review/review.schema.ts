@@ -3,7 +3,7 @@ import { handleValidationErrors } from '../../../utilities/joi-validator-message
 import { ERating } from '../../../enum/rating.enum';
 
 export default {
-  createReview: {
+  create: {
     body: Joi.object({
       text: Joi.string()
         .optional()
@@ -19,7 +19,7 @@ export default {
     }),
   },
 
-  updateReview: {
+  update: {
     body: Joi.object({
       text: Joi.string()
         .optional()

@@ -1,12 +1,12 @@
 import express from 'express';
 import tagController from '../../controllers/tag/tag.controller';
-import { validateDTO } from '../../middlewares/dto-validator.middleware';
-import { CreateTagDTO, UpdateTagDTO } from '../../services/dto/tag/tag.dto';
 import { checkPermission } from '../../middlewares/authenticate.middleware';
 import constants from '../../constants';
+import tagSchema from '../../validations/schemas/tag/tag.schema';
+const schemaValidator = require('express-joi-validator');
 
 const router = express.Router();
-const model = constants.PERMISSION.MODEL.TAG
+const model = constants.PERMISSION.MODEL.TAG;
 
 /**
  * @swagger
@@ -133,7 +133,12 @@ router.delete('/:id', checkPermission(model), tagController.remove);
  *               error:
  *                 message: "Error message"
  */
-router.post('/', checkPermission(model), validateDTO(CreateTagDTO), tagController.create);
+router.post(
+  '/',
+  checkPermission(model),
+  schemaValidator(tagSchema.create),
+    tagController.create,
+);
 
 /**
  * @swagger
@@ -171,6 +176,11 @@ router.post('/', checkPermission(model), validateDTO(CreateTagDTO), tagControlle
  *       500:
  *         description: Internal server error
  */
-router.patch('/:id', checkPermission(model), validateDTO(UpdateTagDTO), tagController.update);
+router.patch(
+  '/:id',
+  checkPermission(model),
+  schemaValidator(tagSchema.update),
+    tagController.update,
+);
 
 export default router;
