@@ -1,7 +1,7 @@
 import express from 'express';
 import permissionController from '../../controllers/user/permission.controller';
-import { validateDTO } from '../../middlewares/dto-validator.middleware';
-import { CreatePermissionDTO, UpdatePermissionDTO } from '../../services/dto/permission/create-update-permission.dto';
+// import { validateDTO } from '../../middlewares/dto-validator.middleware';
+// import { CreatePermissionDTO, UpdatePermissionDTO } from '../../services/dto/permission/create-update-permission.dto';
 
 const router = express.Router();
 
@@ -27,12 +27,12 @@ const router = express.Router();
 router.get('/', permissionController.list);
 router.post(
   '/',
-  validateDTO(CreatePermissionDTO),
+  // validateDTO(CreatePermissionDTO),
   permissionController.create,
 );
 router.patch(
   '/:id',
-  validateDTO(UpdatePermissionDTO),
+  // validateDTO(UpdatePermissionDTO),
   permissionController.update,
 );
 export default router;

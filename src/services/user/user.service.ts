@@ -9,7 +9,6 @@ import {
   applyPagination,
   listEntitiesUtill,
 } from '../../utilities/pagination-filtering.utility';
-import { loginDTO } from '../dto/auth/auth.dto';
 import { toIUserResponse } from './mapper/user.mapper';
 import {
   IBaseQueryParams,
@@ -27,6 +26,7 @@ import {
   IUpdateUser,
   IUpdateUserByAdmin,
 } from 'user/user.interface';
+import { ILogin } from 'auth/auth.interface';
 
 const register = async (
   params: IRegisterUser,
@@ -116,7 +116,7 @@ const create = async (
   return toIUserResponse(savedUser);
 };
 
-const login = async (params: loginDTO) => {
+const login = async (params: ILogin) => {
   const user = await dataSource
     .getRepository(User)
     .createQueryBuilder('user')

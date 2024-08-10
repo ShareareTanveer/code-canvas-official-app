@@ -1,9 +1,9 @@
+import { IGenericPageSectionItemResponse } from 'core/generic-page-section-item.interface';
 import { GenericPageSectionItem } from '../../../entities/core/generic-page-section-item.entity';
-import { GenericPageSectionItemResponseDTO } from '../../dto/core/generic-page-section-item.dto';
 
 export const toIGenericPageSectionItemResponse = (
   entity: GenericPageSectionItem,
-): GenericPageSectionItemResponseDTO => {
+): IGenericPageSectionItemResponse => {
   return {
     id: entity.id,
     title: entity.title,

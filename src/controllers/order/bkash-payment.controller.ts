@@ -5,9 +5,9 @@ import IController from 'IController';
 import ApiResponse from '../../utilities/api-response.utility';
 import { v4 as uuidv4 } from 'uuid';
 import bkashPaymentService from '../../services/order/bkash-payment.service';
-import { BkashPaymentExecuteResponseDTO } from '../../services/dto/order/bkash-payment.dto';
 import orderService from '../../services/order/order.service';
 import { ICreateOrder } from 'order/order.interface';
+import { IBkashPaymentExecuteResponse } from 'order/bkash-payment.interface';
 
 const createPayment: IController = async (req, res) => {
   try {
@@ -64,7 +64,7 @@ const handleCallback = async (req: Request, res: Response) => {
         { headers: getHeaders(token) },
       );
       if (data && data.statusCode === '0000') {
-        const params: BkashPaymentExecuteResponseDTO = {
+        const params: IBkashPaymentExecuteResponse = {
           orderId: data.payerReference,
           paymentID: data.paymentID,
           paymentExecuteTime: data.paymentExecuteTime,

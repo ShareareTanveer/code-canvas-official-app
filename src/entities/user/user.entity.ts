@@ -16,6 +16,7 @@ import { Review } from '../review/review.entity';
 import { Cart } from '../cart/cart.entity';
 import { Order } from '../order/order.entity';
 import { Customer } from '../customer/customer.entity';
+import { Wishlist } from '../wishlist/wishlist.entity';
 
 @Entity('user', { orderBy: { id: 'DESC' } })
 export class User extends BaseEntity {
@@ -46,6 +47,15 @@ export class User extends BaseEntity {
   })
   @JoinColumn()
   details: UserDetail;
+
+  @OneToOne(() => Wishlist, (wishlist) => wishlist.user, {
+    nullable: true,
+    eager: true,
+    onDelete: 'CASCADE',
+    cascade: true,
+  })
+  @JoinColumn()
+  wishlist?: Wishlist;
 
   @OneToMany(() => Review, (review) => review.user)
   reviews: Review[];

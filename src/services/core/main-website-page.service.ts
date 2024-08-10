@@ -1,15 +1,15 @@
 import { GenericPageSection } from '../../entities/core/generic-page-section.entity';
 import dataSource from '../../configs/orm.config';
 import { OfficeInfo } from '../../entities/core/office-info.entity';
-import { GenericPageSectionResponseDTO } from '../dto/core/generic-page-section.dto';
 import { toIGenericPageSectionResponse } from './mapper/generic-page-section.mapper';
+import { IGenericPageSectionResponse } from 'core/generic-page-section.interface';
 
 const repository = dataSource.getRepository(GenericPageSection);
 const officeRepository = dataSource.getRepository(OfficeInfo);
 
 const getSectionByName = async (
   sectionName: string,
-): Promise<GenericPageSectionResponseDTO> => {
+): Promise<IGenericPageSectionResponse> => {
   const entity = await repository.findOne({ where: { sectionName } });
   if (!entity) {
     throw new Error('sectionName not found');

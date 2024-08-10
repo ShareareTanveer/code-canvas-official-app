@@ -1,10 +1,5 @@
 import express from 'express';
 import genericPageSectionItemController from '../../controllers/core/generic-page-section-item.controller';
-import { validateDTO } from '../../middlewares/dto-validator.middleware';
-import {
-  CreateGenericPageSectionItemDTO,
-  UpdateGenericPageSectionItemDTO,
-} from '../../services/dto/core/generic-page-section-item.dto';
 import { upload } from '../../middlewares/multer.middleware';
 import { checkPermission } from '../../middlewares/authenticate.middleware';
 import constants from '../../constants';

@@ -1,7 +1,5 @@
 import express from 'express';
 import officeInfoController from '../../controllers/core/contact-us.controller';
-import { validateDTO } from '../../middlewares/dto-validator.middleware';
-import { CreateContactUsDTO, UpdateContactUsDTO } from '../../services/dto/core/contact-us.dto';
 import { checkPermission } from '../../middlewares/authenticate.middleware';
 import constants from '../../constants';
 import contactUsSchema from '../../validations/schemas/core/contact-us.schema';
