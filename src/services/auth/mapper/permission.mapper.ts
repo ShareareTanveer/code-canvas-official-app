@@ -1,9 +1,8 @@
 import { Permission } from '../../../entities/user/permission.entity';
-import { PermissionResponseDTO } from '../../../services/dto/auth/permission.dto';
 
 export const toPermissionResponseDTO = (
   entity: Permission,
-): PermissionResponseDTO => {
+): any => {
   return {
     id: entity.id,
     name: entity.name,
