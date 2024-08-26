@@ -2,7 +2,7 @@ import dataSource from '../../configs/orm.config';
 import { OurService } from '../../entities/ourService/our-service.entity';
 import { OurServiceImage } from '../../entities/ourService/our-service-image.entity';
 import { OurServiceFAQ } from '../../entities/ourService/our-service-faq.entity';
-import { In } from 'typeorm';
+import { In, Not } from 'typeorm';
 import { IBaseQueryParams } from 'common.interface';
 import {
   applyPagination,
@@ -21,22 +21,44 @@ import {
   toIOurServiceDetailResponse,
   toIOurServiceResponse,
 } from './mapper/our-service.mapper';
+import { Category } from '../../entities/category/category.entity';
 
 const repository = dataSource.getRepository(OurService);
 const faqRepository = dataSource.getRepository(OurServiceFAQ);
 const imageRepository = dataSource.getRepository(OurServiceImage);
+const categoryRepository = dataSource.getRepository(Category);
 
 const getById = async (
   id: number,
 ): Promise<IOurServiceDetailResponse> => {
   const entity = await repository.findOne({
-    where: { id },
-    relations: ['images', 'faqs'],
+    where: {
+      id,
+    },
+    relations: [
+      'images',
+      'faqs',
+      'category',
+    ],
   });
+  
   if (!entity) {
-    throw new Error('OurService not found');
+    throw new Error('OurService not found or clientId mismatch');
   }
-  return toIOurServiceDetailResponse(entity);
+
+  const relatedServices = await repository.find({
+    where: {
+      category: entity.category,
+      id: Not(id),
+    },
+    take: 4,
+    relations: ['images'],
+  });
+
+  const relatedBlogResponses = relatedServices.map((blog) =>
+    toIOurServiceResponse(blog),
+  );
+  return toIOurServiceDetailResponse(entity, relatedBlogResponses);
 };
 
 const list = async (params: IBaseQueryParams) => {
@@ -46,6 +68,7 @@ const list = async (params: IBaseQueryParams) => {
     validSortOrder: ['ASC', 'DESC'],
   });
 
+  repo.leftJoinAndSelect('ourservice.category', 'category');
   repo.leftJoinAndSelect('ourservice.images', 'images');
 
   if (params.pagination == 'true' || params.pagination == 'True') {
@@ -73,6 +96,10 @@ const create = async (
   service.description = params.description;
   service.icon = params.icon || '';
   service.keyPoints = params.keyPoints || [];
+  if (params.price !== undefined) service.price = params.price;
+  if (params.content !== undefined) service.content = params.content;
+  if (params.contentTitle !== undefined)
+    service.contentTitle = params.contentTitle;
   if (params.faqs && params.faqs.length > 0) {
     service.faqs = params.faqs.map((data) => {
       const faq = new OurServiceFAQ();
@@ -80,6 +107,16 @@ const create = async (
       faq.answer = data.answer;
       return faq;
     });
+  }
+
+  if (params.category) {
+    const category = await categoryRepository.findOne({
+      where: { id: params.category },
+    });
+    if (!category) {
+      throw new Error('Category not found');
+    }
+    service.category = category;
   }
 
   if (params.images && params.images.length > 0) {
@@ -114,7 +151,7 @@ const update = async (
 ): Promise<IOurServiceDetailResponse> => {
   const service = await repository.findOne({
     where: { id },
-    relations: ['images', 'faqs'],
+    relations: ['images', 'faqs', 'category'],
   });
 
   if (!service) {
@@ -129,6 +166,20 @@ const update = async (
   if (params.icon !== undefined) service.icon = params.icon;
   if (params.keyPoints !== undefined)
     service.keyPoints = params.keyPoints;
+  if (params.price !== undefined) service.price = params.price;
+  if (params.content !== undefined) service.content = params.content;
+  if (params.contentTitle !== undefined)
+    service.contentTitle = params.contentTitle;
+
+  if (params.category) {
+    const category = await categoryRepository.findOne({
+      where: { id: params.category },
+    });
+    if (!category) {
+      throw new Error('Category not found');
+    }
+    service.category = category;
+  }
 
   if (params.addImages && params.addImages.length > 0) {
     const uploadPromises = params.addImages.map((file) =>

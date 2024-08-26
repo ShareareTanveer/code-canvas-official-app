@@ -1,5 +1,8 @@
 import { OurService } from '../../../entities/ourService/our-service.entity';
-import { IOurServiceResponse, IOurServiceDetailResponse } from 'ourService/our-service.interface';
+import {
+  IOurServiceResponse,
+  IOurServiceDetailResponse,
+} from 'ourService/our-service.interface';
 
 export const toIOurServiceResponse = (
   entity: OurService,
@@ -11,11 +14,14 @@ export const toIOurServiceResponse = (
     slug: entity.slug,
     icon: entity.icon,
     images: entity.images,
+    category: entity.category,
+    price: entity.price,
   };
 };
 
 export const toIOurServiceDetailResponse = (
   entity: OurService,
+  relatedServices?: IOurServiceResponse[],
 ): IOurServiceDetailResponse => {
   return {
     id: entity.id,
@@ -27,5 +33,10 @@ export const toIOurServiceDetailResponse = (
     description: entity.description,
     keyPoints: entity.keyPoints,
     faqs: entity.faqs,
+    category: entity.category,
+    price: entity.price,
+    content: entity.content,
+    contentTitle: entity.contentTitle,
+    relatedServices: relatedServices,
   };
 };

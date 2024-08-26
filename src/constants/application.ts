@@ -28,6 +28,7 @@ export default {
     '/core/office-info',
     '/cart',
     '/category',
+    '/blog',
     '/tag',
     '/product',
     '/our-service',

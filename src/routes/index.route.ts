@@ -20,6 +20,7 @@ import genericPageSectionRouter from './core/generic-page-section.route';
 import officeInfoRouter from './core/office-info.route';
 import contactUsRouter from './core/contact-us.route';
 import mainWebsitePageRouter from './core/main-website-page.route';
+import blogRouter from './blog/blog.route';
 
 
 const router = express.Router();
@@ -31,6 +32,7 @@ router.use('/customer', customerRouter);
 router.use('/role', roleRouter);
 router.use('/permission', permissionRouter);
 router.use('/category', categoryRouter);
+router.use('/blog', blogRouter);
 router.use('/product', productRouter);
 router.use('/tag', tagRouter);
 router.use('/review', reviewRouter);

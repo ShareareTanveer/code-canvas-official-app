@@ -164,6 +164,7 @@ const login: IController = async (req, res) => {
 const create: IController = async (req, res) => {
   try {
     const imageLocalFile = req.file?.path;
+    const roleId: number = parseInt(req.body.role, 10);
     const params: ICreateUser = {
       email: req.body.email,
       password: req.body.password,
@@ -172,7 +173,7 @@ const create: IController = async (req, res) => {
       phone: req.body.phone,
       address: req.body.address,
       gender: req.body.gender,
-      role: req.body.role,
+      role: roleId,
       image: imageLocalFile,
     };
     const user = await service.create(params);
@@ -320,19 +321,21 @@ const update: IController = async (req, res) => {
   try {
     const imageLocalFile = req.file?.path;
     const id: number = parseInt(req.params.id, 10);
+    const roleId: number = parseInt(req.body.role, 10);
     const params: IUpdateUserByAdmin = {
       firstName: req.body.firstName,
       lastName: req.body.lastName,
       phone: req.body.phone,
       address: req.body.address,
       gender: req.body.gender,
-      role: req.body.role,
+      role: roleId,
       image: imageLocalFile,
     };
     const user = await service.update(params, id);
     return ApiResponse.result(res, user, httpStatusCodes.OK);
   } catch (e) {
-    ApiResponse.exception(res, e);
+    console.log(e)
+    ApiResponse.exception(res, e.message);
   }
 };
 

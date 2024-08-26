@@ -9,12 +9,14 @@ const dataSource = new DataSource({
   // database: process.env.DB_NAME,
   // port: parseInt(process.env.DB_PORT || '3306', 10),
   // charset: 'utf8',
+
   type: 'postgres',
   host: 'dpg-cqkb6kiju9rs738k2340-a',
   username: 'codecanvas',
   password:'5uyz0qv41s7EZBuB2HFdkSC3zL7z8CWk',
   database: 'codecanvasdb',
   port: 5432,
+  
   synchronize: true,
   entities:
     process.env.NODE_ENV !== 'production'

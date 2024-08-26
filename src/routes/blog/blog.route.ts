@@ -1,27 +1,25 @@
 import express from 'express';
-import ourServiceController from '../../controllers/ourService/our-service.controller';
+import blogController from '../../controllers/blog/blog.controller';
 import { upload } from '../../middlewares/multer.middleware';
-import { checkPermission } from '../../middlewares/authenticate.middleware';
-import constants from '../../constants';
-import ourServiceSchema from '../../validations/schemas/ourService/our-service.schema';
+import blogSchema from '../../validations/schemas/blog/blog.schema';
 import { stringParser } from '../../middlewares/parser-form-data.middleware';
+import { IsAdmin } from '../../decorators/role-permission.decorator';
 const schemaValidator = require('express-joi-validator');
 
 const router = express.Router();
-const model = constants.PERMISSION.MODEL.OUR_SERVICE;
 
 /**
  * @swagger
  * tags:
- *   - name: OurService
- *     description: Endpoints related to OurService
+ *   - name: Blog
+ *     description: Endpoints related to Blog
  */
 
 /**
  * @swagger
  * components:
  *   schemas:
- *     OurService:
+ *     Blog:
  *       type: object
  *       properties:
  *         id:
@@ -52,24 +50,15 @@ const model = constants.PERMISSION.MODEL.OUR_SERVICE;
  *           items:
  *             type: string
  *           example: ["image1.png", "image2.png"]
- *         faqs:
- *           type: array
- *           items:
- *             type: object
- *             properties:
- *               question:
- *                 type: string
- *               answer:
- *                 type: string
  */
 
 /**
  * @swagger
- * /our-service:
+ * /blog:
  *   get:
  *     tags:
- *       - OurService
- *     summary: Get list of OurService
+ *       - Blog
+ *     summary: Get list of Blog
  *     parameters:
  *       - in: query
  *         name: keyword
@@ -130,7 +119,7 @@ const model = constants.PERMISSION.MODEL.OUR_SERVICE;
  *         description: Page number for pagination.
  *     responses:
  *       200:
- *         description: OurService list retrieved successfully
+ *         description: Blog list retrieved successfully
  *         content:
  *           application/json:
  *             schema:
@@ -142,7 +131,7 @@ const model = constants.PERMISSION.MODEL.OUR_SERVICE;
  *                 data:
  *                   type: array
  *                   items:
- *                     $ref: '#/components/schemas/OurService'
+ *                     $ref: '#/components/schemas/Blog'
  *       400:
  *         description: Error Response
  *         content:
@@ -160,15 +149,15 @@ const model = constants.PERMISSION.MODEL.OUR_SERVICE;
  *                       type: string
  *                       example: "Error message"
  */
-router.get('/', ourServiceController.list);
+router.get('/', blogController.list);
 
 /**
  * @swagger
- * /our-service/{id}:
+ * /blog/{id}:
  *   get:
  *     tags:
- *       - OurService
- *     summary: Get a OurService by ID
+ *       - Blog
+ *     summary: Get a Blog by ID
  *     security:
  *       - bearerAuth: []
  *     parameters:
@@ -179,7 +168,7 @@ router.get('/', ourServiceController.list);
  *           type: integer
  *     responses:
  *       200:
- *         description: OurService retrieved successfully
+ *         description: Blog retrieved successfully
  *         content:
  *           application/json:
  *             schema:
@@ -189,7 +178,7 @@ router.get('/', ourServiceController.list);
  *                   type: boolean
  *                   example: true
  *                 data:
- *                   $ref: '#/components/schemas/OurService'
+ *                   $ref: '#/components/schemas/Blog'
  *       400:
  *         description: Error Response
  *         content:
@@ -207,15 +196,15 @@ router.get('/', ourServiceController.list);
  *                       type: string
  *                       example: "Error message"
  */
-router.get('/:id', ourServiceController.getById);
+router.get('/:id', blogController.getById);
 
 /**
  * @swagger
- * /our-service/{id}:
+ * /blog/{id}:
  *   delete:
  *     tags:
- *       - OurService
- *     summary: Remove a OurService by ID
+ *       - Blog
+ *     summary: Remove a Blog by ID
  *     security:
  *       - bearerAuth: []
  *     parameters:
@@ -226,7 +215,7 @@ router.get('/:id', ourServiceController.getById);
  *           type: integer
  *     responses:
  *       200:
- *         description: OurService removed successfully
+ *         description: Blog removed successfully
  *         content:
  *           application/json:
  *             schema:
@@ -254,17 +243,17 @@ router.get('/:id', ourServiceController.getById);
  */
 router.delete(
   '/:id',
-  checkPermission(model),
-  ourServiceController.remove,
+  IsAdmin,
+  blogController.remove,
 );
 
 /**
  * @swagger
- * /our-service:
+ * /blog:
  *   post:
  *     tags:
- *       - OurService
- *     summary: Create a new OurService
+ *       - Blog
+ *     summary: Create a new Blog
  *     requestBody:
  *       required: true
  *       content:
@@ -302,7 +291,7 @@ router.delete(
  *                   format: binary
  *     responses:
  *       201:
- *         description: OurService created successfully
+ *         description: Blog created successfully
  *         content:
  *           application/json:
  *             schema:
@@ -312,7 +301,7 @@ router.delete(
  *                   type: boolean
  *                   example: true
  *                 data:
- *                   $ref: '#/components/schemas/OurService'
+ *                   $ref: '#/components/schemas/Blog'
  *       409:
  *         description: Error Response
  *         content:
@@ -332,20 +321,20 @@ router.delete(
  */
 router.post(
   '/',
-  checkPermission(model),
   upload.array('images'),
+  IsAdmin,
   stringParser(),
-  // schemaValidator(ourServiceSchema.create),
-  ourServiceController.create,
+  schemaValidator(blogSchema.create),
+  blogController.create,
 );
 
 /**
  * @swagger
- * /our-service/{id}:
+ * /blog/{id}:
  *   patch:
- *     summary: Update a OurService by ID
+ *     summary: Update a Blog by ID
  *     tags:
- *       - OurService
+ *       - Blog
  *     security:
  *       - bearerAuth: []
  *     parameters:
@@ -395,7 +384,7 @@ router.post(
  *                   format: binary
  *     responses:
  *       200:
- *         description: OurService updated successfully
+ *         description: Blog updated successfully
  *         content:
  *           application/json:
  *             schema:
@@ -405,7 +394,7 @@ router.post(
  *                   type: boolean
  *                   example: true
  *                 data:
- *                   $ref: '#/components/schemas/OurService'
+ *                   $ref: '#/components/schemas/Blog'
  *       400:
  *         description: Bad request
  *         content:
@@ -423,7 +412,7 @@ router.post(
  *                       type: string
  *                       example: "Error message"
  *       404:
- *         description: OurService not found
+ *         description: Blog not found
  *         content:
  *           application/json:
  *             schema:
@@ -440,11 +429,11 @@ router.post(
  */
 router.patch(
   '/:id',
-  checkPermission(model),
   upload.array('addImages'),
+  IsAdmin,
   stringParser(),
-  schemaValidator(ourServiceSchema.update),
-  ourServiceController.update,
+  schemaValidator(blogSchema.update),
+  blogController.update,
 );
 
 export default router;

@@ -14,8 +14,6 @@ export function stringParser() {
       req.body.deleteImages = JSON.parse(req.body.deleteImages);
     }
 
-    console.log(req.body.deleteImages)
-
     if (typeof req.body.addFaqs === 'string') {
       req.body.addFaqs = JSON.parse(req.body.addFaqs);
     }

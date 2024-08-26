@@ -1,13 +1,13 @@
 import httpStatusCodes from 'http-status-codes';
 import IController from '../../interfaces/IController';
 import ApiResponse from '../../utilities/api-response.utility';
-import service from '../../services/ourService/our-service.service';
+import service from '../../services/blog/blog.service';
 import ApiUtility from '../../utilities/api.utility';
 import { IBaseQueryParams } from 'common.interface';
 import {
-  ICreateOurService,
-  IUpdateOurService,
-} from 'ourService/our-service.interface';
+  ICreateBlog,
+  IUpdateBlog,
+} from 'blog/blog.interface';
 
 const getById: IController = async (req, res) => {
   try {
@@ -57,23 +57,20 @@ const create: IController = async (req, res) => {
     const imageLocalFiles = (req.files as Express.Multer.File[]).map(
       (file) => file,
     );
-
+    
     if (imageLocalFiles.length<1) {
       throw new Error("No files were uploaded.");
     }
-    const params: ICreateOurService = {
+    const params: ICreateBlog = {
       title: req.body.title,
       subtitle: req.body.subtitle,
       slug: req.body.slug,
-      description: req.body.description,
-      icon: req.body.icon,
-      faqs: req.body.faqs,
+      isFeatured: req.body.isFeatured,
       category: req.body.category,
+      description: req.body.description,
+      content: req.body.content,
       keyPoints: req.body.keyPoints,
       images: imageLocalFiles,
-      price: req.body.price,
-      content: req.body.content,
-      contentTitle: req.body.contentTitle,
     };
     const data = await service.create(params);
     return ApiResponse.result(res, data, httpStatusCodes.CREATED);
@@ -92,21 +89,18 @@ const update: IController = async (req, res) => {
       (file) => file,
     );
     const id: number = parseInt(req.params.id, 10);
-    const params: IUpdateOurService = {
+
+    const params: IUpdateBlog = {
       title: req.body.title,
       subtitle: req.body.subtitle,
       slug: req.body.slug,
+      isFeatured: req.body.isFeatured,
+      category: req.body.category,
       description: req.body.description,
-      icon: req.body.icon,
-      addFaqs: req.body.addFaqs,
-      deleteFaqs: req.body.deleteFaqs,
+      content: req.body.content,
       keyPoints: req.body.keyPoints,
       addImages: imageLocalFiles,
       deleteImages: req.body.deleteImages,
-      price: req.body.price,
-      category: req.body.category,
-      content: req.body.content,
-      contentTitle: req.body.contentTitle,
     };
     const data = await service.update(id, params);
     return ApiResponse.result(res, data, httpStatusCodes.OK);

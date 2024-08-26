@@ -11,6 +11,7 @@ export default {
     ROLE: 'role',
     CART: 'cart',
     CATEGORY: 'category',
+    BLOG: 'blog',
     CONTACT_US: 'contactus',
     GENERIC_PAGE_SECTION_ITEM: 'genericpagesectionitem',
     GENERIC_PAGE_SECTION: 'genericpagesection',

@@ -15,12 +15,28 @@ export default {
         .optional()
         .allow(null)
         .error(handleValidationErrors),
+      price: Joi
+        .optional()
+        .allow(null)
+        .error(handleValidationErrors),
+      content: Joi.string()
+        .optional()
+        .allow(null)
+        .error(handleValidationErrors),
+      contentTitle: Joi.string()
+        .optional()
+        .allow(null)
+        .error(handleValidationErrors),
       faqs: Joi.array()
         .items(ourServiceFaqSchema.createOurServiceFAQ.body)
         .optional()
         .error(handleValidationErrors),
       keyPoints: Joi.array()
         .items(Joi.string())
+        .optional()
+        .error(handleValidationErrors),
+      category: Joi.number()
+        .integer()
         .optional()
         .error(handleValidationErrors),
     }),
@@ -41,6 +57,18 @@ export default {
         .allow(null)
         .error(handleValidationErrors),
       description: Joi.string()
+        .optional()
+        .allow(null)
+        .error(handleValidationErrors),
+        price: Joi
+        .optional()
+        .allow(null)
+        .error(handleValidationErrors),
+      content: Joi.string()
+        .optional()
+        .allow(null)
+        .error(handleValidationErrors),
+      contentTitle: Joi.string()
         .optional()
         .allow(null)
         .error(handleValidationErrors),
@@ -71,6 +99,10 @@ export default {
         .error(handleValidationErrors),
       deleteImages: Joi.array()
         .items(Joi.number())
+        .optional()
+        .error(handleValidationErrors),
+      category: Joi.number()
+        .integer()
         .optional()
         .error(handleValidationErrors),
     }),
