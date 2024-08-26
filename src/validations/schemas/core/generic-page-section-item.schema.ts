@@ -25,7 +25,7 @@ export default {
       image: Joi.string()
         .optional()
         .error(handleValidationErrors),
-      genericPageSection: Joi.number()
+      genericPageSection: Joi
         .required()
         .error(handleValidationErrors),
     }),
@@ -54,7 +54,7 @@ export default {
       image: Joi.string()
         .optional()
         .error(handleValidationErrors),
-      genericPageSection: Joi.number()
+      genericPageSection: Joi
         .optional()
         .error(handleValidationErrors),
     }),

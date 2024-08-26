@@ -26,7 +26,7 @@ const createPayment: IController = async (req, res) => {
     const order = await orderService.create(params);
     const token = await getToken();
     const { data }: any = await axios.post(
-      process.env.bkash_create_payment_url,
+      process.env.BKASH_CREATE_PAYMENT_URL,
       {
         mode: '0011',
         payerReference: order.id,
@@ -59,7 +59,7 @@ const handleCallback = async (req: Request, res: Response) => {
     try {
       const token = await getToken();
       const { data } = await axios.post(
-        process.env.bkash_execute_payment_url,
+        process.env.BKASH_EXECUTE_PAYMENT_URL,
         { paymentID },
         { headers: getHeaders(token) },
       );
@@ -98,7 +98,7 @@ const processRefund = async (req: Request, res: Response) => {
   try {
     const token = await getToken();
     const { data } = await axios.post(
-      process.env.bkash_refund_transaction_url,
+      process.env.BKASH_REFUND_TRANSECTION_URL,
       {
         paymentID: 'payment.paymentID',
         amount: 'payment.amount',
@@ -123,23 +123,23 @@ const getHeaders = (token: string) => ({
   'Content-Type': 'application/json',
   Accept: 'application/json',
   Authorization: token,
-  'x-app-key': process.env.bkash_api_key,
+  'x-app-key': process.env.BKASH_API_KEY,
 });
 
 const getToken = async () => {
   try {
     const { data } = await axios.post(
-      process.env.bkash_grant_token_url,
+      process.env.BKASH_GRANT_TOKRN_URL,
       {
-        app_key: process.env.bkash_api_key,
-        app_secret: process.env.bkash_secret_key,
+        app_key: process.env.BKASH_API_KEY,
+        app_secret: process.env.BKASH_SECRET_KEY,
       },
       {
         headers: {
           'Content-Type': 'application/json',
           Accept: 'application/json',
-          username: process.env.bkash_username,
-          password: process.env.bkash_password,
+          username: process.env.BKASH_USERNAME,
+          password: process.env.BKASH_PASSWORD,
         },
       },
     );

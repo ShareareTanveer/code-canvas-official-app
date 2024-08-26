@@ -9,10 +9,10 @@ export default {
     resetPasswordCookieExpiry: '15m',
   },
   env: {
-    authSecret: process.env.TOKEN_SECRET_KEY || 'test',
+    authSecret: process.env.TOKEN_SECRET_KEY || 'TOKEN_SECRET_KEY',
     AUTH_RESET_PASSWORD_SECRET:
-      process.env.AUTH_RESET_PASSWORD_SECRET || 'test',
-    AUTH_REGISTER_SECRET: process.env.AUTH_REGISTER_SECRET || 'test',
+      process.env.AUTH_RESET_PASSWORD_SECRET || 'AUTH_RESET_PASSWORD_SECRET',
+    AUTH_REGISTER_SECRET: process.env.AUTH_REGISTER_SECRET || 'AUTH_REGISTER_SECRET',
   },
   authorizationIgnorePath: [
     '/',

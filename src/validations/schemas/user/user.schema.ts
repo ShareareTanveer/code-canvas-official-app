@@ -59,7 +59,7 @@ export default {
         .valid(...genderEnum)
         .required()
         .error(handleValidationErrors),
-      role: Joi.number().required().error(handleValidationErrors),
+      role: Joi.required().error(handleValidationErrors),
       image: Joi.string().optional().error(handleValidationErrors),
     }),
   },
@@ -86,7 +86,7 @@ export default {
         .valid(...genderEnum)
         .optional()
         .error(handleValidationErrors),
-      role: Joi.number().optional().error(handleValidationErrors),
+      role: Joi.optional().error(handleValidationErrors),
       image: Joi.string().optional().error(handleValidationErrors),
     }),
   },
