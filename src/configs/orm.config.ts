@@ -20,10 +20,10 @@ const dataSource = new DataSource({
     process.env.NODE_ENV !== 'production'
       ? ['src/**/*.entity.ts']
       : ['dist/**/*.entity.js'],
-  logging:
-    process.env.NODE_ENV !== 'production'
-      ? ['query', 'error', 'schema', 'warn', 'info', 'log', 'migration']
-      : ['error'],
+  // logging:
+  //   process.env.NODE_ENV !== 'production'
+  //     ? ['query', 'error', 'schema', 'warn', 'info', 'log', 'migration']
+  //     : ['error'],
   subscribers: [],
   migrations: ['src/migrations/*.ts'],
 });
