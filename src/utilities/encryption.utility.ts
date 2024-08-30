@@ -1,7 +1,7 @@
 import constants from '../constants';
 import jwt from 'jsonwebtoken';
 
-const bcrypt = require('bcrypt');
+import bcrypt from 'bcryptjs';
 
 export default class Encryption {
   static async generateHash(
@@ -23,7 +23,7 @@ export default class Encryption {
     hash: string,
   ): Promise<boolean> {
     return new Promise((resolve, reject) => {
-      bcrypt.compare(password, hash, (err: any, result: string) => {
+      bcrypt.compare(password, hash, (err: any, result: any) => {
         if (result) {
           resolve(true);
         }

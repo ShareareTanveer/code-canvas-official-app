@@ -15,7 +15,6 @@ import { User } from '../user/user.entity';
 import { Category } from '../category/category.entity';
 
 @Entity()
-@Unique(['title'])
 export class Blog extends BaseEntity {
   @PrimaryGeneratedColumn()
   id: number;
