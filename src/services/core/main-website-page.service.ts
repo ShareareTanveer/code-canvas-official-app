@@ -3,9 +3,11 @@ import dataSource from '../../configs/orm.config';
 import { OfficeInfo } from '../../entities/core/office-info.entity';
 import { toIGenericPageSectionResponse } from './mapper/generic-page-section.mapper';
 import { IGenericPageSectionResponse } from 'core/generic-page-section.interface';
+import { Blog } from '../../entities/blog/blog.entity';
 
 const repository = dataSource.getRepository(GenericPageSection);
 const officeRepository = dataSource.getRepository(OfficeInfo);
+const blogRepository = dataSource.getRepository(Blog);
 
 const getSectionByName = async (
   sectionName: string,
@@ -59,6 +61,14 @@ const landingPageData = async () => {
     .createQueryBuilder()
     .orderBy('id', 'ASC')
     .getOne();
+    
+  const blogs = await blogRepository.find({
+    take: 4,
+    order: {
+      updatedAt: 'DESC',
+    },
+    relations: ['images', 'category'],
+  });
 
   const data = {
     heroSection,
@@ -71,6 +81,7 @@ const landingPageData = async () => {
     faq,
     connectFast,
     officeInfo,
+    blogs,
   };
   return data;
 };

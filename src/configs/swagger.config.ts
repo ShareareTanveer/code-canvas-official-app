@@ -11,7 +11,7 @@ const options: any = {
       title: 'Code Canvas Creation Offcial Website',
       termsOfService: 'http://swagger.io/terms/',
       contact: {
-        email: 'codecanvus@gmail.com',
+        email: 'codecanvas@gmail.com',
       },
       license: {
         name: 'Apache 2.0',
@@ -24,7 +24,7 @@ const options: any = {
         description: 'Development server',
       },
       {
-        url: 'https://code-canvas-official-app.onrender.com',
+        url: 'https://api.codecanvascreation.com',
         description: 'Production server',
       },
     ],

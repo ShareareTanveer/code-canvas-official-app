@@ -52,7 +52,7 @@ const register: IController = async (req, res) => {
       data: {
         hash: access_token,
       },
-      to: 'ominuzhat@gmail.com',
+      to: user.email,
     };
     console.log(access_token);
     userSignUp(mailDataSignUp);
@@ -147,7 +147,7 @@ const login: IController = async (req, res) => {
       data: {
         hash: access_token,
       },
-      to: 'ominuzhat@gmail.com',
+      to: user.email,
     };
     console.log(access_token);
     twoFactorAuth(mailData, web);
@@ -206,7 +206,7 @@ export const sendResetPasswordEmail: IController = async (req, res) => {
       data: {
         hash: access_token,
       },
-      to: 'ominuzhat@gmail.com',
+      to: user.email,
     };
     console.log(access_token);
     forgotPassword(mailDataSignUp);
