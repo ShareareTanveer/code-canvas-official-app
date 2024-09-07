@@ -11,7 +11,7 @@ import { User } from '../user/user.entity';
 import { ERating } from '../../enum/rating.enum';
 
 @Entity()
-@Unique(['user', 'product'])
+// @Unique(['user', 'product'])
 export class Review {
   @PrimaryGeneratedColumn()
   id: number;

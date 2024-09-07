@@ -25,7 +25,7 @@ export class GenericPageSection {
   @IsString()
   subtitle: string;
 
-  @Column({ length: 255, nullable: true })
+  @Column({ nullable: true })
   @IsString()
   description: string;
 
