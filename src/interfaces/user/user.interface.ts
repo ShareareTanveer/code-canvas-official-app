@@ -49,7 +49,6 @@ export interface ISimpleUserResponse {
   firstName?: string;
   lastName?: string;
   status?: boolean;
-  customer?: any;
   email?: string;
   details?: IUserDetailResponse;
   role?: ISimpleRoleResponse;

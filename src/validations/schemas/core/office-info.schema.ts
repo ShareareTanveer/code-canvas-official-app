@@ -47,11 +47,9 @@ export default {
         .required()
         .error(handleValidationErrors),
       officeAddress: Joi.string()
-        .max(255)
         .required()
         .error(handleValidationErrors),
       secondaryOfficeAddress: Joi.string()
-        .max(255)
         .optional()
         .error(handleValidationErrors),
       latitude: Joi.number()
@@ -120,11 +118,9 @@ export default {
         .optional()
         .error(handleValidationErrors),
       officeAddress: Joi.string()
-        .max(255)
         .optional()
         .error(handleValidationErrors),
       secondaryOfficeAddress: Joi.string()
-        .max(255)
         .optional()
         .error(handleValidationErrors),
       latitude: Joi.number()

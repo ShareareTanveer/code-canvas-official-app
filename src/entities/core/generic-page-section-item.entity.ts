@@ -16,7 +16,7 @@ export class GenericPageSectionItem {
   @IsString()
   title: string;
 
-  @Column({ length: 255, nullable: false })
+  @Column({type: 'text', nullable: false })
   @IsString()
   subtitle: string;
 
@@ -25,15 +25,15 @@ export class GenericPageSectionItem {
   @IsString({ each: true })
   keyPoints: string[];
 
-  @Column({ nullable: true, default: null })
+  @Column({type: 'text', nullable: true, default: null })
   @IsString()
   description: string;
 
-  @Column({ nullable: true, default: null })
+  @Column({type: 'text', nullable: true, default: null })
   @IsString()
   icon: string;
 
-  @Column({ nullable: true, default: null })
+  @Column({type: 'text', nullable: true, default: null })
   @IsString()
   image: string;
 

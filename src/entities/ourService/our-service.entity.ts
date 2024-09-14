@@ -29,13 +29,13 @@ export class OurService extends BaseEntity {
   @JoinColumn()
   category: Category;
 
-  @Column({ nullable: false })
+  @Column({type: 'text', nullable: false })
   subtitle: string;
 
   @Column({ length: 255, nullable: true })
   contentTitle: string;
 
-  @Column({ nullable: true })
+  @Column({type: 'text', nullable: true })
   content: string;
 
   @Column('decimal', {
@@ -49,7 +49,7 @@ export class OurService extends BaseEntity {
   @Column({ nullable: false,})
   slug: string;
 
-  @Column({ nullable: false })
+  @Column({type: 'text', nullable: false })
   description: string;
 
   @OneToMany(() => OurServiceImage, (image) => image.service, {
@@ -63,7 +63,7 @@ export class OurService extends BaseEntity {
   })
   faqs: OurServiceFAQ[];
 
-  @Column({ nullable: true, default: null })
+  @Column({type: 'text', nullable: true, default: null })
   @IsString()
   icon?: string;
 

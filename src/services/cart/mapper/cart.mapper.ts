@@ -6,7 +6,7 @@ export const toICartResponse = (
 ): ICartResponse => {
   return {
     id: entity.id,
-    products: entity.products,
+    // products?: entity.products,
     totalPrice: entity.totalPrice,
   };
 };

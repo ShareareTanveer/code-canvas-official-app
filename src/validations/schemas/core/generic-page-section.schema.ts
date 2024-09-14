@@ -13,11 +13,9 @@ export default {
         .required()
         .error(handleValidationErrors),
       subtitle: Joi.string()
-        .max(255)
         .required()
         .error(handleValidationErrors),
       description: Joi.string()
-        .max(255)
         .required()
         .error(handleValidationErrors),
       icon: Joi.string()
@@ -48,7 +46,6 @@ export default {
         .optional()
         .error(handleValidationErrors),
       description: Joi.string()
-        .max(255)
         .optional()
         .error(handleValidationErrors),
       icon: Joi.string()

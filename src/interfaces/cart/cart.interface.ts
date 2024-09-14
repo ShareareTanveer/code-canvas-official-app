@@ -2,7 +2,7 @@ import { IProductResponse } from "product/product.interface";
 
 export interface ICartResponse {
   id: string;
-  products: IProductResponse[];
+  products?: IProductResponse[];
   totalPrice?: number;
 }
 

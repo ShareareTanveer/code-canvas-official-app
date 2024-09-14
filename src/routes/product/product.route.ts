@@ -69,7 +69,7 @@ const model = constants.PERMISSION.MODEL.PRODUCT;
  *     CreateProductDTO:
  *       type: object
  *       properties:
- *         category:
+ *         productCategory:
  *           type: integer
  *           example: 2
  *         title:
@@ -102,11 +102,40 @@ const model = constants.PERMISSION.MODEL.PRODUCT;
  *           items:
  *             type: string
  *             format: binary
+ *         priceOptions:
+ *           type: array
+ *           description: Array of price options
+ *           items:
+ *             type: object
+ *             properties:
+ *               price:
+ *                 type: number
+ *                 description: Price value
+ *               title:
+ *                 type: string
+ *                 description: title
+ *               pricePer:
+ *                 type: string
+ *                 description: pricePer
+ *               serviceLink:
+ *                 type: string
+ *                 description: serviceLink
+ *               discount:
+ *                 type: number
+ *                 description: Discount value
+ *               discountType:
+ *                 type: string
+ *                 enum: [PERCENT, AMOUNT]
+ *                 description: Discount type (Percent or Amount)
+ *               support_for:
+ *                 type: string
+ *                 description: support_for
+ *           example: [{"price":0,"discount":0,"discountType":"Percent","support_for":"6 months"}]
  *
  *     UpdateProductDTO:
  *       type: object
  *       properties:
- *         category:
+ *         productCategory:
  *           type: integer
  *           example: 2
  *         title:
@@ -315,10 +344,13 @@ router.get('/:id', productController.getById);
 router.post(
   '/',
   checkPermission(model),
-  upload.array('images'),
+  upload.fields([
+    { name: 'images', maxCount: 10 },
+    { name: 'featuredImage', maxCount: 2 },
+  ]),
   stringParser(),
   schemaValidator(productSchema.create),
-    productController.create,
+  productController.create,
 );
 
 /**
@@ -355,10 +387,13 @@ router.post(
 router.patch(
   '/:id',
   checkPermission(model),
-  upload.array('addImages'),
+  upload.fields([
+    { name: 'addImages', maxCount: 10 },
+    { name: 'featuredImage', maxCount: 1 },
+  ]),
   stringParser(),
   schemaValidator(productSchema.update),
-    productController.update,
+  productController.update,
 );
 
 /**

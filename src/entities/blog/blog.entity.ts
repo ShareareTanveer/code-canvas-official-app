@@ -22,13 +22,13 @@ export class Blog extends BaseEntity {
   @Column({ length: 255, unique: true, nullable: false })
   title: string;
 
-  @Column({ nullable: true })
+  @Column({type: 'text', nullable: true })
   subtitle: string;
 
   @Column({ unique: true, nullable: false })
   slug: string;
 
-  @Column({ nullable: false })
+  @Column({type: 'text', nullable: false })
   description: string;
 
   @Column({ type: 'text', nullable: false })

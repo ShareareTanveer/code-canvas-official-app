@@ -9,7 +9,7 @@ class MailerService {
   private transporter: nodemailer.Transporter;
 
   constructor() {
-    this.transporter = nodemailer.createTransport({ 
+    this.transporter = nodemailer.createTransport({
       service: 'gmail',
       host: 'smtp.gmail.com',
       // host: process.env.MAIL_HOST,

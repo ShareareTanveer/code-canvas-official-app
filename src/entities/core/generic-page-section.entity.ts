@@ -21,15 +21,15 @@ export class GenericPageSection {
   @IsString()
   title: string;
 
-  @Column({ length: 255, nullable: true })
+  @Column({ type: 'text', nullable: true })
   @IsString()
   subtitle: string;
 
-  @Column({ nullable: true })
+  @Column({type: 'text', nullable: true })
   @IsString()
   description: string;
 
-  @Column({ nullable: true, default: null })
+  @Column({type: 'text', nullable: true, default: null })
   @IsString()
   icon: string;
 

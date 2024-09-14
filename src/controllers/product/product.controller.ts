@@ -58,25 +58,30 @@ const list: IController = async (req, res) => {
 
 const create: IController = async (req, res) => {
   try {
-    const imageLocalFiles = (req.files as Express.Multer.File[]).map(
-      (file) => file,
-    );
-    
-    if (imageLocalFiles.length < 1) {
-      throw new Error('No files were uploaded.');
+    const files = req.files as
+      | { [fieldname: string]: Express.Multer.File[] }
+      | undefined;
+
+    if (!files?.images?.[0]?.path) {
+      throw new Error('Images are required.');
     }
+
+    if (!files?.featuredImage?.[0]?.path) {
+      throw new Error('featuredImage is required.');
+    }
+
     const params: ICreateProduct = {
-      category: req.body.category,
+      productCategory: req.body.productCategory,
       title: req.body.title,
       subtitle: req.body.subtitle,
       slug: req.body.slug,
       description: req.body.description,
       live_link: req.body.live_link,
-      support_for: req.body.support_for,
-      price: req.body.price,
       is_documented: req.body.is_documented,
       tags: req.body.tags,
-      images: imageLocalFiles,
+      images: files?.images,
+      featuredImage: files?.featuredImage?.[0]?.path,
+      priceOptions: req.body.priceOptions,
     };
     const data = await service.create(params);
     return ApiResponse.result(res, data, httpStatusCodes.CREATED);
@@ -92,22 +97,24 @@ const create: IController = async (req, res) => {
 const update: IController = async (req, res) => {
   try {
     const id: number = parseInt(req.params.id, 10);
-    const imageLocalFiles = (req.files as Express.Multer.File[]).map(
-      (file) => file,
-    );
+    const files = req.files as
+      | { [fieldname: string]: Express.Multer.File[] }
+      | undefined;
+
     const params: IUpdateProduct = {
-      category: req.body.category,
+      productCategory: req.body.productCategory,
       title: req.body.title,
       subtitle: req.body.subtitle,
       slug: req.body.slug,
       description: req.body.description,
       live_link: req.body.live_link,
-      support_for: req.body.support_for,
-      price: req.body.price,
       is_documented: req.body.is_documented,
-      addImages: imageLocalFiles,
+      addImages: files?.images,
+      featuredImage: files?.featuredImage?.[0]?.path,
       deleteImages: req.body.deleteImages,
       tags: req.body.tags,
+      deletePriceOptions: req.body.deletePriceOptions,
+      addPriceOptions: req.body.addPriceOptions,
     };
     const data = await service.update(id, params);
     return ApiResponse.result(res, data, httpStatusCodes.OK);

@@ -78,10 +78,10 @@ const toggleCartProduct = async (
     ? cart.products.filter((p) => p.id !== product.id)
     : [...cart.products, product];
 
-  cart.totalPrice = cart.products.reduce(
-    (total, prod) => total + prod.price,
-    0,
-  );
+  // cart.totalPrice = cart.products.reduce(
+  //   (total, prod) => total + prod.price,
+  //   0,
+  // );
 
   const updatedCart = await repository.save(cart);
 

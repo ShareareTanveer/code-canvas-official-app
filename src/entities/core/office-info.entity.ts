@@ -35,10 +35,10 @@ export class OfficeInfo {
   @Column({ length: 15, nullable: false })
   hotline: string;
 
-  @Column({ length: 255, nullable: false })
+  @Column({ type: 'text', nullable: false })
   officeAddress: string;
 
-  @Column({ length: 255, nullable: true })
+  @Column({ type: 'text', nullable: true })
   secondaryOfficeAddress: string;
 
   @Column({ length: 255, nullable: true })

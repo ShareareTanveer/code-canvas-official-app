@@ -9,7 +9,6 @@ export default {
         .required()
         .error(handleValidationErrors),
       subtitle: Joi.string()
-        .max(255)
         .required()
         .error(handleValidationErrors),
       keyPoints: Joi.array()

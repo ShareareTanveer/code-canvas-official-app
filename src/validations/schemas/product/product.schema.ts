@@ -1,21 +1,16 @@
 import Joi from 'joi';
 import { handleValidationErrors } from '../../../utilities/joi-validator-message.utility';
+import priceOptionSchema from './priceOptionSchema';
 
 export default {
   create: {
     body: Joi.object({
-      category: Joi.number()
+      productCategory: Joi.number()
         .required()
         .error(handleValidationErrors),
-      title: Joi.string()
-        .required()
-        .error(handleValidationErrors),
-      subtitle: Joi.string()
-        .required()
-        .error(handleValidationErrors),
-      slug: Joi.string()
-        .required()
-        .error(handleValidationErrors),
+      title: Joi.string().required().error(handleValidationErrors),
+      subtitle: Joi.string().required().error(handleValidationErrors),
+      slug: Joi.string().required().error(handleValidationErrors),
       description: Joi.string()
         .required()
         .error(handleValidationErrors),
@@ -23,11 +18,8 @@ export default {
         .optional()
         .allow(null)
         .error(handleValidationErrors),
-      support_for: Joi.string()
-        .optional()
-        .allow(null)
-        .error(handleValidationErrors),
-      price: Joi.number()
+      priceOptions: Joi.array()
+        .items(priceOptionSchema.create.body)
         .required()
         .error(handleValidationErrors),
       is_documented: Joi.boolean()
@@ -42,7 +34,7 @@ export default {
 
   update: {
     body: Joi.object({
-      category: Joi.number()
+      productCategory: Joi.number()
         .optional()
         .allow(null)
         .error(handleValidationErrors),
@@ -66,13 +58,9 @@ export default {
         .optional()
         .allow(null)
         .error(handleValidationErrors),
-      support_for: Joi.string()
+      addPriceOptions: Joi.array()
+        .items(priceOptionSchema.update.body)
         .optional()
-        .allow(null)
-        .error(handleValidationErrors),
-      price: Joi.number()
-        .optional()
-        .allow(null)
         .error(handleValidationErrors),
       is_documented: Joi.boolean()
         .optional()
@@ -82,6 +70,10 @@ export default {
         .optional()
         .error(handleValidationErrors),
       tags: Joi.array()
+        .items(Joi.number())
+        .optional()
+        .error(handleValidationErrors),
+      deletePriceOptions: Joi.array()
         .items(Joi.number())
         .optional()
         .error(handleValidationErrors),

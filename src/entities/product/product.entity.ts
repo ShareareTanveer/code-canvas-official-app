@@ -8,25 +8,25 @@ import {
   ManyToMany,
   JoinTable,
 } from 'typeorm';
-import { Category } from '../category/category.entity';
-import { IsBoolean, IsNumber, IsOptional } from 'class-validator';
+import { IsBoolean } from 'class-validator';
 import { BaseEntity } from '../base/base.entity';
 import { ProductImage } from './product-image.entity';
 import { Tag } from '../tag/tag.entity';
-import { Review } from '../review/review.entity';
-import { DecimalColumnTransformer } from '../../utilities/decimal-column-transformer.utility';
+import { ProductCategory } from './productCategory.entity';
+import { PriceOption } from './priceOption.entity';
 
 @Entity('product')
-export class Product  {
+export class Product extends BaseEntity {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @ManyToOne(() => Category, (category) => category.id, {
+  @ManyToOne(() => ProductCategory, (category) => category.id, {
     nullable: false,
-    onDelete: 'CASCADE',
+    onDelete: 'RESTRICT',
+    
   })
   @JoinColumn()
-  category: Category;
+  productCategory: ProductCategory;
 
   @Column({ length: 255, unique: true, nullable: false })
   title: string;
@@ -34,19 +34,18 @@ export class Product  {
   @Column({ unique: true, nullable: false })
   slug: string;
 
-  @Column({ nullable: false })
+  @Column({ type: 'text', nullable: false })
   description: string;
 
   @Column({ nullable: true })
   live_link: string;
 
-  @Column({ nullable: true })
-  support_for: string;
+  @OneToMany(() => PriceOption, (priceOption) => priceOption.product, {
+    cascade: true,
+  })
+  priceOptions: PriceOption[];
 
-  @Column('decimal', { precision: 10, scale: 2, nullable: false, transformer: new DecimalColumnTransformer()  })
-  price: number;
-
-  @Column({ nullable: true })
+  @Column({ type: 'text', nullable: true })
   subtitle?: string;
 
   @Column({ default: false })
@@ -57,24 +56,14 @@ export class Product  {
   @JoinTable()
   tags: Tag[];
 
-  @OneToMany(() => ProductImage, (image) => image.product, { cascade: true })
+  @OneToMany(() => ProductImage, (image) => image.product, {
+    cascade: true,
+  })
   images: ProductImage[];
-  
+
+  @Column({ type: 'text', nullable: false })
+  featuredImage: string;
+
   @Column({ nullable: true })
-  @IsOptional()
-  @IsNumber()
-  total_sale?: number;
-
-  @OneToMany(() => Review, (review) => review.product)
-  reviews: Review[];
- 
-//   @Column({ length: 255, nullable: true })
-//   @IsOptional()
-//   @IsNumber()
-//   total_review?: number;
-
-//   @Column('decimal', { precision: 1, scale: 1, nullable: false  })
-//   @IsOptional()
-//   @IsNumber()
-//   avg_review?: number;
+  cloudinary_image_public_id: string;
 }

@@ -183,7 +183,7 @@ const getById = async (params: IDetailById) => {
   try {
     const data = await dataSource.getRepository(User).findOne({
       where: { id: params.id },
-      relations: ['role', 'customer'],
+      relations: ['role'],
     });
     return ApiUtility.sanitizeUser(data);
   } catch (e) {
@@ -194,7 +194,7 @@ const getById = async (params: IDetailById) => {
 const detail = async (params: IDetailById) => {
   const query = {
     where: { id: params.id },
-    relations: ['role', 'details', 'customer'],
+    relations: ['role', 'details'],
   };
 
   const user = await dataSource.getRepository(User).findOne(query);

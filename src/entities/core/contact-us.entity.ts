@@ -26,12 +26,12 @@ export class ContactUs extends BaseEntity {
   @IsOptional()
   subject?: string;
 
-  @Column({ nullable: false })
+  @Column({type: 'text', nullable: false })
   @IsString()
   @IsNotEmpty()
   message: string;
 
-  @Column({ length: 255, nullable: true })
+  @Column({type: 'text', nullable: true })
   @IsString()
   @IsOptional()
   address?: string;
