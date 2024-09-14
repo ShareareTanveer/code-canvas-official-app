@@ -122,6 +122,7 @@ const create = async (
 
   // featured image upload
   if (params.featuredImage) {
+    console.log(params.featuredImage);
     const uploadedImage = await uploadOnCloud(params.featuredImage);
     if (!uploadedImage)
       throw new Error('Failed to upload featured image');
