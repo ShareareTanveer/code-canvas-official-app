@@ -120,9 +120,7 @@ const create = async (
     product.tags = tagEntities;
   }
 
-  // featured image upload
   if (params.featuredImage) {
-    console.log(params.featuredImage);
     const uploadedImage = await uploadOnCloud(params.featuredImage);
     if (!uploadedImage)
       throw new Error('Failed to upload featured image');
@@ -208,6 +206,7 @@ const update = async (
         existingOption.price = option.price;
         existingOption.discount = option.discount;
         existingOption.support_for = option.support_for;
+        existingOption.keyPoints = option.keyPoints;
         existingOption.discountType =
           option.discountType || EDiscountType.AMOUNT;
         return existingOption;
@@ -219,6 +218,7 @@ const update = async (
         newPriceOption.price = option.price;
         newPriceOption.discount = option.discount;
         newPriceOption.support_for = option.support_for;
+        newPriceOption.keyPoints = option.keyPoints;
         newPriceOption.discountType =
           option.discountType || EDiscountType.AMOUNT;
         return newPriceOption;
@@ -256,7 +256,6 @@ const update = async (
   }
   if (imageUrl) product.featuredImage = imageUrl;
   if (imageUrl) product.cloudinary_image_public_id = cloudiaryPublicId;
-
   if (params.addImages && params.addImages.length > 0) {
     const uploadPromises = params.addImages.map((file) =>
       uploadOnCloud(file.path),

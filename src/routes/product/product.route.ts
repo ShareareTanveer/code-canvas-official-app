@@ -389,7 +389,7 @@ router.patch(
   checkPermission(model),
   upload.fields([
     { name: 'addImages', maxCount: 10 },
-    { name: 'featuredImage', maxCount: 1 },
+    { name: 'featuredImage', maxCount: 2 },
   ]),
   stringParser(),
   schemaValidator(productSchema.update),

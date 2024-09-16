@@ -98,8 +98,8 @@ const update: IController = async (req, res) => {
   try {
     const id: number = parseInt(req.params.id, 10);
     const files = req.files as
-      | { [fieldname: string]: Express.Multer.File[] }
-      | undefined;
+    | { [fieldname: string]: Express.Multer.File[] }
+    | undefined;
 
     const params: IUpdateProduct = {
       productCategory: req.body.productCategory,
@@ -109,7 +109,7 @@ const update: IController = async (req, res) => {
       description: req.body.description,
       live_link: req.body.live_link,
       is_documented: req.body.is_documented,
-      addImages: files?.images,
+      addImages: files?.addImages,
       featuredImage: files?.featuredImage?.[0]?.path,
       deleteImages: req.body.deleteImages,
       tags: req.body.tags,
