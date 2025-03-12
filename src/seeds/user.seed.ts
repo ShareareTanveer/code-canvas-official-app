@@ -6,14 +6,21 @@ export const userSeed = [
     password: bcrypt.hashSync('StrongPassword123!', 10),
     firstName: 'Administrator',
     lastName: '',
-    role: 1
+    role: 1,
   },
   {
     email: 'user@gmail.com',
     password: bcrypt.hashSync('StrongPassword123!', 10),
     firstName: 'Matteo',
     lastName: 'Gleichner',
-    role: 2
+    role: 2,
+  },
+  {
+    email: 'info.codecanvascreation@gmail.com',
+    password: bcrypt.hashSync('StrongPassword123!', 10),
+    firstName: 'codecanvascreation',
+    lastName: 'codecanvascreation',
+    role: 1,
   },
   // {
   //   email: 'titus@gmail.com',

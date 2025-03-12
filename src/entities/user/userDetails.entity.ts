@@ -22,7 +22,7 @@ export class UserDetail {
   @IsString()
   @IsOptional()
   image: string;
-
+ 
   @Column({ nullable: true })
   @IsString()
   @IsOptional()

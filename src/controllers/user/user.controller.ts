@@ -143,15 +143,20 @@ const login: IController = async (req, res) => {
     const user = await service.login(params);
     const cookie: any = await generateRegisterCookie(user.email);
     const access_token = cookie.value;
-    const mailData: MailData<{ hash: string }> = {
-      data: {
-        hash: access_token,
-      },
-      to: user.email,
+    // const mailData: MailData<{ hash: string }> = {
+    //   data: {
+    //     hash: access_token,
+    //   },
+    //   to: user.email,
+    // };
+    // console.log(access_token);
+    // twoFactorAuth(mailData, web);
+    const data = {
+      access_token,
+      user,
     };
-    console.log(access_token);
-    twoFactorAuth(mailData, web);
-    return ApiResponse.result(res, user, httpStatusCodes.OK);
+    return ApiResponse.result(res, data, httpStatusCodes.OK, cookie);
+    // return ApiResponse.result(res, user, httpStatusCodes.OK);
   } catch (e) {
     return ApiResponse.error(
       res,

@@ -17,7 +17,7 @@ export class ProductCategory {
   @Column({type: 'text', nullable: true })
   subtitle?: string;
 
-  @Column({ type: "text", unique: true})
+  @Column({ type: "text" })
   @IsString()
   icon: string;
 
