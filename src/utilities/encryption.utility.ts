@@ -73,7 +73,7 @@ export default class Encryption {
     return new Promise((resolve) => {
       jwt.verify(
         token,
-        constants.APPLICATION.env.authSecret,
+        constants.APPLICATION.env.AUTH_REGISTER_SECRET,
         (err: Error, decoded: any) => {
           if (err) {
             resolve(null);
