@@ -5,8 +5,16 @@ export function stringParser() {
     if (typeof req.body.keyPoints === 'string') {
       req.body.keyPoints = JSON.parse(req.body.keyPoints);
     }
-    if (typeof req.body.priceOptions === 'string') {
-      req.body.priceOptions = JSON.parse(req.body.priceOptions);
+
+    if (
+      req.body.priceOptions &&
+      typeof req.body.priceOptions === 'string'
+    ) {
+      try {
+        req.body.priceOptions = JSON.parse(req.body.priceOptions);
+      } catch (e) {
+        req.body.priceOptions = [];
+      }
     }
     if (typeof req.body.addPriceOptions === 'string') {
       req.body.addPriceOptions = JSON.parse(req.body.addPriceOptions);

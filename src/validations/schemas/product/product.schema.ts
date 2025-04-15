@@ -20,7 +20,7 @@ export default {
         .error(handleValidationErrors),
       priceOptions: Joi.array()
         .items(priceOptionSchema.create.body)
-        .required()
+        .optional()
         .error(handleValidationErrors),
       is_documented: Joi.boolean()
         .optional()

@@ -24,15 +24,16 @@ export class PriceOption {
     precision: 10,
     scale: 2,
     nullable: false,
+    default:0,
     transformer: new DecimalColumnTransformer(),
   })
-  price: number;
+  price?: number;
 
   @Column({ nullable: true })
-  support_for: string;
+  support_for?: string;
 
   @Column({ nullable: true })
-  pricePer: string;
+  pricePer?: string;
 
   @Column({ nullable: true })
   serviceLink?: string;

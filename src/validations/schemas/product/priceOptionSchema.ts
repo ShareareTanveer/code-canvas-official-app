@@ -9,16 +9,16 @@ export default {
     body: Joi.object({
       discountType: Joi.string()
         .valid(...discountTypeEnum)
-        .required()
+        .optional()
         .error(handleValidationErrors),
-      discount: Joi.number().required().error(handleValidationErrors),
+      discount: Joi.number().optional().error(handleValidationErrors),
       support_for: Joi.string()
-        .required()
+        .optional()
         .error(handleValidationErrors),
       title: Joi.string().required().error(handleValidationErrors),
       pricePer: Joi.string().optional().error(handleValidationErrors),
       serviceLink: Joi.string().optional().error(handleValidationErrors),
-      price: Joi.number().required().error(handleValidationErrors),
+      price: Joi.number().optional().error(handleValidationErrors),
       keyPoints: Joi.array()
         .items(Joi.string())
         .optional()

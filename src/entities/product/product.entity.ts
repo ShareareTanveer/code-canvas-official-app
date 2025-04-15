@@ -38,7 +38,7 @@ export class Product extends BaseEntity {
   description: string;
 
   @Column({ nullable: true })
-  live_link: string;
+  live_link?: string;
 
   @OneToMany(() => PriceOption, (priceOption) => priceOption.product, {
     cascade: true,

@@ -6,7 +6,7 @@ export interface ISimplePriceOptionResponse {
   title: string;
   discount: number;
   discountType: EDiscountType;
-  price: number;
+  price?: number;
   totalPrice?: number;
   pricePer?: string;
   serviceLink?: string;
@@ -17,7 +17,7 @@ export interface IPriceOptionResponse {
   discount: number;
   discountType: EDiscountType;
   product?: IProductResponse;
-  price: number;
+  price?: number;
   totalPrice?: number;
   support_for: string;
   keyPoints?: string[];
@@ -30,7 +30,7 @@ export interface ICreatePriceOption {
   discount: number;
   discountType?: EDiscountType;
   products?: number[];
-  price: number;
+  price?: number;
   support_for: string;
   keyPoints: string[];
   pricePer?: string;
